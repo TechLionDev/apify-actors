@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Substack Scraper: Newsletter Posts, Full Text &amp; Comments</title>
+  <meta name="description" content="Substack newsletter scraper: posts, full text as Markdown, likes, comments, paywall status and subscriber counts. Free filters and new-post tracking.">
+  <meta name="theme-color" content="#0a0a0a">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://actors.techlion.dev/substack-scraper/">
+  <link rel="preconnect" href="https://cdn.techlion.dev" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.techlion.dev">
+  <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-title" content="TLD">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="TechLion Dev">
+  <meta property="og:title" content="Substack Scraper: Newsletter Posts, Full Text &amp; Comments">
+  <meta property="og:description" content="Substack newsletter scraper: posts, full text as Markdown, likes, comments, paywall status and subscriber counts. Free filters and new-post tracking.">
+  <meta property="og:url" content="https://actors.techlion.dev/substack-scraper/">
+  <meta property="og:image" content="https://actors.techlion.dev/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Substack Scraper: Newsletter Posts, Full Text &amp; Comments">
+  <meta name="twitter:description" content="Substack newsletter scraper: posts, full text as Markdown, likes, comments, paywall status and subscriber counts. Free filters and new-post tracking.">
+  <meta name="twitter:image" content="https://actors.techlion.dev/og.png">
+  <meta name="twitter:creator" content="@jeremiahisdev">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --background: 0 0% 4%;
+      --foreground: 0 0% 100%;
+      --card: 0 0% 6%;
+      --card-foreground: 0 0% 100%;
+      --primary: 42 54% 54%;
+      --primary-foreground: 0 0% 4%;
+      --secondary: 0 0% 10%;
+      --secondary-foreground: 0 0% 100%;
+      --muted: 0 0% 12%;
+      --muted-foreground: 0 0% 65%;
+      --accent: 42 54% 54%;
+      --accent-foreground: 0 0% 4%;
+      --border: 42 54% 54% / 0.15;
+      --ring: 42 54% 54%;
+      --radius: 0.75rem;
+      --font-syne: "Syne", ui-sans-serif, system-ui, sans-serif;
+      --font-outfit: "Outfit", ui-sans-serif, system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; border-color: hsl(var(--border)); }
+    html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: hsl(var(--background));
+      color: hsl(var(--foreground));
+      font-family: var(--font-outfit);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    ::selection { background: hsl(var(--primary) / 0.3); color: hsl(var(--foreground)); }
+    a { color: inherit; }
+    img { display: block; max-width: 100%; }
+    .font-heading { font-family: var(--font-syne); }
+    .gold-gradient {
+      background: linear-gradient(135deg, #c9a84c 0%, #e8c85a 50%, #c9a84c 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .section-padding { padding-left: 1rem; padding-right: 1rem; }
+    @media (min-width: 640px) { .section-padding { padding-left: 1.5rem; padding-right: 1.5rem; } }
+    @media (min-width: 1024px) { .section-padding { padding-left: 2rem; padding-right: 2rem; } }
+    .max-w-content { margin-left: auto; margin-right: auto; max-width: 80rem; }
+
+    /* Header / nav — from src/components/navbar.tsx */
+    .site-header {
+      position: sticky; top: 0; z-index: 50; width: 100%;
+      border-bottom: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--background) / 0.9);
+    }
+    @supports (backdrop-filter: blur(24px)) or (-webkit-backdrop-filter: blur(24px)) {
+      .site-header {
+        background: hsl(var(--background) / 0.8);
+        -webkit-backdrop-filter: blur(24px);
+        backdrop-filter: blur(24px);
+      }
+    }
+    .nav {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 4rem;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 0.5rem;
+      text-decoration: none; transition: opacity 0.15s;
+    }
+    .brand:hover { opacity: 0.8; }
+    .brand img { width: 2rem; height: 2rem; }
+    .brand-name {
+      font-family: var(--font-syne);
+      font-size: 1.125rem; font-weight: 700; letter-spacing: -0.025em;
+      white-space: nowrap; color: #fff;
+    }
+    .nav-desktop { display: none; align-items: center; gap: 0.25rem; }
+    @media (min-width: 768px) { .nav-desktop { display: flex; } }
+    .nav-link {
+      position: relative; display: inline-flex; align-items: center; gap: 0.25rem;
+      border-radius: 0.5rem; padding: 0.375rem 0.5rem;
+      font-size: 0.75rem; font-weight: 500; text-decoration: none;
+      color: hsl(var(--muted-foreground)); transition: color 0.15s;
+    }
+    .nav-link:hover { color: hsl(var(--foreground)); }
+    @media (min-width: 1024px) {
+      .nav-link { padding: 0.5rem 0.75rem; font-size: 0.875rem; }
+    }
+    .nav-dropdown { position: relative; }
+    .nav-dropdown-menu {
+      position: absolute; left: 0; top: 100%; z-index: 50;
+      margin-top: 0.25rem; width: 14rem; padding: 0.5rem;
+      border-radius: 0.75rem; border: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--card)); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+      opacity: 0; visibility: hidden; transition: opacity 0.15s, visibility 0.15s;
+    }
+    .nav-dropdown:hover .nav-dropdown-menu,
+    .nav-dropdown:focus-within .nav-dropdown-menu {
+      opacity: 1; visibility: visible;
+    }
+    .nav-dropdown-menu a {
+      display: block; border-radius: 0.5rem; padding: 0.5rem 0.75rem;
+      font-size: 0.875rem; text-decoration: none;
+      color: hsl(var(--muted-foreground));
+    }
+    .nav-dropdown-menu a:first-child {
+      font-weight: 500; color: hsl(var(--foreground));
+    }
+    .nav-dropdown-menu a:hover { background: hsl(var(--primary) / 0.05); color: hsl(var(--foreground)); }
+    .btn-gold {
+      display: inline-flex; align-items: center; justify-content: center;
+      flex-shrink: 0; height: 2.5rem; margin-left: 0.5rem; padding: 0 1.25rem;
+      border-radius: 0.75rem; white-space: nowrap; text-decoration: none;
+      font-size: 0.875rem; font-weight: 600; color: #000;
+      background-image: linear-gradient(to right, #f59e0b, #eab308);
+      transition: filter 0.15s;
+    }
+    .btn-gold:hover { background-image: linear-gradient(to right, #fbbf24, #facc15); }
+    .menu-toggle {
+      display: flex; align-items: center; justify-content: center;
+      border: 0; background: transparent; border-radius: 0.5rem; padding: 0.5rem;
+      color: hsl(var(--muted-foreground)); cursor: pointer;
+    }
+    .menu-toggle:hover { color: hsl(var(--foreground)); }
+    .menu-toggle #icon-close { display: none; }
+    .site-header.is-open .menu-toggle #icon-menu { display: none; }
+    .site-header.is-open .menu-toggle #icon-close { display: block; }
+    @media (min-width: 768px) { .menu-toggle { display: none; } }
+    .nav-mobile {
+      display: none;
+      border-top: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--background) / 0.95);
+    }
+    @supports (backdrop-filter: blur(24px)) or (-webkit-backdrop-filter: blur(24px)) {
+      .nav-mobile {
+        background: hsl(var(--background) / 0.85);
+        -webkit-backdrop-filter: blur(24px);
+        backdrop-filter: blur(24px);
+      }
+    }
+    .site-header.is-open .nav-mobile { display: block; }
+    @media (min-width: 768px) { .site-header.is-open .nav-mobile { display: none; } }
+    .nav-mobile-inner { padding-top: 1rem; padding-bottom: 1rem; }
+    .nav-mobile a, .nav-mobile summary {
+      display: block; border-radius: 0.5rem; padding: 0.5rem 0.75rem;
+      font-size: 0.875rem; font-weight: 500; color: hsl(var(--muted-foreground));
+      text-decoration: none; list-style: none; cursor: pointer;
+    }
+    .nav-mobile summary { display: flex; align-items: center; justify-content: space-between; }
+    .nav-mobile summary::-webkit-details-marker { display: none; }
+    .nav-mobile a:hover, .nav-mobile summary:hover { color: hsl(var(--foreground)); }
+    .nav-mobile details[open] > summary { color: hsl(var(--foreground)); }
+    .nav-mobile .sub { margin-left: 1rem; }
+    .nav-mobile .sub a { font-weight: 500; }
+    .nav-mobile .sub a.strong { font-weight: 600; color: hsl(var(--foreground)); }
+    .nav-mobile .btn-gold {
+      display: block; margin: 0.5rem 0 0; height: auto; padding: 0.625rem 0.75rem; text-align: center;
+    }
+    .chevron { width: 0.75rem; height: 0.75rem; flex-shrink: 0; }
+    .nav-mobile .chevron { width: 1rem; height: 1rem; transition: transform 0.2s; }
+    .nav-mobile details[open] .chevron { transform: rotate(180deg); }
+
+    /* Hero — from src/components/sections/hero.tsx */
+    .hero {
+      position: relative; overflow: hidden;
+      border-bottom: 1px solid hsl(var(--primary) / 0.1);
+    }
+    .hero-bg {
+      pointer-events: none; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at top, hsl(var(--primary) / 0.08), transparent 60%);
+    }
+    .hero-inner { position: relative; z-index: 1; padding: 6rem 0; }
+    @media (min-width: 640px) { .hero-inner { padding: 8rem 0; } }
+    @media (min-width: 1024px) { .hero-inner { padding: 10rem 0; } }
+    .hero-copy { margin: 0 auto; max-width: 48rem; text-align: center; }
+    .hero h1 {
+      margin: 0;
+      font-family: var(--font-syne);
+      font-size: 2.25rem; font-weight: 700; letter-spacing: -0.025em; line-height: 1.15;
+      color: hsl(var(--foreground));
+    }
+    @media (min-width: 640px) { .hero h1 { font-size: 3rem; } }
+    @media (min-width: 1024px) { .hero h1 { font-size: 3.75rem; } }
+    .hero .lead {
+      margin: 2rem auto 0; max-width: 32rem;
+      font-size: 1rem; color: hsl(var(--muted-foreground));
+    }
+    @media (min-width: 640px) { .hero .lead { font-size: 1.125rem; } }
+    .hero-note {
+      margin: 1.5rem auto 0;
+      font-size: 0.875rem; color: hsl(var(--muted-foreground) / 0.8);
+    }
+    .actions {
+      margin-top: 2.5rem;
+      display: flex; flex-direction: column; align-items: center; gap: 1rem;
+    }
+    @media (min-width: 640px) {
+      .actions { flex-direction: row; justify-content: center; }
+    }
+    .btn-gold-lg {
+      display: inline-flex; align-items: center; justify-content: center;
+      height: 3rem; width: 100%; padding: 0 1.5rem; border-radius: 0.75rem;
+      font-size: 0.875rem; font-weight: 600; color: #000; text-decoration: none;
+      background-image: linear-gradient(to right, #f59e0b, #eab308);
+      transition: filter 0.15s;
+    }
+    .btn-gold-lg:hover { background-image: linear-gradient(to right, #fbbf24, #facc15); }
+    @media (min-width: 640px) { .btn-gold-lg { width: auto; } }
+    .btn-outline {
+      display: inline-flex; align-items: center; justify-content: center;
+      height: 3rem; width: 100%; padding: 0 1.5rem; border-radius: 0.75rem;
+      border: 1px solid hsl(var(--primary) / 0.2);
+      font-size: 0.875rem; font-weight: 600; color: hsl(var(--foreground));
+      text-decoration: none; transition: background 0.15s;
+    }
+    .btn-outline:hover { background: hsl(var(--secondary)); }
+    @media (min-width: 640px) { .btn-outline { width: auto; } }
+
+    /* Breadcrumb-ish */
+    .crumbs {
+      border-bottom: 1px solid hsl(var(--primary) / 0.1);
+      font-size: 0.8125rem; color: hsl(var(--muted-foreground));
+    }
+    .crumbs-inner { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; min-height: 2.75rem; }
+    .crumbs a { color: hsl(var(--muted-foreground)); text-decoration: none; }
+    .crumbs a:hover { color: hsl(var(--primary)); }
+    .crumbs span[aria-current] { color: hsl(var(--foreground)); }
+
+    /* Directory */
+    main { flex: 1; }
+    .directory { padding: 3rem 0 5rem; }
+    .directory h2 {
+      margin: 2.5rem 0 1rem;
+      font-family: var(--font-syne);
+      font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em;
+      color: hsl(var(--foreground));
+    }
+    .directory h2:first-child { margin-top: 0; }
+    .grid {
+      display: grid; gap: 1.5rem;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 640px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1024px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+    /* Cards — from src/components/offer-card-client.tsx */
+    article {
+      display: flex; flex-direction: column;
+      border-radius: 1rem;
+      border: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--card));
+      padding: 1.5rem;
+      transition: border-color 0.2s;
+    }
+    @media (min-width: 640px) { article { padding: 1.5rem; } }
+    article:hover { border-color: hsl(var(--primary) / 0.3); }
+    article a { text-decoration: none; display: flex; flex-direction: column; flex: 1; color: inherit; }
+    article h3 {
+      margin: 0;
+      font-family: var(--font-syne);
+      font-size: 1.125rem; font-weight: 700; letter-spacing: -0.02em;
+      color: hsl(var(--foreground));
+    }
+    article p {
+      margin: 0.75rem 0 0;
+      font-size: 0.875rem; color: hsl(var(--muted-foreground));
+      flex: 1;
+    }
+    .price {
+      display: inline-flex; align-items: center; align-self: flex-start;
+      margin-top: 1.25rem;
+      border-radius: 999px;
+      border: 1px solid hsl(var(--primary) / 0.3);
+      background: hsl(var(--primary) / 0.1);
+      padding: 0.25rem 0.75rem;
+      font-size: 0.75rem; font-weight: 600; color: hsl(var(--primary));
+    }
+
+    /* Footer — from src/components/footer.tsx */
+    .site-footer {
+      border-top: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--card));
+    }
+    .footer-inner { padding-top: 4rem; padding-bottom: 4rem; }
+    .footer-grid {
+      display: grid; gap: 2.5rem;
+    }
+    @media (min-width: 640px) { .footer-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1024px) { .footer-grid { grid-template-columns: repeat(5, 1fr); } }
+    .footer-brand { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; }
+    .footer-brand img { width: 2rem; height: 2rem; }
+    .footer-brand span {
+      font-family: var(--font-syne); font-size: 1.125rem; font-weight: 700; color: #fff;
+    }
+    .footer-blurb {
+      margin: 1rem 0 0; font-size: 0.875rem; line-height: 1.625;
+      color: hsl(var(--muted-foreground));
+    }
+    .footer-col h3 {
+      margin: 0 0 1rem;
+      font-family: var(--font-syne);
+      font-size: 0.875rem; font-weight: 600; letter-spacing: 0.05em;
+      text-transform: uppercase; color: hsl(var(--foreground));
+    }
+    .footer-col ul { list-style: none; margin: 0; padding: 0; }
+    .footer-col li + li { margin-top: 0.5rem; }
+    .footer-col a {
+      font-size: 0.875rem; color: hsl(var(--muted-foreground));
+      text-decoration: none; transition: color 0.15s;
+    }
+    .footer-col a:hover { color: hsl(var(--primary)); }
+    .footer-email {
+      margin: 0.5rem 0 0;
+      font-size: 0.75rem; color: hsl(var(--muted-foreground) / 0.6);
+    }
+    .footer-email a {
+      font-size: 0.75rem; color: hsl(var(--muted-foreground) / 0.6);
+      text-decoration: none;
+    }
+    .footer-email a:hover { color: hsl(var(--primary)); }
+    .footer-bottom {
+      margin-top: 3rem; padding-top: 2rem;
+      border-top: 1px solid hsl(var(--primary) / 0.1);
+      display: flex; flex-direction: column; align-items: flex-start; gap: 1rem;
+      font-size: 0.75rem; color: hsl(var(--muted-foreground) / 0.6);
+    }
+    @media (min-width: 640px) {
+      .footer-bottom { flex-direction: row; align-items: center; justify-content: space-between; }
+    }
+    .footer-bottom p { margin: 0; }
+    .footer-legal { display: flex; align-items: center; gap: 1rem; }
+    .footer-legal a { color: inherit; text-decoration: none; }
+    .footer-legal a:hover { color: hsl(var(--primary)); }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: hsl(var(--background)); }
+    ::-webkit-scrollbar-thumb { background: hsl(var(--primary) / 0.3); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: hsl(var(--primary) / 0.5); }
+
+    @media 
+    .doc { padding: 1.5rem 0 5rem; max-width: 52rem; }
+    .doc h1 { font-family: var(--font-syne); font-size: clamp(1.9rem,4vw,2.8rem); line-height:1.1; letter-spacing:-.03em; margin: .75rem 0 1rem; }
+    .doc h2 { font-family: var(--font-syne); font-size: 1.5rem; letter-spacing:-.02em; margin: 2.75rem 0 .75rem; }
+    .doc h3 { font-family: var(--font-syne); font-size: 1.1rem; margin: 1.75rem 0 .5rem; }
+    .doc p, .doc li { color: hsl(0 0% 82%); line-height: 1.7; }
+    .doc a { color: hsl(var(--primary)); }
+    .doc ul, .doc ol { padding-left: 1.25rem; }
+    .doc code { background: hsl(var(--muted)); padding: .1rem .35rem; border-radius: .35rem; font-size: .88em; }
+    .doc pre { background: hsl(var(--card)); border: 1px solid hsl(var(--primary) / .12); border-radius: .75rem; padding: 1rem; overflow-x: auto; font-size: .82rem; }
+    .doc pre code { background: none; padding: 0; }
+    .doc table { width: 100%; border-collapse: collapse; display: block; overflow-x: auto; font-size: .9rem; margin: 1rem 0; }
+    .doc th, .doc td { border: 1px solid hsl(var(--primary) / .15); padding: .5rem .75rem; text-align: left; vertical-align: top; }
+    .doc th { background: hsl(var(--card)); }
+    .lede { font-size: 1.1rem; color: hsl(var(--muted-foreground)); }
+    .cta-row { display: flex; flex-wrap: wrap; gap: .75rem; margin: 1.5rem 0 .5rem; align-items: center; }
+    .related { margin-top: 3rem; }
+    .related .grid { margin-top: 1rem; }
+    article .guide { margin-top: .75rem; font-size: .8rem; color: hsl(var(--primary)); flex: 0; }
+(prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+  </style>
+
+  <script type="application/ld+json">[{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Substack Scraper: Newsletter Posts, Full Text & Comments", "applicationCategory": "DeveloperApplication", "operatingSystem": "Web", "url": "https://actors.techlion.dev/substack-scraper/", "description": "Substack newsletter scraper: posts, full text as Markdown, likes, comments, paywall status and subscriber counts. Free filters and new-post tracking.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD", "description": "$0.50 / 1,000 posts (pay per result on Apify)"}, "author": {"@type": "Organization", "name": "TechLion Dev", "url": "https://www.techlion.dev/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.techlion.dev/"}, {"@type": "ListItem", "position": 2, "name": "Apify Actors", "item": "https://actors.techlion.dev/"}, {"@type": "ListItem", "position": 3, "name": "Substack Newsletter Scraper", "item": "https://actors.techlion.dev/substack-scraper/"}]}, {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Does it get the full text of paid posts?", "acceptedAnswer": {"@type": "Answer", "text": "No. For paid (subscriber-only) posts, Substack publicly shows only the free preview, so that is what you get. The isPaywalled and isFullTextComplete fields tell you which is which."}}, {"@type": "Question", "name": "Do custom domains work?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Newsletters on their own domain, like www.lennysnewsletter.com, work the same way as name.substack.com addresses."}}, {"@type": "Question", "name": "Where does the subscriber number come from?", "acceptedAnswer": {"@type": "Answer", "text": "From the subscriber count the newsletter itself shows publicly, such as \"Over 1,200,000 subscribers\". Some newsletters hide it, and then the field is empty."}}, {"@type": "Question", "name": "How does new-post tracking work?", "acceptedAnswer": {"@type": "Answer", "text": "With Only save posts that are new since the last run on, the scraper remembers the newest post of each newsletter and next time stops as soon as it reaches it. You only get, and pay for, new posts."}}, {"@type": "Question", "name": "Is it legal to scrape Substack?", "acceptedAnswer": {"@type": "Answer", "text": "The scraper reads only public pages that anyone can open without logging in. Comments can contain names and personal opinions, so make sure you have a legitimate reason to collect and use them under the privacy laws that apply to you, and respect authors' copyright when reusing text."}}, {"@type": "Question", "name": "Can I use this as a newsletter scraper for many Substacks at once?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Add as many publications as you like (names, links or custom domains). Each row says which newsletter it came from, so one run can track a whole list of newsletters."}}, {"@type": "Question", "name": "Can I feed Substack posts into an AI tool?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Turn on Full text of each post and Also give the full text as Markdown to get each post's full text in a format that AI (artificial intelligence) tools and language models read well, with headings and links kept."}}]}]</script>
+</head>
+<body>
+  <header class="site-header" id="site-header">
+    <nav class="nav max-w-content section-padding" aria-label="Primary">
+      <a class="brand" href="https://www.techlion.dev/">
+        <img src="https://cdn.techlion.dev/logos/png/icons/Color.png" alt="TechLion Dev" width="32" height="32">
+        <span class="brand-name">TechLion<span class="gold-gradient"> Dev</span></span>
+      </a>
+      <div class="nav-desktop">
+        <a class="nav-link" href="https://www.techlion.dev/">Home</a>
+        <div class="nav-dropdown">
+          <a class="nav-link" href="https://www.techlion.dev/services">Services
+            <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+          </a>
+          <div class="nav-dropdown-menu">
+            <a href="https://www.techlion.dev/services">All Services</a>
+            <a href="https://www.techlion.dev/services/web-design">Web Design</a>
+            <a href="https://www.techlion.dev/services/web-apps">Web Apps &amp; APIs</a>
+            <a href="https://www.techlion.dev/services/automations">Automations</a>
+            <a href="https://www.techlion.dev/services/ai-integration">AI Integration</a>
+            <a href="https://www.techlion.dev/services/ai-visibility">AI Visibility</a>
+            <a href="https://www.techlion.dev/locations">Locations</a>
+          </div>
+        </div>
+        <a class="nav-link" href="https://www.techlion.dev/projects">Projects</a>
+        <a class="nav-link" href="https://www.techlion.dev/blog">Blog</a>
+        <a class="nav-link" href="https://www.techlion.dev/pricing">Pricing</a>
+        <a class="nav-link" href="https://www.techlion.dev/productized-offer">Offers</a>
+        <div class="nav-dropdown">
+          <a class="nav-link" href="https://www.techlion.dev/about">Company
+            <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+          </a>
+          <div class="nav-dropdown-menu">
+            <a href="https://www.techlion.dev/about">Company</a>
+            <a href="https://www.techlion.dev/about">About</a>
+            <a href="https://www.techlion.dev/process">Process</a>
+            <a href="https://www.techlion.dev/faq">FAQ</a>
+            <a href="https://www.techlion.dev/contact">Contact</a>
+          </div>
+        </div>
+        <a class="btn-gold" href="https://www.techlion.dev/contact">Start Your Project</a>
+      </div>
+      <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav" id="menu-toggle">
+        <svg id="icon-menu" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16"></path><path d="M4 12h16"></path><path d="M4 19h16"></path></svg>
+        <svg id="icon-close" hidden xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+      </button>
+    </nav>
+    <div class="nav-mobile" id="mobile-nav">
+      <div class="nav-mobile-inner section-padding max-w-content">
+        <a href="https://www.techlion.dev/">Home</a>
+        <details>
+          <summary>Services <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary>
+          <div class="sub">
+            <a class="strong" href="https://www.techlion.dev/services">All Services</a>
+            <a href="https://www.techlion.dev/services/web-design">Web Design</a>
+            <a href="https://www.techlion.dev/services/web-apps">Web Apps &amp; APIs</a>
+            <a href="https://www.techlion.dev/services/automations">Automations</a>
+            <a href="https://www.techlion.dev/services/ai-integration">AI Integration</a>
+            <a href="https://www.techlion.dev/services/ai-visibility">AI Visibility</a>
+            <a href="https://www.techlion.dev/locations">Locations</a>
+          </div>
+        </details>
+        <a href="https://www.techlion.dev/projects">Projects</a>
+        <a href="https://www.techlion.dev/blog">Blog</a>
+        <a href="https://www.techlion.dev/pricing">Pricing</a>
+        <a href="https://www.techlion.dev/productized-offer">Offers</a>
+        <details>
+          <summary>Company <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary>
+          <div class="sub">
+            <a class="strong" href="https://www.techlion.dev/about">Company</a>
+            <a href="https://www.techlion.dev/about">About</a>
+            <a href="https://www.techlion.dev/process">Process</a>
+            <a href="https://www.techlion.dev/faq">FAQ</a>
+            <a href="https://www.techlion.dev/contact">Contact</a>
+          </div>
+        </details>
+        <a class="btn-gold" href="https://www.techlion.dev/contact">Start Your Project</a>
+      </div>
+    </div>
+  </header>
+<nav class="crumbs" aria-label="Breadcrumb"><div class="crumbs-inner max-w-content section-padding"><a href="https://www.techlion.dev/">Home</a><span aria-hidden="true">/</span><a href="/">Apify Actors</a><span aria-hidden="true">/</span><span aria-current="page">Substack Newsletter Scraper</span></div></nav>
+<main>
+    <div class="max-w-content section-padding">
+<div class="doc">
+<h1>Substack Scraper: Newsletter Posts, Full Text &amp; Comments</h1>
+<p class="lede">Substack newsletter scraper: posts, full text as Markdown, likes, comments, paywall status and subscriber counts. Free filters and new-post tracking.</p>
+<div class="cta-row"><a class="btn-gold" href="https://apify.com/techliondev/substack-scraper">Run it on Apify</a><a class="btn-outline" href="/">All 23 TechLion Dev Actors</a><span class="price">$0.50 / 1,000 posts</span></div>
+<p class="lede" style="font-size:.9rem">A first test run is usually under a cent. No login to the source site. Pay only for the results you get. Built and maintained by <a href="https://www.techlion.dev/">TechLion Dev</a>.</p>
+<p><strong>Substack Newsletter Scraper</strong> (also called Substack Scraper) collects posts from <strong>any Substack newsletter</strong>, including newsletters on their own domain (like <code>lennysnewsletter.com</code>), into a clean table. Get titles, dates, authors, likes, comments, restacks, paywall status and subscriber estimates, plus optional full text (as plain text, HTML or Markdown) and public comments. No login and no API (application programming interface) key needed.</p>
+<p>It is for media researchers, newsletter operators, sponsor teams and AI (artificial intelligence) pipelines that need Substack posts and full text in one place.</p>
+<ul>
+<li><strong>Research creators and niches:</strong> compare newsletters by subscribers, likes and comments per post.</li>
+<li><strong>Build reading lists and archives:</strong> export a newsletter's full public history.</li>
+<li><strong>Feed AI tools:</strong> get full text as Markdown for summaries, search or RAG (retrieval-augmented generation).</li>
+<li><strong>Monitor topics:</strong> keep only posts that mention your keywords and get new ones on a schedule.</li>
+<li><strong>Find sponsors and partners:</strong> spot fast-growing, highly engaged newsletters in your space.</li>
+</ul><h3>What data does Substack Newsletter Scraper extract?</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>📰 Newsletter name, link and subscriber estimate</td>
+<td>🧾 Post title, subtitle, link and ID</td>
+</tr>
+<tr>
+<td>📅 Publish date</td>
+<td>✍️ Authors (name and handle)</td>
+</tr>
+<tr>
+<td>🔒 Audience: free or paid, and a paywall flag</td>
+<td>❤️ Likes, 💬 comment count and 🔁 restacks</td>
+</tr>
+<tr>
+<td>⏱️ Word count and reading time</td>
+<td>🏷️ Section and tags</td>
+</tr>
+<tr>
+<td>🖼️ Cover image</td>
+<td>🎧 Podcast audio link and length</td>
+</tr>
+<tr>
+<td>📄 Full text as text, HTML or Markdown (add-on)</td>
+<td>💬 Public comments with author, date and likes (add-on)</td>
+</tr>
+</tbody>
+</table><h3>Why this scraper?</h3>
+<ul>
+<li><strong>Low price per post</strong> and only a tiny start fee (see pricing below).</li>
+<li><strong>Free filters:</strong> date range, keywords, words to skip, free or paid, post type and minimum likes.</li>
+<li><strong>Subscriber estimates and reading time</strong> on every row at no extra cost.</li>
+<li><strong>New-post tracking</strong> for scheduled runs, so you never pay twice for the same post.</li>
+<li><strong>Markdown output</strong> ready for AI tools.</li>
+</ul><h2>Input</h2><p>Add newsletters one per line: the short name (<code>astralcodexten</code>), the newsletter address (<code>https://www.lennysnewsletter.com</code>), or a single post link (<code>https://www.lennysnewsletter.com/p/some-post</code>).</p>
+<pre><code class="language-json">{
+    &quot;publications&quot;: [&quot;https://www.lennysnewsletter.com&quot;, &quot;astralcodexten&quot;],
+    &quot;maxPostsPerPublication&quot;: 100,
+    &quot;newerThan&quot;: &quot;90 days&quot;,
+    &quot;includeKeywords&quot;: [&quot;AI&quot;, &quot;growth&quot;],
+    &quot;access&quot;: &quot;free&quot;,
+    &quot;minLikes&quot;: 50,
+    &quot;includeFullText&quot;: true,
+    &quot;includeMarkdown&quot;: true,
+    &quot;maxCommentsPerPost&quot;: 20
+}
+</code></pre><h2>Output</h2><p>One row per post. The <strong>Overview</strong> view shows engagement, <strong>Full text</strong> shows the body, and <strong>Newsletter stats</strong> shows subscriber estimates next to each post.</p>
+<h3>Table view</h3>
+<p>Sample rows from a real run with the default input (2 newsletters, 10 posts each, full text on):</p>
+<table>
+<thead>
+<tr>
+<th>Newsletter</th>
+<th>Subscribers</th>
+<th>Title</th>
+<th>Date</th>
+<th>Access</th>
+<th>Words</th>
+<th>Likes</th>
+<th>Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lenny's Newsletter</td>
+<td>Over 1,200,000 subscribers</td>
+<td>State of the tech job market: late 2026</td>
+<td>2026-11-10</td>
+<td>only_paid</td>
+<td>2,183</td>
+<td>325</td>
+<td>33</td>
+</tr>
+<tr>
+<td>Lenny's Newsletter</td>
+<td>Over 1,200,000 subscribers</td>
+<td>All of the Lenny &amp; Friends Summit talks are…</td>
+<td>2026-09-29</td>
+<td>everyone</td>
+<td>1,276</td>
+<td>297</td>
+<td>9</td>
+</tr>
+<tr>
+<td>Lenny's Newsletter</td>
+<td>Over 1,200,000 subscribers</td>
+<td>60+ new creative growth ideas</td>
+<td>2026-09-15</td>
+<td>only_paid</td>
+<td>5,674</td>
+<td>441</td>
+<td>7</td>
+</tr>
+<tr>
+<td>Lenny's Newsletter</td>
+<td>Over 1,200,000 subscribers</td>
+<td>Announcing Lenny’s Jobs: The best place in…</td>
+<td>2026-08-18</td>
+<td>everyone</td>
+<td>933</td>
+<td>391</td>
+<td>18</td>
+</tr>
+<tr>
+<td>Astral Codex Ten</td>
+<td></td>
+<td>Escaping The “Outside Criticism” Trap</td>
+<td>2026-11-11</td>
+<td>everyone</td>
+<td>1,776</td>
+<td>318</td>
+<td>318</td>
+</tr>
+<tr>
+<td>Astral Codex Ten</td>
+<td></td>
+<td>Your Book Review: Orality and Literacy</td>
+<td>2026-11-06</td>
+<td>everyone</td>
+<td>6,967</td>
+<td>198</td>
+<td>202</td>
+</tr>
+<tr>
+<td>Astral Codex Ten</td>
+<td></td>
+<td>Links For November 2026</td>
+<td>2026-11-05</td>
+<td>everyone</td>
+<td>3,370</td>
+<td>224</td>
+<td>476</td>
+</tr>
+<tr>
+<td>Astral Codex Ten</td>
+<td></td>
+<td>My California Ballot, 2026</td>
+<td>2026-10-28</td>
+<td>everyone</td>
+<td>5,439</td>
+<td>171</td>
+<td>608</td>
+</tr>
+</tbody>
+</table><h2>How to use it</h2><ol>
+<li>Click <strong>Try for free</strong> (an Apify account is free to create).</li>
+<li>Add one or more newsletters or post links.</li>
+<li>Choose filters and add-ons.</li>
+<li>Click <strong>Start</strong>. The default input finishes in about 15 seconds.</li>
+<li>Download the posts from the <strong>Output</strong> tab, or connect them to another tool.</li>
+</ol><h2>How much does it cost?</h2><p>Pay-per-event pricing: you pay for what you get, not for computer time.</p>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Price (free plan)</th>
+<th>When it is charged</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actor start</td>
+<td>$0.00005</td>
+<td>Once per run</td>
+</tr>
+<tr>
+<td><strong>Post saved</strong></td>
+<td><strong>$0.0005</strong> ($0.50 per 1,000 posts)</td>
+<td>For each post saved, after your filters</td>
+</tr>
+<tr>
+<td>Add-on: Full text</td>
+<td>$0.0005</td>
+<td>For each saved post whose full text was loaded</td>
+</tr>
+<tr>
+<td>Add-on: Comment</td>
+<td>$0.0002</td>
+<td>For each comment saved</td>
+</tr>
+</tbody>
+</table>
+<p>Paid Apify plans get lower prices automatically. The <strong>Pricing</strong> tab lists every plan.</p>
+<p><strong>Worked examples</strong></p>
+<ul>
+<li><strong>Default test run, 20 posts with full text:</strong> $0.00005 + 20 × ($0.0005 + $0.0005) = <strong>about $0.02</strong>.</li>
+<li><strong>1,000 posts with full text:</strong> 1,000 × $0.001 = <strong>$1.00</strong>. A popular alternative charges $2.30 per 1,000 posts with content, plus a $0.005 start fee.</li>
+<li><strong>1,000 posts, titles and engagement only:</strong> <strong>$0.50</strong>.</li>
+<li><strong>Weekly check of 50 newsletters, new posts only (about 60 posts a week, with full text and 10 comments each):</strong> 4 runs × $0.00005 + 240 × $0.001 + 2,400 × $0.0002 = <strong>about $0.72 per month</strong>.</li>
+</ul>
+<p>Posts removed by your filters are never charged, and add-ons are charged only for posts that were saved.</p><h2>Use cases</h2><ul>
+<li><strong>Media and market research:</strong> see what the top newsletters in a niche write about and what gets the most engagement.</li>
+<li><strong>Sponsorship and partnerships:</strong> shortlist newsletters by subscribers and engagement.</li>
+<li><strong>AI and search:</strong> build a searchable knowledge base from your favorite newsletters.</li>
+<li><strong>Competitor monitoring:</strong> get a feed of new posts from competitors' newsletters.</li>
+<li><strong>Community analysis:</strong> read what commenters say about each post.</li>
+</ul><h2>Frequently asked questions</h2><h3>Does it get the full text of paid posts?</h3><p>No. For paid (subscriber-only) posts, Substack publicly shows only the free preview, so that is what you get. The <code>isPaywalled</code> and <code>isFullTextComplete</code> fields tell you which is which.</p><h3>Do custom domains work?</h3><p>Yes. Newsletters on their own domain, like <code>www.lennysnewsletter.com</code>, work the same way as <code>name.substack.com</code> addresses.</p><h3>Where does the subscriber number come from?</h3><p>From the subscriber count the newsletter itself shows publicly, such as "Over 1,200,000 subscribers". Some newsletters hide it, and then the field is empty.</p><h3>How does new-post tracking work?</h3><p>With <strong>Only save posts that are new since the last run</strong> on, the scraper remembers the newest post of each newsletter and next time stops as soon as it reaches it. You only get, and pay for, new posts.</p><h3>Is it legal to scrape Substack?</h3><p>The scraper reads only public pages that anyone can open without logging in. Comments can contain names and personal opinions, so make sure you have a legitimate reason to collect and use them under the privacy laws that apply to you, and respect authors' copyright when reusing text.</p><h3>Can I use this as a newsletter scraper for many Substacks at once?</h3><p>Yes. Add as many publications as you like (names, links or custom domains). Each row says which newsletter it came from, so one run can track a whole list of newsletters.</p><h3>Can I feed Substack posts into an AI tool?</h3><p>Yes. Turn on <strong>Full text of each post</strong> and <strong>Also give the full text as Markdown</strong> to get each post's full text in a format that AI (artificial intelligence) tools and language models read well, with headings and links kept.</p>
+<div class="cta-row"><a class="btn-gold" href="https://apify.com/techliondev/substack-scraper">Try Substack Newsletter Scraper on Apify</a></div>
+<section class="related"><h2>More TechLion Dev Actors</h2><div class="grid"><article><a href="/telegram-channel-scraper/"><h3>Telegram Channel Scraper</h3><p>Channel posts, views and reactions, with no Telegram login.</p><span class="price">$0.50 / 1,000 posts</span></a></article><article><a href="/bluesky-scraper/"><h3>Bluesky Scraper</h3><p>Posts by search, hashtag, profile or thread.</p><span class="price">$0.30 / 1,000 posts</span></a></article><article><a href="/rss-feed-reader/"><h3>RSS Feed Reader</h3><p>RSS, Atom and podcasts converted to JSON.</p><span class="price">$0.50 / 1,000 items</span></a></article><article><a href="/sitemap-url-extractor/"><h3>Sitemap Extractor</h3><p>Every URL in a sitemap, with optional SEO and broken-link checks.</p><span class="price">$0.30 / 1,000 URLs</span></a></article></div></section>
+<p>Need a custom data pipeline or integration? <a href="https://www.techlion.dev/contact">Talk to TechLion Dev</a>.</p>
+</div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner max-w-content section-padding">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <a class="footer-brand" href="https://www.techlion.dev/">
+            <img src="https://cdn.techlion.dev/logos/png/icons/Color.png" alt="TechLion Dev" width="32" height="32">
+            <span>TechLion<span class="gold-gradient"> Dev</span></span>
+          </a>
+          <p class="footer-blurb">Web development for small and medium businesses nationwide. Built by Jeremiah Samuel.</p>
+        </div>
+        <div class="footer-col">
+          <h3>Services</h3>
+          <ul>
+            <li><a href="https://www.techlion.dev/services/web-design">Websites</a></li>
+            <li><a href="https://www.techlion.dev/services/web-apps">Web Apps &amp; APIs</a></li>
+            <li><a href="https://www.techlion.dev/services/automations">Automations</a></li>
+            <li><a href="https://www.techlion.dev/services/ai-integration">AI Integration</a></li>
+            <li><a href="https://www.techlion.dev/services/ai-visibility">AI Visibility</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Company</h3>
+          <ul>
+            <li><a href="https://www.techlion.dev/about">About</a></li>
+            <li><a href="https://www.techlion.dev/process">Process</a></li>
+            <li><a href="https://www.techlion.dev/projects">Projects</a></li>
+            <li><a href="https://www.techlion.dev/pricing">Pricing</a></li>
+            <li><a href="https://www.techlion.dev/faq">FAQ</a></li>
+            <li><a href="https://www.techlion.dev/ai-instructions">AI Instructions</a></li>
+            <li><a href="https://www.techlion.dev/contact">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Locations</h3>
+          <ul>
+            <li><a href="https://www.techlion.dev/locations/asbury-park">Asbury Park</a></li>
+            <li><a href="https://www.techlion.dev/locations/brick">Brick</a></li>
+            <li><a href="https://www.techlion.dev/locations/colts-neck">Colts Neck</a></li>
+            <li><a href="https://www.techlion.dev/locations/edison">Edison</a></li>
+            <li><a href="https://www.techlion.dev/locations/freehold">Freehold</a></li>
+            <li><a href="https://www.techlion.dev/locations/holmdel">Holmdel</a></li>
+            <li><a href="https://www.techlion.dev/locations/howell">Howell</a></li>
+            <li><a href="https://www.techlion.dev/locations/manalapan">Manalapan</a></li>
+            <li><a href="https://www.techlion.dev/locations/marlboro">Marlboro</a></li>
+            <li><a href="https://www.techlion.dev/locations/middletown">Middletown</a></li>
+            <li><a href="https://www.techlion.dev/locations/monmouth-county">Monmouth County</a></li>
+            <li><a href="https://www.techlion.dev/locations/old-bridge">Old Bridge</a></li>
+            <li><a href="https://www.techlion.dev/locations/red-bank">Red Bank</a></li>
+            <li><a href="https://www.techlion.dev/locations/toms-river">Toms River</a></li>
+            <li><a href="https://www.techlion.dev/locations/woodbridge">Woodbridge</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Connect</h3>
+          <ul>
+            <li><a href="https://github.com/TechLionDev" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+            <li><a href="https://linkedin.com/in/jeremiah-samuel-4790b138a/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+            <li><a href="https://x.com/jeremiahisdev" target="_blank" rel="noopener noreferrer">X / Twitter</a></li>
+          </ul>
+          <p class="footer-email"><a href="mailto:jeremiahis@techlion.dev">jeremiahis@techlion.dev</a></p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 TechLion Dev. All rights reserved.</p>
+        <div class="footer-legal">
+          <a href="https://www.techlion.dev/privacy">Privacy</a>
+          <a href="https://www.techlion.dev/terms">Terms</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script>
+    (function () {
+      var header = document.getElementById('site-header');
+      var btn = document.getElementById('menu-toggle');
+      var iconMenu = document.getElementById('icon-menu');
+      var iconClose = document.getElementById('icon-close');
+      if (!header || !btn) return;
+      btn.addEventListener('click', function () {
+        var open = header.classList.toggle('is-open');
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+        if (iconMenu) iconMenu.hidden = open;
+        if (iconClose) iconClose.hidden = !open;
+      });
+    })();
+  </script>
+</body>
+</html>
