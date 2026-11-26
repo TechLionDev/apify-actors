@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SAM.gov &amp; USAspending Scraper: Federal Contracts &amp; Grants</title>
+  <meta name="description" content="Federal contracts scraper for USAspending.gov and SAM.gov: search awards and bids by keyword, NAICS code, agency and state. Find contracts ending soon.">
+  <meta name="theme-color" content="#0a0a0a">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://actors.techlion.dev/federal-contracts-feed/">
+  <link rel="preconnect" href="https://cdn.techlion.dev" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.techlion.dev">
+  <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-title" content="TLD">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="TechLion Dev">
+  <meta property="og:title" content="SAM.gov &amp; USAspending Scraper: Federal Contracts &amp; Grants">
+  <meta property="og:description" content="Federal contracts scraper for USAspending.gov and SAM.gov: search awards and bids by keyword, NAICS code, agency and state. Find contracts ending soon.">
+  <meta property="og:url" content="https://actors.techlion.dev/federal-contracts-feed/">
+  <meta property="og:image" content="https://actors.techlion.dev/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="SAM.gov &amp; USAspending Scraper: Federal Contracts &amp; Grants">
+  <meta name="twitter:description" content="Federal contracts scraper for USAspending.gov and SAM.gov: search awards and bids by keyword, NAICS code, agency and state. Find contracts ending soon.">
+  <meta name="twitter:image" content="https://actors.techlion.dev/og.png">
+  <meta name="twitter:creator" content="@jeremiahisdev">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --background: 0 0% 4%;
+      --foreground: 0 0% 100%;
+      --card: 0 0% 6%;
+      --card-foreground: 0 0% 100%;
+      --primary: 42 54% 54%;
+      --primary-foreground: 0 0% 4%;
+      --secondary: 0 0% 10%;
+      --secondary-foreground: 0 0% 100%;
+      --muted: 0 0% 12%;
+      --muted-foreground: 0 0% 65%;
+      --accent: 42 54% 54%;
+      --accent-foreground: 0 0% 4%;
+      --border: 42 54% 54% / 0.15;
+      --ring: 42 54% 54%;
+      --radius: 0.75rem;
+      --font-syne: "Syne", ui-sans-serif, system-ui, sans-serif;
+      --font-outfit: "Outfit", ui-sans-serif, system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; border-color: hsl(var(--border)); }
+    html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: hsl(var(--background));
+      color: hsl(var(--foreground));
+      font-family: var(--font-outfit);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    ::selection { background: hsl(var(--primary) / 0.3); color: hsl(var(--foreground)); }
+    a { color: inherit; }
+    img { display: block; max-width: 100%; }
+    .font-heading { font-family: var(--font-syne); }
+    .gold-gradient {
+      background: linear-gradient(135deg, #c9a84c 0%, #e8c85a 50%, #c9a84c 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .section-padding { padding-left: 1rem; padding-right: 1rem; }
+    @media (min-width: 640px) { .section-padding { padding-left: 1.5rem; padding-right: 1.5rem; } }
+    @media (min-width: 1024px) { .section-padding { padding-left: 2rem; padding-right: 2rem; } }
+    .max-w-content { margin-left: auto; margin-right: auto; max-width: 80rem; }
+
+    /* Header / nav — from src/components/navbar.tsx */
+    .site-header {
+      position: sticky; top: 0; z-index: 50; width: 100%;
+      border-bottom: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--background) / 0.9);
+    }
+    @supports (backdrop-filter: blur(24px)) or (-webkit-backdrop-filter: blur(24px)) {
+      .site-header {
+        background: hsl(var(--background) / 0.8);
+        -webkit-backdrop-filter: blur(24px);
+        backdrop-filter: blur(24px);
+      }
+    }
+    .nav {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 4rem;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 0.5rem;
+      text-decoration: none; transition: opacity 0.15s;
+    }
+    .brand:hover { opacity: 0.8; }
+    .brand img { width: 2rem; height: 2rem; }
+    .brand-name {
+      font-family: var(--font-syne);
+      font-size: 1.125rem; font-weight: 700; letter-spacing: -0.025em;
+      white-space: nowrap; color: #fff;
+    }
+    .nav-desktop { display: none; align-items: center; gap: 0.25rem; }
+    @media (min-width: 768px) { .nav-desktop { display: flex; } }
+    .nav-link {
+      position: relative; display: inline-flex; align-items: center; gap: 0.25rem;
+      border-radius: 0.5rem; padding: 0.375rem 0.5rem;
+      font-size: 0.75rem; font-weight: 500; text-decoration: none;
+      color: hsl(var(--muted-foreground)); transition: color 0.15s;
+    }
+    .nav-link:hover { color: hsl(var(--foreground)); }
+    @media (min-width: 1024px) {
+      .nav-link { padding: 0.5rem 0.75rem; font-size: 0.875rem; }
+    }
+    .nav-dropdown { position: relative; }
+    .nav-dropdown-menu {
+      position: absolute; left: 0; top: 100%; z-index: 50;
+      margin-top: 0.25rem; width: 14rem; padding: 0.5rem;
+      border-radius: 0.75rem; border: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--card)); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+      opacity: 0; visibility: hidden; transition: opacity 0.15s, visibility 0.15s;
+    }
+    .nav-dropdown:hover .nav-dropdown-menu,
+    .nav-dropdown:focus-within .nav-dropdown-menu {
+      opacity: 1; visibility: visible;
+    }
+    .nav-dropdown-menu a {
+      display: block; border-radius: 0.5rem; padding: 0.5rem 0.75rem;
+      font-size: 0.875rem; text-decoration: none;
+      color: hsl(var(--muted-foreground));
+    }
+    .nav-dropdown-menu a:first-child {
+      font-weight: 500; color: hsl(var(--foreground));
+    }
+    .nav-dropdown-menu a:hover { background: hsl(var(--primary) / 0.05); color: hsl(var(--foreground)); }
+    .btn-gold {
+      display: inline-flex; align-items: center; justify-content: center;
+      flex-shrink: 0; height: 2.5rem; margin-left: 0.5rem; padding: 0 1.25rem;
+      border-radius: 0.75rem; white-space: nowrap; text-decoration: none;
+      font-size: 0.875rem; font-weight: 600; color: #000;
+      background-image: linear-gradient(to right, #f59e0b, #eab308);
+      transition: filter 0.15s;
+    }
+    .btn-gold:hover { background-image: linear-gradient(to right, #fbbf24, #facc15); }
+    .menu-toggle {
+      display: flex; align-items: center; justify-content: center;
+      border: 0; background: transparent; border-radius: 0.5rem; padding: 0.5rem;
+      color: hsl(var(--muted-foreground)); cursor: pointer;
+    }
+    .menu-toggle:hover { color: hsl(var(--foreground)); }
+    .menu-toggle #icon-close { display: none; }
+    .site-header.is-open .menu-toggle #icon-menu { display: none; }
+    .site-header.is-open .menu-toggle #icon-close { display: block; }
+    @media (min-width: 768px) { .menu-toggle { display: none; } }
+    .nav-mobile {
+      display: none;
+      border-top: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--background) / 0.95);
+    }
+    @supports (backdrop-filter: blur(24px)) or (-webkit-backdrop-filter: blur(24px)) {
+      .nav-mobile {
+        background: hsl(var(--background) / 0.85);
+        -webkit-backdrop-filter: blur(24px);
+        backdrop-filter: blur(24px);
+      }
+    }
+    .site-header.is-open .nav-mobile { display: block; }
+    @media (min-width: 768px) { .site-header.is-open .nav-mobile { display: none; } }
+    .nav-mobile-inner { padding-top: 1rem; padding-bottom: 1rem; }
+    .nav-mobile a, .nav-mobile summary {
+      display: block; border-radius: 0.5rem; padding: 0.5rem 0.75rem;
+      font-size: 0.875rem; font-weight: 500; color: hsl(var(--muted-foreground));
+      text-decoration: none; list-style: none; cursor: pointer;
+    }
+    .nav-mobile summary { display: flex; align-items: center; justify-content: space-between; }
+    .nav-mobile summary::-webkit-details-marker { display: none; }
+    .nav-mobile a:hover, .nav-mobile summary:hover { color: hsl(var(--foreground)); }
+    .nav-mobile details[open] > summary { color: hsl(var(--foreground)); }
+    .nav-mobile .sub { margin-left: 1rem; }
+    .nav-mobile .sub a { font-weight: 500; }
+    .nav-mobile .sub a.strong { font-weight: 600; color: hsl(var(--foreground)); }
+    .nav-mobile .btn-gold {
+      display: block; margin: 0.5rem 0 0; height: auto; padding: 0.625rem 0.75rem; text-align: center;
+    }
+    .chevron { width: 0.75rem; height: 0.75rem; flex-shrink: 0; }
+    .nav-mobile .chevron { width: 1rem; height: 1rem; transition: transform 0.2s; }
+    .nav-mobile details[open] .chevron { transform: rotate(180deg); }
+
+    /* Hero — from src/components/sections/hero.tsx */
+    .hero {
+      position: relative; overflow: hidden;
+      border-bottom: 1px solid hsl(var(--primary) / 0.1);
+    }
+    .hero-bg {
+      pointer-events: none; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at top, hsl(var(--primary) / 0.08), transparent 60%);
+    }
+    .hero-inner { position: relative; z-index: 1; padding: 6rem 0; }
+    @media (min-width: 640px) { .hero-inner { padding: 8rem 0; } }
+    @media (min-width: 1024px) { .hero-inner { padding: 10rem 0; } }
+    .hero-copy { margin: 0 auto; max-width: 48rem; text-align: center; }
+    .hero h1 {
+      margin: 0;
+      font-family: var(--font-syne);
+      font-size: 2.25rem; font-weight: 700; letter-spacing: -0.025em; line-height: 1.15;
+      color: hsl(var(--foreground));
+    }
+    @media (min-width: 640px) { .hero h1 { font-size: 3rem; } }
+    @media (min-width: 1024px) { .hero h1 { font-size: 3.75rem; } }
+    .hero .lead {
+      margin: 2rem auto 0; max-width: 32rem;
+      font-size: 1rem; color: hsl(var(--muted-foreground));
+    }
+    @media (min-width: 640px) { .hero .lead { font-size: 1.125rem; } }
+    .hero-note {
+      margin: 1.5rem auto 0;
+      font-size: 0.875rem; color: hsl(var(--muted-foreground) / 0.8);
+    }
+    .actions {
+      margin-top: 2.5rem;
+      display: flex; flex-direction: column; align-items: center; gap: 1rem;
+    }
+    @media (min-width: 640px) {
+      .actions { flex-direction: row; justify-content: center; }
+    }
+    .btn-gold-lg {
+      display: inline-flex; align-items: center; justify-content: center;
+      height: 3rem; width: 100%; padding: 0 1.5rem; border-radius: 0.75rem;
+      font-size: 0.875rem; font-weight: 600; color: #000; text-decoration: none;
+      background-image: linear-gradient(to right, #f59e0b, #eab308);
+      transition: filter 0.15s;
+    }
+    .btn-gold-lg:hover { background-image: linear-gradient(to right, #fbbf24, #facc15); }
+    @media (min-width: 640px) { .btn-gold-lg { width: auto; } }
+    .btn-outline {
+      display: inline-flex; align-items: center; justify-content: center;
+      height: 3rem; width: 100%; padding: 0 1.5rem; border-radius: 0.75rem;
+      border: 1px solid hsl(var(--primary) / 0.2);
+      font-size: 0.875rem; font-weight: 600; color: hsl(var(--foreground));
+      text-decoration: none; transition: background 0.15s;
+    }
+    .btn-outline:hover { background: hsl(var(--secondary)); }
+    @media (min-width: 640px) { .btn-outline { width: auto; } }
+
+    /* Breadcrumb-ish */
+    .crumbs {
+      border-bottom: 1px solid hsl(var(--primary) / 0.1);
+      font-size: 0.8125rem; color: hsl(var(--muted-foreground));
+    }
+    .crumbs-inner { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; min-height: 2.75rem; }
+    .crumbs a { color: hsl(var(--muted-foreground)); text-decoration: none; }
+    .crumbs a:hover { color: hsl(var(--primary)); }
+    .crumbs span[aria-current] { color: hsl(var(--foreground)); }
+
+    /* Directory */
+    main { flex: 1; }
+    .directory { padding: 3rem 0 5rem; }
+    .directory h2 {
+      margin: 2.5rem 0 1rem;
+      font-family: var(--font-syne);
+      font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em;
+      color: hsl(var(--foreground));
+    }
+    .directory h2:first-child { margin-top: 0; }
+    .grid {
+      display: grid; gap: 1.5rem;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 640px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1024px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+    /* Cards — from src/components/offer-card-client.tsx */
+    article {
+      display: flex; flex-direction: column;
+      border-radius: 1rem;
+      border: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--card));
+      padding: 1.5rem;
+      transition: border-color 0.2s;
+    }
+    @media (min-width: 640px) { article { padding: 1.5rem; } }
+    article:hover { border-color: hsl(var(--primary) / 0.3); }
+    article a { text-decoration: none; display: flex; flex-direction: column; flex: 1; color: inherit; }
+    article h3 {
+      margin: 0;
+      font-family: var(--font-syne);
+      font-size: 1.125rem; font-weight: 700; letter-spacing: -0.02em;
+      color: hsl(var(--foreground));
+    }
+    article p {
+      margin: 0.75rem 0 0;
+      font-size: 0.875rem; color: hsl(var(--muted-foreground));
+      flex: 1;
+    }
+    .price {
+      display: inline-flex; align-items: center; align-self: flex-start;
+      margin-top: 1.25rem;
+      border-radius: 999px;
+      border: 1px solid hsl(var(--primary) / 0.3);
+      background: hsl(var(--primary) / 0.1);
+      padding: 0.25rem 0.75rem;
+      font-size: 0.75rem; font-weight: 600; color: hsl(var(--primary));
+    }
+
+    /* Footer — from src/components/footer.tsx */
+    .site-footer {
+      border-top: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--card));
+    }
+    .footer-inner { padding-top: 4rem; padding-bottom: 4rem; }
+    .footer-grid {
+      display: grid; gap: 2.5rem;
+    }
+    @media (min-width: 640px) { .footer-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1024px) { .footer-grid { grid-template-columns: repeat(5, 1fr); } }
+    .footer-brand { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; }
+    .footer-brand img { width: 2rem; height: 2rem; }
+    .footer-brand span {
+      font-family: var(--font-syne); font-size: 1.125rem; font-weight: 700; color: #fff;
+    }
+    .footer-blurb {
+      margin: 1rem 0 0; font-size: 0.875rem; line-height: 1.625;
+      color: hsl(var(--muted-foreground));
+    }
+    .footer-col h3 {
+      margin: 0 0 1rem;
+      font-family: var(--font-syne);
+      font-size: 0.875rem; font-weight: 600; letter-spacing: 0.05em;
+      text-transform: uppercase; color: hsl(var(--foreground));
+    }
+    .footer-col ul { list-style: none; margin: 0; padding: 0; }
+    .footer-col li + li { margin-top: 0.5rem; }
+    .footer-col a {
+      font-size: 0.875rem; color: hsl(var(--muted-foreground));
+      text-decoration: none; transition: color 0.15s;
+    }
+    .footer-col a:hover { color: hsl(var(--primary)); }
+    .footer-email {
+      margin: 0.5rem 0 0;
+      font-size: 0.75rem; color: hsl(var(--muted-foreground) / 0.6);
+    }
+    .footer-email a {
+      font-size: 0.75rem; color: hsl(var(--muted-foreground) / 0.6);
+      text-decoration: none;
+    }
+    .footer-email a:hover { color: hsl(var(--primary)); }
+    .footer-bottom {
+      margin-top: 3rem; padding-top: 2rem;
+      border-top: 1px solid hsl(var(--primary) / 0.1);
+      display: flex; flex-direction: column; align-items: flex-start; gap: 1rem;
+      font-size: 0.75rem; color: hsl(var(--muted-foreground) / 0.6);
+    }
+    @media (min-width: 640px) {
+      .footer-bottom { flex-direction: row; align-items: center; justify-content: space-between; }
+    }
+    .footer-bottom p { margin: 0; }
+    .footer-legal { display: flex; align-items: center; gap: 1rem; }
+    .footer-legal a { color: inherit; text-decoration: none; }
+    .footer-legal a:hover { color: hsl(var(--primary)); }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: hsl(var(--background)); }
+    ::-webkit-scrollbar-thumb { background: hsl(var(--primary) / 0.3); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: hsl(var(
+    .doc { padding: 1.5rem 0 5rem; max-width: 52rem; }
+    .doc h1 { font-family: var(--font-syne); font-size: clamp(1.9rem,4vw,2.8rem); line-height:1.1; letter-spacing:-.03em; margin: .75rem 0 1rem; }
+    .doc h2 { font-family: var(--font-syne); font-size: 1.5rem; letter-spacing:-.02em; margin: 2.75rem 0 .75rem; }
+    .doc h3 { font-family: var(--font-syne); font-size: 1.1rem; margin: 1.75rem 0 .5rem; }
+    .doc p, .doc li { color: hsl(0 0% 82%); line-height: 1.7; }
+    .doc a { color: hsl(var(--primary)); }
+    .doc ul, .doc ol { padding-left: 1.25rem; }
+    .doc code { background: hsl(var(--muted)); padding: .1rem .35rem; border-radius: .35rem; font-size: .88em; }
+    .doc pre { background: hsl(var(--card)); border: 1px solid hsl(var(--primary) / .12); border-radius: .75rem; padding: 1rem; overflow-x: auto; font-size: .82rem; }
+    .doc pre code { background: none; padding: 0; }
+    .doc table { width: 100%; border-collapse: collapse; display: block; overflow-x: auto; font-size: .9rem; margin: 1rem 0; }
+    .doc th, .doc td { border: 1px solid hsl(var(--primary) / .15); padding: .5rem .75rem; text-align: left; vertical-align: top; }
+    .doc th { background: hsl(var(--card)); }
+    .lede { font-size: 1.1rem; color: hsl(var(--muted-foreground)); }
+    .cta-row { display: flex; flex-wrap: wrap; gap: .75rem; margin: 1.5rem 0 .5rem; align-items: center; }
+    .related { margin-top: 3rem; }
+    .related .grid { margin-top: 1rem; }
+    article .guide { margin-top: .75rem; font-size: .8rem; color: hsl(var(--primary)); flex: 0; }
+--primary) / 0.5); }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+  </style>
+
+  <script type="application/ld+json">[{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "SAM.gov & USAspending Scraper: Federal Contracts & Grants", "applicationCategory": "DeveloperApplication", "operatingSystem": "Web", "url": "https://actors.techlion.dev/federal-contracts-feed/", "description": "Federal contracts scraper for USAspending.gov and SAM.gov: search awards and bids by keyword, NAICS code, agency and state. Find contracts ending soon.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD", "description": "$2.00 / 1,000 records (pay per result on Apify)"}, "author": {"@type": "Organization", "name": "TechLion Dev", "url": "https://www.techlion.dev/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.techlion.dev/"}, {"@type": "ListItem", "position": 2, "name": "Apify Actors", "item": "https://actors.techlion.dev/"}, {"@type": "ListItem", "position": 3, "name": "Federal Contracts Scraper", "item": "https://actors.techlion.dev/federal-contracts-feed/"}]}, {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Is this data public?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. USAspending.gov and SAM.gov publish this data for public use. This tool reads it through their official public data services."}}, {"@type": "Question", "name": "How fresh is it?", "acceptedAnswer": {"@type": "Answer", "text": "USAspending is updated daily from agency reports, but agencies can report a contract several days after signing it. SAM.gov notices appear as soon as they are posted."}}, {"@type": "Question", "name": "What does \"Any activity in the range\" mean?", "acceptedAnswer": {"@type": "Answer", "text": "It includes older contracts that had a payment or change in your dates. Choose New awards only to see only awards that started in your range."}}, {"@type": "Question", "name": "How does \"Ending before\" work?", "acceptedAnswer": {"@type": "Answer", "text": "It keeps awards whose current end date is between today and your date. For umbrella contracts, the end date is the last date to place orders. With award details on, potentialEndDate also shows the end date if all options are used."}}, {"@type": "Question", "name": "Why are some add-on fields empty?", "acceptedAnswer": {"@type": "Answer", "text": "Agencies do not report every field for every award. For example, the number of offers is often missing for orders under umbrella contracts, and executive pay is only reported for some companies."}}, {"@type": "Question", "name": "What do the competition values mean?", "acceptedAnswer": {"@type": "Answer", "text": "They are the government's own labels. For example, \"Competed under SAP\" means the award used simplified acquisition procedures (the faster process for smaller purchases), and \"Full and open competition after exclusion of sources\" usually means a small-business set-aside. The vehicle types are FSS (Federal Supply Schedule), GWAC (Government-Wide Acquisition Contract), BPA (Blanket Purchase Agreement) and IDC (Indefinite Delivery Contract)."}}, {"@type": "Question", "name": "Agency names don't match?", "acceptedAnswer": {"@type": "Answer", "text": "Use the official full name, for example Department of Defense or Department of Health and Human Services."}}, {"@type": "Question", "name": "Is this a USAspending API alternative?", "acceptedAnswer": {"@type": "Answer", "text": "It uses the official USAspending.gov data behind the scenes, but saves you from learning its API (application programming interface): you fill in a simple form, and you get flat spreadsheet columns instead of nested data. You can still call it from code through the Apify API, as shown above."}}, {"@type": "Question", "name": "Can I find government contracts for my small business?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Filter by your NAICS code, your state and a set-aside type (such as small business or women-owned), and set Ending before to see contracts that will come up for a new bid soon."}}]}]</script>
+</head>
+<body>
+  <header class="site-header" id="site-header">
+    <nav class="nav max-w-content section-padding" aria-label="Primary">
+      <a class="brand" href="https://www.techlion.dev/">
+        <img src="https://cdn.techlion.dev/logos/png/icons/Color.png" alt="TechLion Dev" width="32" height="32">
+        <span class="brand-name">TechLion<span class="gold-gradient"> Dev</span></span>
+      </a>
+      <div class="nav-desktop">
+        <a class="nav-link" href="https://www.techlion.dev/">Home</a>
+        <div class="nav-dropdown">
+          <a class="nav-link" href="https://www.techlion.dev/services">Services
+            <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+          </a>
+          <div class="nav-dropdown-menu">
+            <a href="https://www.techlion.dev/services">All Services</a>
+            <a href="https://www.techlion.dev/services/web-design">Web Design</a>
+            <a href="https://www.techlion.dev/services/web-apps">Web Apps &amp; APIs</a>
+            <a href="https://www.techlion.dev/services/automations">Automations</a>
+            <a href="https://www.techlion.dev/services/ai-integration">AI Integration</a>
+            <a href="https://www.techlion.dev/services/ai-visibility">AI Visibility</a>
+            <a href="https://www.techlion.dev/locations">Locations</a>
+          </div>
+        </div>
+        <a class="nav-link" href="https://www.techlion.dev/projects">Projects</a>
+        <a class="nav-link" href="https://www.techlion.dev/blog">Blog</a>
+        <a class="nav-link" href="https://www.techlion.dev/pricing">Pricing</a>
+        <a class="nav-link" href="https://www.techlion.dev/productized-offer">Offers</a>
+        <div class="nav-dropdown">
+          <a class="nav-link" href="https://www.techlion.dev/about">Company
+            <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+          </a>
+          <div class="nav-dropdown-menu">
+            <a href="https://www.techlion.dev/about">Company</a>
+            <a href="https://www.techlion.dev/about">About</a>
+            <a href="https://www.techlion.dev/process">Process</a>
+            <a href="https://www.techlion.dev/faq">FAQ</a>
+            <a href="https://www.techlion.dev/contact">Contact</a>
+          </div>
+        </div>
+        <a class="btn-gold" href="https://www.techlion.dev/contact">Start Your Project</a>
+      </div>
+      <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav" id="menu-toggle">
+        <svg id="icon-menu" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16"></path><path d="M4 12h16"></path><path d="M4 19h16"></path></svg>
+        <svg id="icon-close" hidden xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+      </button>
+    </nav>
+    <div class="nav-mobile" id="mobile-nav">
+      <div class="nav-mobile-inner section-padding max-w-content">
+        <a href="https://www.techlion.dev/">Home</a>
+        <details>
+          <summary>Services <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary>
+          <div class="sub">
+            <a class="strong" href="https://www.techlion.dev/services">All Services</a>
+            <a href="https://www.techlion.dev/services/web-design">Web Design</a>
+            <a href="https://www.techlion.dev/services/web-apps">Web Apps &amp; APIs</a>
+            <a href="https://www.techlion.dev/services/automations">Automations</a>
+            <a href="https://www.techlion.dev/services/ai-integration">AI Integration</a>
+            <a href="https://www.techlion.dev/services/ai-visibility">AI Visibility</a>
+            <a href="https://www.techlion.dev/locations">Locations</a>
+          </div>
+        </details>
+        <a href="https://www.techlion.dev/projects">Projects</a>
+        <a href="https://www.techlion.dev/blog">Blog</a>
+        <a href="https://www.techlion.dev/pricing">Pricing</a>
+        <a href="https://www.techlion.dev/productized-offer">Offers</a>
+        <details>
+          <summary>Company <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary>
+          <div class="sub">
+            <a class="strong" href="https://www.techlion.dev/about">Company</a>
+            <a href="https://www.techlion.dev/about">About</a>
+            <a href="https://www.techlion.dev/process">Process</a>
+            <a href="https://www.techlion.dev/faq">FAQ</a>
+            <a href="https://www.techlion.dev/contact">Contact</a>
+          </div>
+        </details>
+        <a class="btn-gold" href="https://www.techlion.dev/contact">Start Your Project</a>
+      </div>
+    </div>
+  </header>
+<nav class="crumbs" aria-label="Breadcrumb"><div class="crumbs-inner max-w-content section-padding"><a href="https://www.techlion.dev/">Home</a><span aria-hidden="true">/</span><a href="/">Apify Actors</a><span aria-hidden="true">/</span><span aria-current="page">Federal Contracts Scraper</span></div></nav>
+<main>
+    <div class="max-w-content section-padding">
+<div class="doc">
+<h1>SAM.gov &amp; USAspending Scraper: Federal Contracts &amp; Grants</h1>
+<p class="lede">Federal contracts scraper for USAspending.gov and SAM.gov: search awards and bids by keyword, NAICS code, agency and state. Find contracts ending soon.</p>
+<div class="cta-row"><a class="btn-gold" href="https://apify.com/techliondev/federal-contracts-feed">Run it on Apify</a><a class="btn-outline" href="/">All 23 TechLion Dev Actors</a><span class="price">$2.00 / 1,000 records</span></div>
+<p class="lede" style="font-size:.9rem">A first test run is usually under a cent. No login to the source site. Pay only for the results you get. Built and maintained by <a href="https://www.techlion.dev/">TechLion Dev</a>.</p>
+<p><strong>Federal Contracts Scraper</strong> searches <strong>US federal government contracts, umbrella contracts and grants</strong> from <strong>USAspending.gov</strong> and optional open bids from <strong>SAM.gov</strong>, and turns them into a clean spreadsheet. USAspending.gov is the official public source of federal spending data run by the US Treasury, so you don't need an account or API (application programming interface) key for award data. You can also add <strong>open bid opportunities from SAM.gov</strong> (the System for Award Management) with your own free SAM.gov key.</p>
+<p>It is for government-contracting teams, business-development staff and researchers who need a USAspending or SAM.gov feed of federal contracts and grants.</p>
+<ul>
+<li><strong>Find who wins work in your field:</strong> search by keyword, NAICS (North American Industry Classification System) code, agency, state or set-aside.</li>
+<li><strong>Spot contracts up for renewal:</strong> list awards ending in the next 6 or 12 months, so you can prepare for the follow-on bid.</li>
+<li><strong>Build lead lists:</strong> companies that just won federal money, with their address, parent company and small-business status.</li>
+<li><strong>Study the competition:</strong> how each award was competed, how many offers came in, the contract vehicle and the full potential value.</li>
+<li><strong>Get a daily feed:</strong> schedule it and save only awards that are new or changed since the last run.</li>
+</ul><h3>What data does it extract?</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>📄 Award number, description and award type</td>
+<td>💵 Amount obligated and amount paid out so far</td>
+</tr>
+<tr>
+<td>🏢 Recipient name, UEI (Unique Entity ID) and address</td>
+<td>🏛️ Awarding agency, sub-agency and funding agency</td>
+</tr>
+<tr>
+<td>🏷️ NAICS industry and PSC (Product and Service Code)</td>
+<td>📅 Start date, end date, length and days left</td>
+</tr>
+<tr>
+<td>📍 Place of performance</td>
+<td>🔗 Link to the official record</td>
+</tr>
+<tr>
+<td>➕ Competition type, number of offers and set-aside (add-on)</td>
+<td>➕ Potential value, potential end date and contract vehicle (add-on)</td>
+</tr>
+<tr>
+<td>➕ Parent company, business types and small-business flag (add-on)</td>
+<td>➕ Contracting office, subawards and top executive pay (add-on)</td>
+</tr>
+<tr>
+<td>📣 SAM.gov notices: type, deadline, days left and contacts (optional)</td>
+<td>🔁 New or updated flag for scheduled runs</td>
+</tr>
+</tbody>
+</table><h3>Why this feed?</h3>
+<ul>
+<li><strong>Official data and no login.</strong> It reads the government's own public data services with plain web requests, so runs are fast and cheap.</li>
+<li><strong>Renewal radar:</strong> the free <strong>Ending before</strong> filter finds contracts that end soon. Few other tools offer this.</li>
+<li><strong>Deep award details</strong> for each contract on request: competition, offers, pricing type, vehicle, potential value and parent company.</li>
+<li><strong>Free filters:</strong> every filter is free, and records you filter out are never charged.</li>
+<li><strong>New and changed records only</strong> for daily alerts, with a <code>changeType</code> column.</li>
+<li><strong>One table for everything:</strong> awards and SAM.gov notices have the same columns.</li>
+</ul><h2>Input</h2><p>The fastest start is a keyword and a date window:</p>
+<pre><code class="language-json">{
+    &quot;keywords&quot;: [&quot;cybersecurity&quot;],
+    &quot;awardCategories&quot;: [&quot;contracts&quot;],
+    &quot;dateFrom&quot;: &quot;30 days&quot;,
+    &quot;maxRecords&quot;: 50
+}
+</code></pre>
+<p>A renewal search for small-business IT work in Virginia, with full award details:</p>
+<pre><code class="language-json">{
+    &quot;naicsCodes&quot;: [&quot;541512&quot;, &quot;541519&quot;],
+    &quot;states&quot;: [&quot;VA&quot;],
+    &quot;awardCategories&quot;: [&quot;contracts&quot;, &quot;idvs&quot;],
+    &quot;dateFrom&quot;: &quot;2 years&quot;,
+    &quot;endingBefore&quot;: &quot;270 days&quot;,
+    &quot;minAmount&quot;: 250000,
+    &quot;includeAwardDetails&quot;: true,
+    &quot;maxRecords&quot;: 500
+}
+</code></pre>
+<p>Main options:</p>
+<ul>
+<li><strong>Keywords</strong>, <strong>Award types</strong> (contracts, indefinite delivery vehicles such as IDIQs (indefinite delivery, indefinite quantity contracts) and GSA (General Services Administration) schedules, and grants), <strong>From</strong> and <strong>To</strong> dates and <strong>what the dates refer to</strong> (any activity, new awards only, or last updated).</li>
+<li><strong>Filters (free):</strong> words to skip, NAICS codes, PSC codes, agencies, recipient names, states, set-aside codes, minimum and maximum amount, <strong>Ending before</strong> and sort order.</li>
+<li><strong>Award details add-on ($):</strong> one extra request per award for the deeper fields.</li>
+<li><strong>New record tracking:</strong> save only new records, and optionally changed ones too.</li>
+<li><strong>SAM.gov:</strong> your key, notice types, a limit and contacts.</li>
+</ul><h2>Output</h2><p>One row per award or SAM.gov notice. The <strong>Overview</strong> view shows the essentials, <strong>Competition and renewals</strong> shows the add-on fields and end dates, and <strong>SAM.gov opportunities</strong> shows the open notices. Download as Excel, CSV (comma-separated values), JSON (JavaScript Object Notation), XML or HTML.</p>
+<h3>Table view</h3>
+<p>Sample rows from a real run (cybersecurity contracts from the last 30 days, with award details):</p>
+<table>
+<thead>
+<tr>
+<th>Recipient</th>
+<th>Obligated (USD)</th>
+<th>Agency</th>
+<th>Ends</th>
+<th>Days left</th>
+<th>Competition</th>
+<th>Offers</th>
+<th>Small biz</th>
+<th>Vehicle</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TANAQ MANAGEMENT SERVICES L…</td>
+<td>3,574,046.20</td>
+<td>Department of Health and Huma…</td>
+<td>2028-03-25</td>
+<td>498</td>
+<td>Not Available For Competition</td>
+<td>1</td>
+<td>yes</td>
+<td></td>
+</tr>
+<tr>
+<td>AUGUST SCHELL ENTERPRISES,…</td>
+<td>28,228.66</td>
+<td>Social Security Administration</td>
+<td>2027-11-04</td>
+<td>356</td>
+<td>Full And Open Competition After E…</td>
+<td>10</td>
+<td>yes</td>
+<td>GWAC</td>
+</tr>
+<tr>
+<td>MANTECH ADVANCED SYSTEMS IN…</td>
+<td>4,288,808.84</td>
+<td>Consumer Financial Protection…</td>
+<td>2027-05-05</td>
+<td>173</td>
+<td>Competed Under SAP</td>
+<td>6</td>
+<td>no</td>
+<td>BPA</td>
+</tr>
+<tr>
+<td>IRON VINE SECURITY LLC</td>
+<td>36,506,237.86</td>
+<td>Department of Education</td>
+<td>2027-03-15</td>
+<td>122</td>
+<td>Full And Open Competition</td>
+<td>11</td>
+<td>no</td>
+<td>BPA</td>
+</tr>
+<tr>
+<td>ELECTROSOFT SERVICES, LLC</td>
+<td>4,131,597.33</td>
+<td>Department of Health and Huma…</td>
+<td>2027-09-29</td>
+<td>320</td>
+<td>Full And Open Competition</td>
+<td>7</td>
+<td>yes</td>
+<td>FSS</td>
+</tr>
+<tr>
+<td>V3GATE, LLC</td>
+<td>8,183,939.48</td>
+<td>Department of Energy</td>
+<td>2027-09-29</td>
+<td>320</td>
+<td>Not Competed Under SAP</td>
+<td>1</td>
+<td>yes</td>
+<td>BPA</td>
+</tr>
+<tr>
+<td>LEIDOS, INC.</td>
+<td>21,354,014.20</td>
+<td>Department of Homeland Securi…</td>
+<td>2027-01-26</td>
+<td>74</td>
+<td>Full And Open Competition</td>
+<td>1</td>
+<td>no</td>
+<td>GWAC</td>
+</tr>
+<tr>
+<td>IRON VINE SECURITY LLC</td>
+<td>104,028,980.33</td>
+<td>Department of Commerce</td>
+<td>2027-03-27</td>
+<td>134</td>
+<td>Full And Open Competition</td>
+<td>14</td>
+<td>no</td>
+<td>FSS</td>
+</tr>
+</tbody>
+</table><h2>How to use it</h2><ol>
+<li>Click <strong>Try for free</strong>.</li>
+<li>Type a keyword or pick an industry code, and set the date window.</li>
+<li>Add any free filters, and turn on <strong>Add full award details</strong> if you want competition and vehicle data.</li>
+<li>Click <strong>Start</strong>. The default search finishes in a few seconds.</li>
+<li>Download the data, or schedule the run with <strong>Only save records not seen in earlier runs</strong>.</li>
+</ol>
+<h3>Adding SAM.gov opportunities (optional)</h3>
+<ol>
+<li>Sign in to SAM.gov, open <strong>Account Details</strong> and request a <strong>public API key</strong>.</li>
+<li>Turn on <strong>Also get open bid opportunities from SAM.gov</strong> and paste the key. It is stored encrypted and sent only to SAM.gov.</li>
+<li>Your keywords are matched against notice titles, and your NAICS codes, states and dates are reused. SAM.gov allows at most one year of posting dates.</li>
+</ol>
+<p>If the key is wrong or not active yet, the award data is still saved and the run summary explains what went wrong.</p><h2>How much does it cost?</h2><p>Pay-per-event pricing: you pay for the records you get, not for computer time.</p>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Price (free plan)</th>
+<th>When it is charged</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actor start</td>
+<td>$0.00005</td>
+<td>Once per run</td>
+</tr>
+<tr>
+<td><strong>Record saved</strong></td>
+<td><strong>$0.002</strong> ($2 per 1,000)</td>
+<td>For each award or SAM.gov notice saved, after your filters</td>
+</tr>
+<tr>
+<td>Add-on: Full award details</td>
+<td>$0.002</td>
+<td>For each saved award whose details were loaded</td>
+</tr>
+</tbody>
+</table>
+<p>Paid Apify plans get lower prices automatically. The <strong>Pricing</strong> tab lists every plan.</p>
+<p><strong>Worked examples</strong></p>
+<ul>
+<li><strong>Default search, 50 records:</strong> $0.00005 + 50 × $0.002 = <strong>about $0.10</strong>.</li>
+<li><strong>1,000 awards:</strong> <strong>$2.00</strong>, or <strong>$4.00</strong> with full award details. Comparable federal data tools charge $2.50 to $3 per 1,000 records plus a start fee, or $12 per 1,000.</li>
+<li><strong>Daily alert, about 40 new awards a day:</strong> 30 runs × $0.00005 + 1,200 × $0.002 = <strong>about $2.40 per month</strong>.</li>
+</ul>
+<p>Filtered-out records and records seen before are never charged.</p><h2>Use cases</h2><ul>
+<li><strong>Capture and bid teams:</strong> follow-on opportunities from contracts ending soon, and who holds them today.</li>
+<li><strong>Business development:</strong> new prime contract winners who may need subcontractors, partners or suppliers.</li>
+<li><strong>Competitive intelligence:</strong> a competitor's wins, vehicles, pricing types and number of competing offers.</li>
+<li><strong>Market research:</strong> spending by agency, industry, state and set-aside.</li>
+<li><strong>Journalism and policy:</strong> track grants and contracts for a topic, program or district.</li>
+</ul><h2>Frequently asked questions</h2><h3>Is this data public?</h3><p>Yes. USAspending.gov and SAM.gov publish this data for public use. This tool reads it through their official public data services.</p><h3>How fresh is it?</h3><p>USAspending is updated daily from agency reports, but agencies can report a contract several days after signing it. SAM.gov notices appear as soon as they are posted.</p><h3>What does &quot;Any activity in the range&quot; mean?</h3><p>It includes older contracts that had a payment or change in your dates. Choose <strong>New awards only</strong> to see only awards that started in your range.</p><h3>How does &quot;Ending before&quot; work?</h3><p>It keeps awards whose current end date is between today and your date. For umbrella contracts, the end date is the last date to place orders. With award details on, <code>potentialEndDate</code> also shows the end date if all options are used.</p><h3>Why are some add-on fields empty?</h3><p>Agencies do not report every field for every award. For example, the number of offers is often missing for orders under umbrella contracts, and executive pay is only reported for some companies.</p><h3>What do the competition values mean?</h3><p>They are the government's own labels. For example, "Competed under SAP" means the award used simplified acquisition procedures (the faster process for smaller purchases), and "Full and open competition after exclusion of sources" usually means a small-business set-aside. The vehicle types are FSS (Federal Supply Schedule), GWAC (Government-Wide Acquisition Contract), BPA (Blanket Purchase Agreement) and IDC (Indefinite Delivery Contract).</p><h3>Agency names don&#x27;t match?</h3><p>Use the official full name, for example <code>Department of Defense</code> or <code>Department of Health and Human Services</code>.</p><h3>Is this a USAspending API alternative?</h3><p>It uses the official USAspending.gov data behind the scenes, but saves you from learning its API (application programming interface): you fill in a simple form, and you get flat spreadsheet columns instead of nested data. You can still call it from code through the Apify API, as shown above.</p><h3>Can I find government contracts for my small business?</h3><p>Yes. Filter by your NAICS code, your state and a set-aside type (such as small business or women-owned), and set <strong>Ending before</strong> to see contracts that will come up for a new bid soon.</p>
+<div class="cta-row"><a class="btn-gold" href="https://apify.com/techliondev/federal-contracts-feed">Try Federal Contracts Scraper on Apify</a></div>
+<section class="related"><h2>More TechLion Dev Actors</h2><div class="grid"><article><a href="/shopify-woocommerce-products-scraper/"><h3>Shopify &amp; WooCommerce Products</h3><p>Prices, variants, discounts, SKUs and stock.</p><span class="price">$0.50 / 1,000 products</span></a></article><article><a href="/luma-events-scraper/"><h3>Luma Events Scraper</h3><p>lu.ma events, hosts, tickets and guest counts.</p><span class="price">$1.50 / 1,000 events</span></a></article><article><a href="/isbn-book-lookup/"><h3>ISBN Lookup API</h3><p>Book metadata and covers by ISBN-10, ISBN-13 or title. Misses are free.</p><span class="price">$0.50 / 1,000 books</span></a></article><article><a href="/apple-app-store-reviews-scraper/"><h3>Apple App Store Reviews Scraper</h3><p>iOS reviews, ratings and text, with only-new tracking.</p><span class="price">$0.05 / 1,000 reviews</span></a></article></div></section>
+<p>Need a custom data pipeline or integration? <a href="https://www.techlion.dev/contact">Talk to TechLion Dev</a>.</p>
+</div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner max-w-content section-padding">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <a class="footer-brand" href="https://www.techlion.dev/">
+            <img src="https://cdn.techlion.dev/logos/png/icons/Color.png" alt="TechLion Dev" width="32" height="32">
+            <span>TechLion<span class="gold-gradient"> Dev</span></span>
+          </a>
+          <p class="footer-blurb">Web development for small and medium businesses nationwide. Built by Jeremiah Samuel.</p>
+        </div>
+        <div class="footer-col">
+          <h3>Services</h3>
+          <ul>
+            <li><a href="https://www.techlion.dev/services/web-design">Websites</a></li>
+            <li><a href="https://www.techlion.dev/services/web-apps">Web Apps &amp; APIs</a></li>
+            <li><a href="https://www.techlion.dev/services/automations">Automations</a></li>
+            <li><a href="https://www.techlion.dev/services/ai-integration">AI Integration</a></li>
+            <li><a href="https://www.techlion.dev/services/ai-visibility">AI Visibility</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Company</h3>
+          <ul>
+            <li><a href="https://www.techlion.dev/about">About</a></li>
+            <li><a href="https://www.techlion.dev/process">Process</a></li>
+            <li><a href="https://www.techlion.dev/projects">Projects</a></li>
+            <li><a href="https://www.techlion.dev/pricing">Pricing</a></li>
+            <li><a href="https://www.techlion.dev/faq">FAQ</a></li>
+            <li><a href="https://www.techlion.dev/ai-instructions">AI Instructions</a></li>
+            <li><a href="https://www.techlion.dev/contact">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Locations</h3>
+          <ul>
+            <li><a href="https://www.techlion.dev/locations/asbury-park">Asbury Park</a></li>
+            <li><a href="https://www.techlion.dev/locations/brick">Brick</a></li>
+            <li><a href="https://www.techlion.dev/locations/colts-neck">Colts Neck</a></li>
+            <li><a href="https://www.techlion.dev/locations/edison">Edison</a></li>
+            <li><a href="https://www.techlion.dev/locations/freehold">Freehold</a></li>
+            <li><a href="https://www.techlion.dev/locations/holmdel">Holmdel</a></li>
+            <li><a href="https://www.techlion.dev/locations/howell">Howell</a></li>
+            <li><a href="https://www.techlion.dev/locations/manalapan">Manalapan</a></li>
+            <li><a href="https://www.techlion.dev/locations/marlboro">Marlboro</a></li>
+            <li><a href="https://www.techlion.dev/locations/middletown">Middletown</a></li>
+            <li><a href="https://www.techlion.dev/locations/monmouth-county">Monmouth County</a></li>
+            <li><a href="https://www.techlion.dev/locations/old-bridge">Old Bridge</a></li>
+            <li><a href="https://www.techlion.dev/locations/red-bank">Red Bank</a></li>
+            <li><a href="https://www.techlion.dev/locations/toms-river">Toms River</a></li>
+            <li><a href="https://www.techlion.dev/locations/woodbridge">Woodbridge</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Connect</h3>
+          <ul>
+            <li><a href="https://github.com/TechLionDev" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+            <li><a href="https://linkedin.com/in/jeremiah-samuel-4790b138a/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+            <li><a href="https://x.com/jeremiahisdev" target="_blank" rel="noopener noreferrer">X / Twitter</a></li>
+          </ul>
+          <p class="footer-email"><a href="mailto:jeremiahis@techlion.dev">jeremiahis@techlion.dev</a></p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 TechLion Dev. All rights reserved.</p>
+        <div class="footer-legal">
+          <a href="https://www.techlion.dev/privacy">Privacy</a>
+          <a href="https://www.techlion.dev/terms">Terms</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script>
+    (function () {
+      var header = document.getElementById('site-header');
+      var btn = document.getElementById('menu-toggle');
+      var iconMenu = document.getElementById('icon-menu');
+      var iconClose = document.getElementById('icon-close');
+      if (!header || !btn) return;
+      btn.addEventListener('click', function () {
+        var open = header.classList.toggle('is-open');
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+        if (iconMenu) iconMenu.hidden = open;
+        if (iconClose) iconClose.hidden = !open;
+      });
+    })();
+  </script>
+</body>
+</html>
