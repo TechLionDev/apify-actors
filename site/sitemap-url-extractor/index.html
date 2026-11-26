@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sitemap URL Extractor: All Pages, SEO Check &amp; Monitor | TechLion Dev</title>
+  <meta name="description" content="Sitemap extractor: get every URL from a website&#x27;s sitemap.xml, with dates and images. Optional page check finds broken links and SEO problems.">
+  <meta name="theme-color" content="#0a0a0a">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://actors.techlion.dev/sitemap-url-extractor/">
+  <link rel="preconnect" href="https://cdn.techlion.dev" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.techlion.dev">
+  <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-title" content="TLD">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="TechLion Dev">
+  <meta property="og:title" content="Sitemap URL Extractor: All Pages, SEO Check &amp; Monitor | TechLion Dev">
+  <meta property="og:description" content="Sitemap extractor: get every URL from a website&#x27;s sitemap.xml, with dates and images. Optional page check finds broken links and SEO problems.">
+  <meta property="og:url" content="https://actors.techlion.dev/sitemap-url-extractor/">
+  <meta property="og:image" content="https://actors.techlion.dev/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Sitemap URL Extractor: All Pages, SEO Check &amp; Monitor | TechLion Dev">
+  <meta name="twitter:description" content="Sitemap extractor: get every URL from a website&#x27;s sitemap.xml, with dates and images. Optional page check finds broken links and SEO problems.">
+  <meta name="twitter:image" content="https://actors.techlion.dev/og.png">
+  <meta name="twitter:creator" content="@jeremiahisdev">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --background: 0 0% 4%;
+      --foreground: 0 0% 100%;
+      --card: 0 0% 6%;
+      --card-foreground: 0 0% 100%;
+      --primary: 42 54% 54%;
+      --primary-foreground: 0 0% 4%;
+      --secondary: 0 0% 10%;
+      --secondary-foreground: 0 0% 100%;
+      --muted: 0 0% 12%;
+      --muted-foreground: 0 0% 65%;
+      --accent: 42 54% 54%;
+      --accent-foreground: 0 0% 4%;
+      --border: 42 54% 54% / 0.15;
+      --ring: 42 54% 54%;
+      --radius: 0.75rem;
+      --font-syne: "Syne", ui-sans-serif, system-ui, sans-serif;
+      --font-outfit: "Outfit", ui-sans-serif, system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; border-color: hsl(var(--border)); }
+    html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: hsl(var(--background));
+      color: hsl(var(--foreground));
+      font-family: var(--font-outfit);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    ::selection { background: hsl(var(--primary) / 0.3); color: hsl(var(--foreground)); }
+    a { color: inherit; }
+    img { display: block; max-width: 100%; }
+    .font-heading { font-family: var(--font-syne); }
+    .gold-gradient {
+      background: linear-gradient(135deg, #c9a84c 0%, #e8c85a 50%, #c9a84c 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .section-padding { padding-left: 1rem; padding-right: 1rem; }
+    @media (min-width: 640px) { .section-padding { padding-left: 1.5rem; padding-right: 1.5rem; } }
+    @media (min-width: 1024px) { .section-padding { padding-left: 2rem; padding-right: 2rem; } }
+    .max-w-content { margin-left: auto; margin-right: auto; max-width: 80rem; }
+
+    /* Header / nav — from src/components/navbar.tsx */
+    .site-header {
+      position: sticky; top: 0; z-index: 50; width: 100%;
+      border-bottom: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--background) / 0.9);
+    }
+    @supports (backdrop-filter: blur(24px)) or (-webkit-backdrop-filter: blur(24px)) {
+      .site-header {
+        background: hsl(var(--background) / 0.8);
+        -webkit-backdrop-filter: blur(24px);
+        backdrop-filter: blur(24px);
+      }
+    }
+    .nav {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 4rem;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 0.5rem;
+      text-decoration: none; transition: opacity 0.15s;
+    }
+    .brand:hover { opacity: 0.8; }
+    .brand img { width: 2rem; height: 2rem; }
+    .brand-name {
+      font-family: var(--font-syne);
+      font-size: 1.125rem; font-weight: 700; letter-spacing: -0.025em;
+      white-space: nowrap; color: #fff;
+    }
+    .nav-desktop { display: none; align-items: center; gap: 0.25rem; }
+    @media (min-width: 768px) { .nav-desktop { display: flex; } }
+    .nav-link {
+      position: relative; display: inline-flex; align-items: center; gap: 0.25rem;
+      border-radius: 0.5rem; padding: 0.375rem 0.5rem;
+      font-size: 0.75rem; font-weight: 500; text-decoration: none;
+      color: hsl(var(--muted-foreground)); transition: color 0.15s;
+    }
+    .nav-link:hover { color: hsl(var(--foreground)); }
+    @media (min-width: 1024px) {
+      .nav-link { padding: 0.5rem 0.75rem; font-size: 0.875rem; }
+    }
+    .nav-dropdown { position: relative; }
+    .nav-dropdown-menu {
+      position: absolute; left: 0; top: 100%; z-index: 50;
+      margin-top: 0.25rem; width: 14rem; padding: 0.5rem;
+      border-radius: 0.75rem; border: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--card)); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+      opacity: 0; visibility: hidden; transition: opacity 0.15s, visibility 0.15s;
+    }
+    .nav-dropdown:hover .nav-dropdown-menu,
+    .nav-dropdown:focus-within .nav-dropdown-menu {
+      opacity: 1; visibility: visible;
+    }
+    .nav-dropdown-menu a {
+      display: block; border-radius: 0.5rem; padding: 0.5rem 0.75rem;
+      font-size: 0.875rem; text-decoration: none;
+      color: hsl(var(--muted-foreground));
+    }
+    .nav-dropdown-menu a:first-child {
+      font-weight: 500; color: hsl(var(--foreground));
+    }
+    .nav-dropdown-menu a:hover { background: hsl(var(--primary) / 0.05); color: hsl(var(--foreground)); }
+    .btn-gold {
+      display: inline-flex; align-items: center; justify-content: center;
+      flex-shrink: 0; height: 2.5rem; margin-left: 0.5rem; padding: 0 1.25rem;
+      border-radius: 0.75rem; white-space: nowrap; text-decoration: none;
+      font-size: 0.875rem; font-weight: 600; color: #000;
+      background-image: linear-gradient(to right, #f59e0b, #eab308);
+      transition: filter 0.15s;
+    }
+    .btn-gold:hover { background-image: linear-gradient(to right, #fbbf24, #facc15); }
+    .menu-toggle {
+      display: flex; align-items: center; justify-content: center;
+      border: 0; background: transparent; border-radius: 0.5rem; padding: 0.5rem;
+      color: hsl(var(--muted-foreground)); cursor: pointer;
+    }
+    .menu-toggle:hover { color: hsl(var(--foreground)); }
+    .menu-toggle #icon-close { display: none; }
+    .site-header.is-open .menu-toggle #icon-menu { display: none; }
+    .site-header.is-open .menu-toggle #icon-close { display: block; }
+    @media (min-width: 768px) { .menu-toggle { display: none; } }
+    .nav-mobile {
+      display: none;
+      border-top: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--background) / 0.95);
+    }
+    @supports (backdrop-filter: blur(24px)) or (-webkit-backdrop-filter: blur(24px)) {
+      .nav-mobile {
+        background: hsl(var(--background) / 0.85);
+        -webkit-backdrop-filter: blur(24px);
+        backdrop-filter: blur(24px);
+      }
+    }
+    .site-header.is-open .nav-mobile { display: block; }
+    @media (min-width: 768px) { .site-header.is-open .nav-mobile { display: none; } }
+    .nav-mobile-inner { padding-top: 1rem; padding-bottom: 1rem; }
+    .nav-mobile a, .nav-mobile summary {
+      display: block; border-radius: 0.5rem; padding: 0.5rem 0.75rem;
+      font-size: 0.875rem; font-weight: 500; color: hsl(var(--muted-foreground));
+      text-decoration: none; list-style: none; cursor: pointer;
+    }
+    .nav-mobile summary { display: flex; align-items: center; justify-content: space-between; }
+    .nav-mobile summary::-webkit-details-marker { display: none; }
+    .nav-mobile a:hover, .nav-mobile summary:hover { color: hsl(var(--foreground)); }
+    .nav-mobile details[open] > summary { color: hsl(var(--foreground)); }
+    .nav-mobile .sub { margin-left: 1rem; }
+    .nav-mobile .sub a { font-weight: 500; }
+    .nav-mobile .sub a.strong { font-weight: 600; color: hsl(var(--foreground)); }
+    .nav-mobile .btn-gold {
+      display: block; margin: 0.5rem 0 0; height: auto; padding: 0.625rem 0.75rem; text-align: center;
+    }
+    .chevron { width: 0.75rem; height: 0.75rem; flex-shrink: 0; }
+    .nav-mobile .chevron { width: 1rem; height: 1rem; transition: transform 0.2s; }
+    .nav-mobile details[open] .chevron { transform: rotate(180deg); }
+
+    /* Hero — from src/components/sections/hero.tsx */
+    .hero {
+      position: relative; overflow: hidden;
+      border-bottom: 1px solid hsl(var(--primary) / 0.1);
+    }
+    .hero-bg {
+      pointer-events: none; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at top, hsl(var(--primary) / 0.08), transparent 60%);
+    }
+    .hero-inner { position: relative; z-index: 1; padding: 6rem 0; }
+    @media (min-width: 640px) { .hero-inner { padding: 8rem 0; } }
+    @media (min-width: 1024px) { .hero-inner { padding: 10rem 0; } }
+    .hero-copy { margin: 0 auto; max-width: 48rem; text-align: center; }
+    .hero h1 {
+      margin: 0;
+      font-family: var(--font-syne);
+      font-size: 2.25rem; font-weight: 700; letter-spacing: -0.025em; line-height: 1.15;
+      color: hsl(var(--foreground));
+    }
+    @media (min-width: 640px) { .hero h1 { font-size: 3rem; } }
+    @media (min-width: 1024px) { .hero h1 { font-size: 3.75rem; } }
+    .hero .lead {
+      margin: 2rem auto 0; max-width: 32rem;
+      font-size: 1rem; color: hsl(var(--muted-foreground));
+    }
+    @media (min-width: 640px) { .hero .lead { font-size: 1.125rem; } }
+    .hero-note {
+      margin: 1.5rem auto 0;
+      font-size: 0.875rem; color: hsl(var(--muted-foreground) / 0.8);
+    }
+    .actions {
+      margin-top: 2.5rem;
+      display: flex; flex-direction: column; align-items: center; gap: 1rem;
+    }
+    @media (min-width: 640px) {
+      .actions { flex-direction: row; justify-content: center; }
+    }
+    .btn-gold-lg {
+      display: inline-flex; align-items: center; justify-content: center;
+      height: 3rem; width: 100%; padding: 0 1.5rem; border-radius: 0.75rem;
+      font-size: 0.875rem; font-weight: 600; color: #000; text-decoration: none;
+      background-image: linear-gradient(to right, #f59e0b, #eab308);
+      transition: filter 0.15s;
+    }
+    .btn-gold-lg:hover { background-image: linear-gradient(to right, #fbbf24, #facc15); }
+    @media (min-width: 640px) { .btn-gold-lg { width: auto; } }
+    .btn-outline {
+      display: inline-flex; align-items: center; justify-content: center;
+      height: 3rem; width: 100%; padding: 0 1.5rem; border-radius: 0.75rem;
+      border: 1px solid hsl(var(--primary) / 0.2);
+      font-size: 0.875rem; font-weight: 600; color: hsl(var(--foreground));
+      text-decoration: none; transition: background 0.15s;
+    }
+    .btn-outline:hover { background: hsl(var(--secondary)); }
+    @media (min-width: 640px) { .btn-outline { width: auto; } }
+
+    /* Breadcrumb-ish */
+    .crumbs {
+      border-bottom: 1px solid hsl(var(--primary) / 0.1);
+      font-size: 0.8125rem; color: hsl(var(--muted-foreground));
+    }
+    .crumbs-inner { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; min-height: 2.75rem; }
+    .crumbs a { color: hsl(var(--muted-foreground)); text-decoration: none; }
+    .crumbs a:hover { color: hsl(var(--primary)); }
+    .crumbs span[aria-current] { color: hsl(var(--foreground)); }
+
+    /* Directory */
+    main { flex: 1; }
+    .directory { padding: 3rem 0 5rem; }
+    .directory h2 {
+      margin: 2.5rem 0 1rem;
+      font-family: var(--font-syne);
+      font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em;
+      color: hsl(var(--foreground));
+    }
+    .directory h2:first-child { margin-top: 0; }
+    .grid {
+      display: grid; gap: 1.5rem;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 640px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1024px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+    /* Cards — from src/components/offer-card-client.tsx */
+    article {
+      display: flex; flex-direction: column;
+      border-radius: 1rem;
+      border: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--card));
+      padding: 1.5rem;
+      transition: border-color 0.2s;
+    }
+    @media (min-width: 640px) { article { padding: 1.5rem; } }
+    article:hover { border-color: hsl(var(--primary) / 0.3); }
+    article a { text-decoration: none; display: flex; flex-direction: column; flex: 1; color: inherit; }
+    article h3 {
+      margin: 0;
+      font-family: var(--font-syne);
+      font-size: 1.125rem; font-weight: 700; letter-spacing: -0.02em;
+      color: hsl(var(--foreground));
+    }
+    article p {
+      margin: 0.75rem 0 0;
+      font-size: 0.875rem; color: hsl(var(--muted-foreground));
+      flex: 1;
+    }
+    .price {
+      display: inline-flex; align-items: center; align-self: flex-start;
+      margin-top: 1.25rem;
+      border-radius: 999px;
+      border: 1px solid hsl(var(--primary) / 0.3);
+      background: hsl(var(--primary) / 0.1);
+      padding: 0.25rem 0.75rem;
+      font-size: 0.75rem; font-weight: 600; color: hsl(var(--primary));
+    }
+
+    /* Footer — from src/components/footer.tsx */
+    .site-footer {
+      border-top: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--card));
+    }
+    .footer-inner { padding-top: 4rem; padding-bottom: 4rem; }
+    .footer-grid {
+      display: grid; gap: 2.5rem;
+    }
+    @media (min-width: 640px) { .footer-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1024px) { .footer-grid { grid-template-columns: repeat(5, 1fr); } }
+    .footer-brand { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; }
+    .footer-brand img { width: 2rem; height: 2rem; }
+    .footer-brand span {
+      font-family: var(--font-syne); font-size: 1.125rem; font-weight: 700; color: #fff;
+    }
+    .footer-blurb {
+      margin: 1rem 0 0; font-size: 0.875rem; line-height: 1.625;
+      color: hsl(var(--muted-foreground));
+    }
+    .footer-col h3 {
+      margin: 0 0 1rem;
+      font-family: var(--font-syne);
+      font-size: 0.875rem; font-weight: 600; letter-spacing: 0.05em;
+      text-transform: uppercase; color: hsl(var(--foreground));
+    }
+    .footer-col ul { list-style: none; margin: 0; padding: 0; }
+    .footer-col li + li { margin-top: 0.5rem; }
+    .footer-col a {
+      font-size: 0.875rem; color: hsl(var(--muted-foreground));
+      text-decoration: none; transition: color 0.15s;
+    }
+    .footer-col a:hover { color: hsl(var(--primary)); }
+    .footer-email {
+      margin: 0.5rem 0 0;
+      font-size: 0.75rem; color: hsl(var(--muted-foreground) / 0.6);
+    }
+    .footer-email a {
+      font-size: 0.75rem; color: hsl(var(--muted-foreground) / 0.6);
+      text-decoration: none;
+    }
+    .footer-email a:hover { color: hsl(var(--primary)); }
+    .footer-bottom {
+      margin-top: 3rem; padding-top: 2rem;
+      border-top: 1px solid hsl(var(--primary) / 0.1);
+      display: flex; flex-direction: column; align-items: flex-start; gap: 1rem;
+      font-size: 0.75rem; color: hsl(var(--muted-foreground) / 0.6);
+    }
+    @media (min-width: 640px) {
+      .footer-bottom { flex-direction: row; align-items: center; justify-content: space-between; }
+    }
+    .footer-bottom p { margin: 0; }
+    .footer-legal { display: flex; align-items: center; gap: 1rem; }
+    .footer-legal a { color: inherit; text-decoration: none; }
+    .footer-legal a:hover { color: hsl(var(--primary)); }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: hsl(var(--background)); }
+    ::-webkit-scrollbar-thumb { background: hsl(var(--primary) / 0.3); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: h
+    .doc { padding: 1.5rem 0 5rem; max-width: 52rem; }
+    .doc h1 { font-family: var(--font-syne); font-size: clamp(1.9rem,4vw,2.8rem); line-height:1.1; letter-spacing:-.03em; margin: .75rem 0 1rem; }
+    .doc h2 { font-family: var(--font-syne); font-size: 1.5rem; letter-spacing:-.02em; margin: 2.75rem 0 .75rem; }
+    .doc h3 { font-family: var(--font-syne); font-size: 1.1rem; margin: 1.75rem 0 .5rem; }
+    .doc p, .doc li { color: hsl(0 0% 82%); line-height: 1.7; }
+    .doc a { color: hsl(var(--primary)); }
+    .doc ul, .doc ol { padding-left: 1.25rem; }
+    .doc code { background: hsl(var(--muted)); padding: .1rem .35rem; border-radius: .35rem; font-size: .88em; }
+    .doc pre { background: hsl(var(--card)); border: 1px solid hsl(var(--primary) / .12); border-radius: .75rem; padding: 1rem; overflow-x: auto; font-size: .82rem; }
+    .doc pre code { background: none; padding: 0; }
+    .doc table { width: 100%; border-collapse: collapse; display: block; overflow-x: auto; font-size: .9rem; margin: 1rem 0; }
+    .doc th, .doc td { border: 1px solid hsl(var(--primary) / .15); padding: .5rem .75rem; text-align: left; vertical-align: top; }
+    .doc th { background: hsl(var(--card)); }
+    .lede { font-size: 1.1rem; color: hsl(var(--muted-foreground)); }
+    .cta-row { display: flex; flex-wrap: wrap; gap: .75rem; margin: 1.5rem 0 .5rem; align-items: center; }
+    .related { margin-top: 3rem; }
+    .related .grid { margin-top: 1rem; }
+    article .guide { margin-top: .75rem; font-size: .8rem; color: hsl(var(--primary)); flex: 0; }
+sl(var(--primary) / 0.5); }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+  </style>
+
+  <script type="application/ld+json">[{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Sitemap URL Extractor: All Pages, SEO Check & Monitor", "applicationCategory": "DeveloperApplication", "operatingSystem": "Web", "url": "https://actors.techlion.dev/sitemap-url-extractor/", "description": "Sitemap extractor: get every URL from a website's sitemap.xml, with dates and images. Optional page check finds broken links and SEO problems.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD", "description": "$0.30 / 1,000 URLs (pay per result on Apify)"}, "author": {"@type": "Organization", "name": "TechLion Dev", "url": "https://www.techlion.dev/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.techlion.dev/"}, {"@type": "ListItem", "position": 2, "name": "Apify Actors", "item": "https://actors.techlion.dev/"}, {"@type": "ListItem", "position": 3, "name": "Sitemap Extractor", "item": "https://actors.techlion.dev/sitemap-url-extractor/"}]}, {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How does it find the sitemaps?", "acceptedAnswer": {"@type": "Answer", "text": "It reads the website's robots.txt, then tries the usual addresses such as /sitemap.xml, /sitemap_index.xml and /wp-sitemap.xml. You can also give sitemap links directly."}}, {"@type": "Question", "name": "The site has no sitemap. What happens?", "acceptedAnswer": {"@type": "Answer", "text": "The run summary lists it as no_sitemap_found. This tool does not crawl pages to find links."}}, {"@type": "Question", "name": "What counts as a problem page?", "acceptedAnswer": {"@type": "Answer", "text": "A page that returns an error (400 or higher) or no response, redirects, has a noindex tag, has a canonical link pointing to another page, or has no title."}}, {"@type": "Question", "name": "Will page checks overload a website?", "acceptedAnswer": {"@type": "Answer", "text": "Pages are checked 5 at a time by default with a simple, honest user agent. Lower Pages to check at once for small websites."}}, {"@type": "Question", "name": "Is it legal?", "acceptedAnswer": {"@type": "Answer", "text": "Sitemaps are published by websites so that machines can read them. The page check only loads public pages, like a browser would. Respect each website's terms."}}, {"@type": "Question", "name": "Can I get all the pages of a website without crawling it?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Most websites publish a sitemap that lists every page they want search engines to find. This Actor reads all of them (including sitemap index files and compressed sitemaps), so you get the full list in seconds instead of crawling page by page."}}, {"@type": "Question", "name": "Can it find broken links and redirects?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Turn on the Check each page ($) add-on and every listed page is visited once to record its status code, redirects, page title, meta description and canonical tag. Turn on Only save pages with problems to keep just the pages that need fixing."}}]}]</script>
+</head>
+<body>
+  <header class="site-header" id="site-header">
+    <nav class="nav max-w-content section-padding" aria-label="Primary">
+      <a class="brand" href="https://www.techlion.dev/">
+        <img src="https://cdn.techlion.dev/logos/png/icons/Color.png" alt="TechLion Dev" width="32" height="32">
+        <span class="brand-name">TechLion<span class="gold-gradient"> Dev</span></span>
+      </a>
+      <div class="nav-desktop">
+        <a class="nav-link" href="https://www.techlion.dev/">Home</a>
+        <div class="nav-dropdown">
+          <a class="nav-link" href="https://www.techlion.dev/services">Services
+            <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+          </a>
+          <div class="nav-dropdown-menu">
+            <a href="https://www.techlion.dev/services">All Services</a>
+            <a href="https://www.techlion.dev/services/web-design">Web Design</a>
+            <a href="https://www.techlion.dev/services/web-apps">Web Apps &amp; APIs</a>
+            <a href="https://www.techlion.dev/services/automations">Automations</a>
+            <a href="https://www.techlion.dev/services/ai-integration">AI Integration</a>
+            <a href="https://www.techlion.dev/services/ai-visibility">AI Visibility</a>
+            <a href="https://www.techlion.dev/locations">Locations</a>
+          </div>
+        </div>
+        <a class="nav-link" href="https://www.techlion.dev/projects">Projects</a>
+        <a class="nav-link" href="https://www.techlion.dev/blog">Blog</a>
+        <a class="nav-link" href="https://www.techlion.dev/pricing">Pricing</a>
+        <a class="nav-link" href="https://www.techlion.dev/productized-offer">Offers</a>
+        <div class="nav-dropdown">
+          <a class="nav-link" href="https://www.techlion.dev/about">Company
+            <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+          </a>
+          <div class="nav-dropdown-menu">
+            <a href="https://www.techlion.dev/about">Company</a>
+            <a href="https://www.techlion.dev/about">About</a>
+            <a href="https://www.techlion.dev/process">Process</a>
+            <a href="https://www.techlion.dev/faq">FAQ</a>
+            <a href="https://www.techlion.dev/contact">Contact</a>
+          </div>
+        </div>
+        <a class="btn-gold" href="https://www.techlion.dev/contact">Start Your Project</a>
+      </div>
+      <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav" id="menu-toggle">
+        <svg id="icon-menu" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16"></path><path d="M4 12h16"></path><path d="M4 19h16"></path></svg>
+        <svg id="icon-close" hidden xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+      </button>
+    </nav>
+    <div class="nav-mobile" id="mobile-nav">
+      <div class="nav-mobile-inner section-padding max-w-content">
+        <a href="https://www.techlion.dev/">Home</a>
+        <details>
+          <summary>Services <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary>
+          <div class="sub">
+            <a class="strong" href="https://www.techlion.dev/services">All Services</a>
+            <a href="https://www.techlion.dev/services/web-design">Web Design</a>
+            <a href="https://www.techlion.dev/services/web-apps">Web Apps &amp; APIs</a>
+            <a href="https://www.techlion.dev/services/automations">Automations</a>
+            <a href="https://www.techlion.dev/services/ai-integration">AI Integration</a>
+            <a href="https://www.techlion.dev/services/ai-visibility">AI Visibility</a>
+            <a href="https://www.techlion.dev/locations">Locations</a>
+          </div>
+        </details>
+        <a href="https://www.techlion.dev/projects">Projects</a>
+        <a href="https://www.techlion.dev/blog">Blog</a>
+        <a href="https://www.techlion.dev/pricing">Pricing</a>
+        <a href="https://www.techlion.dev/productized-offer">Offers</a>
+        <details>
+          <summary>Company <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary>
+          <div class="sub">
+            <a class="strong" href="https://www.techlion.dev/about">Company</a>
+            <a href="https://www.techlion.dev/about">About</a>
+            <a href="https://www.techlion.dev/process">Process</a>
+            <a href="https://www.techlion.dev/faq">FAQ</a>
+            <a href="https://www.techlion.dev/contact">Contact</a>
+          </div>
+        </details>
+        <a class="btn-gold" href="https://www.techlion.dev/contact">Start Your Project</a>
+      </div>
+    </div>
+  </header>
+<nav class="crumbs" aria-label="Breadcrumb"><div class="crumbs-inner max-w-content section-padding"><a href="https://www.techlion.dev/">Home</a><span aria-hidden="true">/</span><a href="/">Apify Actors</a><span aria-hidden="true">/</span><span aria-current="page">Sitemap Extractor</span></div></nav>
+<main>
+    <div class="max-w-content section-padding">
+<div class="doc">
+<h1>Sitemap URL Extractor: All Pages, SEO Check &amp; Monitor</h1>
+<p class="lede">Sitemap extractor: get every URL from a website&#x27;s sitemap.xml, with dates and images. Optional page check finds broken links and SEO problems.</p>
+<div class="cta-row"><a class="btn-gold" href="https://apify.com/techliondev/sitemap-url-extractor">Run it on Apify</a><a class="btn-outline" href="/">All 23 TechLion Dev Actors</a><span class="price">$0.30 / 1,000 URLs</span></div>
+<p class="lede" style="font-size:.9rem">A first test run is usually under a cent. No login to the source site. Pay only for the results you get. Built and maintained by <a href="https://www.techlion.dev/">TechLion Dev</a>.</p>
+<p><strong>Sitemap Extractor</strong> (also called Sitemap URL Extractor) gets <strong>every page address a website lists in its sitemaps</strong>, including sitemap.xml, and puts them in one clean table, with last-modified dates, images, language versions and news details. Give it a website and it finds the sitemaps for you, including sitemap indexes, gzipped files and plain-text sitemaps. Turn on the <strong>page check</strong> add-on to visit each page and find broken links, redirects and SEO (search engine optimization) problems, or schedule it to get <strong>new, changed and removed pages</strong>.</p>
+<p>It is for SEO specialists, site owners and developers who need a full URL list from a sitemap, a broken-link check, or a change monitor.</p>
+<ul>
+<li><strong>SEO audits:</strong> list every page a site shows search engines, then check status codes, titles, descriptions, canonical links and noindex tags.</li>
+<li><strong>Broken link reports:</strong> find sitemap pages that return errors or redirect.</li>
+<li><strong>Competitor monitoring:</strong> get new product, pricing or blog pages as soon as they appear.</li>
+<li><strong>Feed other tools:</strong> give a complete URL list to a crawler, an AI (artificial intelligence) tool or a content inventory.</li>
+<li><strong>Site migrations:</strong> compare old and new URL lists and catch missing pages.</li>
+</ul><h3>What data does it extract?</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🔗 Page URL, host, path, folder and file type</td>
+<td>📅 Last-modified date and days since it changed</td>
+</tr>
+<tr>
+<td>🔁 Change frequency and priority</td>
+<td>🖼️ Images listed for the page</td>
+</tr>
+<tr>
+<td>🌍 Other language versions (hreflang)</td>
+<td>📰 News article titles and publish times</td>
+</tr>
+<tr>
+<td>🗂️ Which sitemap file it came from</td>
+<td>🆕 New, modified or removed (change monitoring)</td>
+</tr>
+<tr>
+<td>🩺 HTTP status, redirects, final URL and response time (add-on)</td>
+<td>🏷️ Title, meta description, H1 heading and word count (add-on)</td>
+</tr>
+<tr>
+<td>🧭 Canonical link, noindex tag and language (add-on)</td>
+<td>🚩 Broken and problem page flags (add-on)</td>
+</tr>
+</tbody>
+</table><h3>Why this tool?</h3>
+<ul>
+<li><strong>Finds sitemaps automatically</strong> from robots.txt and the usual locations, and follows nested indexes up to 1,000 sitemap files.</li>
+<li><strong>Fast and cheap:</strong> thousands of URLs in a few seconds, with no browser.</li>
+<li><strong>Built-in SEO check</strong> as an optional add-on, with a "problems only" mode for quick audits.</li>
+<li><strong>Change monitoring</strong> with new, modified and removed pages.</li>
+<li><strong>Free filters:</strong> text to keep or skip, a regular expression (pattern) and a modified-since date. Filtered-out URLs are never charged.</li>
+</ul><h2>Input</h2><pre><code class="language-json">{
+    &quot;startUrls&quot;: [&quot;https://apify.com&quot;, &quot;https://blog.apify.com/sitemap.xml&quot;],
+    &quot;maxUrlsPerSite&quot;: 200
+}
+</code></pre>
+<p>An SEO audit that saves only broken pages, redirects and other problems:</p>
+<pre><code class="language-json">{
+    &quot;startUrls&quot;: [&quot;https://example.com&quot;],
+    &quot;maxUrlsPerSite&quot;: 2000,
+    &quot;urlExcludes&quot;: [&quot;/tag/&quot;],
+    &quot;checkPages&quot;: true,
+    &quot;onlyProblemPages&quot;: true
+}
+</code></pre>
+<p>Main options:</p>
+<ul>
+<li><strong>Websites or sitemaps:</strong> website addresses or direct sitemap links, and a limit per website.</li>
+<li><strong>Filters (free):</strong> URL contains, URL does not contain, URL pattern (regular expression) and modified since (for example <code>7 days</code>).</li>
+<li><strong>Page check add-on ($):</strong> check each page, optionally save only problem pages, and set how many pages to check at once.</li>
+<li><strong>Change monitoring:</strong> track changes between runs, save only changes, and a memory name.</li>
+</ul><h2>Output</h2><p>One row per URL. The <strong>Overview</strong> view shows addresses and dates, <strong>Page checks</strong> shows status and SEO fields, and <strong>Changes</strong> shows new, modified and removed pages. Download as Excel, CSV (comma-separated values), JSON (JavaScript Object Notation), XML or HTML.</p>
+<h3>Table view</h3>
+<p>Sample rows from a real run with page checks on:</p>
+<table>
+<thead>
+<tr>
+<th>URL</th>
+<th>Section</th>
+<th>Modified</th>
+<th>Status</th>
+<th>Redirects</th>
+<th>Time (ms)</th>
+<th>Title</th>
+<th>Words</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>https://apify.com/</td>
+<td>/</td>
+<td></td>
+<td>200</td>
+<td>0</td>
+<td>159</td>
+<td>Apify: Marketplace of ready-to-…</td>
+<td>1,617</td>
+</tr>
+<tr>
+<td>https://apify.com/alternatives/crawl4ai-alternatives</td>
+<td>alternatives</td>
+<td></td>
+<td>200</td>
+<td>0</td>
+<td>20</td>
+<td>Best Crawl4AI alternatives · Ap…</td>
+<td>1,129</td>
+</tr>
+<tr>
+<td>https://apify.com/alternatives/gmapsextractor-alter…</td>
+<td>alternatives</td>
+<td></td>
+<td>200</td>
+<td>1</td>
+<td>46</td>
+<td>Outscraper alternative · Apify</td>
+<td>2,202</td>
+</tr>
+<tr>
+<td>https://apify.com/api</td>
+<td>/</td>
+<td></td>
+<td>200</td>
+<td>0</td>
+<td>8</td>
+<td>Turn any website into an API ·…</td>
+<td>1,899</td>
+</tr>
+<tr>
+<td>https://blog.apify.com/</td>
+<td>/</td>
+<td>2026-11-12</td>
+<td>200</td>
+<td>0</td>
+<td>13</td>
+<td>Apify Blog: Guides to the large…</td>
+<td>755</td>
+</tr>
+<tr>
+<td>https://blog.apify.com/why-captchas-are-bad/</td>
+<td>/</td>
+<td>2026-11-11</td>
+<td>200</td>
+<td>0</td>
+<td>11</td>
+<td>CAPTCHAs: why they're bad UX an…</td>
+<td>2,904</td>
+</tr>
+<tr>
+<td>https://blog.apify.com/scrape-google-ai-mode/</td>
+<td>/</td>
+<td>2026-11-11</td>
+<td>200</td>
+<td>0</td>
+<td>14</td>
+<td>How to scrape AI Mode, Perplexi…</td>
+<td>2,978</td>
+</tr>
+<tr>
+<td>https://blog.apify.com/playwright-web-scraping/</td>
+<td>/</td>
+<td>2026-11-11</td>
+<td>200</td>
+<td>0</td>
+<td>15</td>
+<td>How to scrape the web with Play…</td>
+<td>5,257</td>
+</tr>
+</tbody>
+</table><h2>How to use it</h2><ol>
+<li>Click <strong>Try for free</strong>.</li>
+<li>Add websites (<code>https://example.com</code>) or sitemap links (<code>https://example.com/sitemap.xml</code>).</li>
+<li>Add filters, and turn on <strong>Check each page</strong> for an SEO audit.</li>
+<li>Click <strong>Start</strong>. The default input finishes in a few seconds.</li>
+<li>Download the list, or schedule the run with <strong>Track changes between runs</strong>.</li>
+</ol>
+<h3>Monitoring a site for changes</h3>
+<ol>
+<li>Turn on <strong>Track changes between runs</strong>, keep <strong>Save only changes</strong> on, and schedule the run (for example daily).</li>
+<li>The first run marks every URL as <code>new</code> and remembers the list.</li>
+<li>Every later run saves only pages that are <code>new</code>, <code>modified</code> (their sitemap date changed) or <code>removed</code>.</li>
+<li>Connect the run to email, Slack or a webhook to get alerts.</li>
+</ol><h2>How much does it cost?</h2><p>Pay-per-event pricing: you pay for the URLs you get, not for computer time.</p>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Price (free plan)</th>
+<th>When it is charged</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actor start</td>
+<td>$0.00005</td>
+<td>Once per run</td>
+</tr>
+<tr>
+<td><strong>URL saved</strong></td>
+<td><strong>$0.0003</strong> ($0.30 per 1,000)</td>
+<td>For each URL saved, after your filters</td>
+</tr>
+<tr>
+<td>Add-on: Page check</td>
+<td>$0.001</td>
+<td>For each page visited by the page check</td>
+</tr>
+</tbody>
+</table>
+<p>Paid Apify plans get lower prices automatically. The <strong>Pricing</strong> tab lists every plan.</p>
+<p><strong>Worked examples</strong></p>
+<ul>
+<li><strong>Default input, 400 URLs:</strong> $0.00005 + 400 × $0.0003 = <strong>about $0.12</strong>.</li>
+<li><strong>10,000 URLs:</strong> <strong>$3.00</strong>. The official Apify sitemap extractor charges $5.00 for the same 10,000 URLs.</li>
+<li><strong>SEO audit of 2,000 pages, problems only (say 120 problem pages):</strong> 2,000 × $0.001 + 120 × $0.0003 = <strong>about $2.04</strong>.</li>
+<li><strong>Daily change monitor for a 5,000-page site (about 20 changes a day):</strong> 30 runs × (20 × $0.0003) = <strong>about $0.18 per month</strong>.</li>
+</ul><h2>Use cases</h2><ul>
+<li><strong>SEO teams and agencies:</strong> quick technical audits and index coverage checks.</li>
+<li><strong>Competitive intelligence:</strong> alerts for new pages on competitor sites.</li>
+<li><strong>Content and news monitoring</strong> with news sitemaps.</li>
+<li><strong>Data pipelines:</strong> URL lists for crawlers, search indexes and AI tools.</li>
+<li><strong>Web migrations:</strong> before and after URL inventories.</li>
+</ul><h2>Frequently asked questions</h2><h3>How does it find the sitemaps?</h3><p>It reads the website's robots.txt, then tries the usual addresses such as /sitemap.xml, /sitemap_index.xml and /wp-sitemap.xml. You can also give sitemap links directly.</p><h3>The site has no sitemap. What happens?</h3><p>The run summary lists it as <code>no_sitemap_found</code>. This tool does not crawl pages to find links.</p><h3>What counts as a problem page?</h3><p>A page that returns an error (400 or higher) or no response, redirects, has a noindex tag, has a canonical link pointing to another page, or has no title.</p><h3>Will page checks overload a website?</h3><p>Pages are checked 5 at a time by default with a simple, honest user agent. Lower <strong>Pages to check at once</strong> for small websites.</p><h3>Is it legal?</h3><p>Sitemaps are published by websites so that machines can read them. The page check only loads public pages, like a browser would. Respect each website's terms.</p><h3>Can I get all the pages of a website without crawling it?</h3><p>Yes. Most websites publish a sitemap that lists every page they want search engines to find. This Actor reads all of them (including sitemap index files and compressed sitemaps), so you get the full list in seconds instead of crawling page by page.</p><h3>Can it find broken links and redirects?</h3><p>Yes. Turn on the <strong>Check each page ($)</strong> add-on and every listed page is visited once to record its status code, redirects, page title, meta description and canonical tag. Turn on <strong>Only save pages with problems</strong> to keep just the pages that need fixing.</p>
+<div class="cta-row"><a class="btn-gold" href="https://apify.com/techliondev/sitemap-url-extractor">Try Sitemap Extractor on Apify</a></div>
+<section class="related"><h2>More TechLion Dev Actors</h2><div class="grid"><article><a href="/telegram-channel-scraper/"><h3>Telegram Channel Scraper</h3><p>Channel posts, views and reactions, with no Telegram login.</p><span class="price">$0.50 / 1,000 posts</span></a></article><article><a href="/substack-scraper/"><h3>Substack Newsletter Scraper</h3><p>Posts, full text and comments from public newsletters.</p><span class="price">$0.50 / 1,000 posts</span></a></article><article><a href="/bluesky-scraper/"><h3>Bluesky Scraper</h3><p>Posts by search, hashtag, profile or thread.</p><span class="price">$0.30 / 1,000 posts</span></a></article><article><a href="/rss-feed-reader/"><h3>RSS Feed Reader</h3><p>RSS, Atom and podcasts converted to JSON.</p><span class="price">$0.50 / 1,000 items</span></a></article></div></section>
+<p>Need a custom data pipeline or integration? <a href="https://www.techlion.dev/contact">Talk to TechLion Dev</a>.</p>
+</div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner max-w-content section-padding">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <a class="footer-brand" href="https://www.techlion.dev/">
+            <img src="https://cdn.techlion.dev/logos/png/icons/Color.png" alt="TechLion Dev" width="32" height="32">
+            <span>TechLion<span class="gold-gradient"> Dev</span></span>
+          </a>
+          <p class="footer-blurb">Web development for small and medium businesses nationwide. Built by Jeremiah Samuel.</p>
+        </div>
+        <div class="footer-col">
+          <h3>Services</h3>
+          <ul>
+            <li><a href="https://www.techlion.dev/services/web-design">Websites</a></li>
+            <li><a href="https://www.techlion.dev/services/web-apps">Web Apps &amp; APIs</a></li>
+            <li><a href="https://www.techlion.dev/services/automations">Automations</a></li>
+            <li><a href="https://www.techlion.dev/services/ai-integration">AI Integration</a></li>
+            <li><a href="https://www.techlion.dev/services/ai-visibility">AI Visibility</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Company</h3>
+          <ul>
+            <li><a href="https://www.techlion.dev/about">About</a></li>
+            <li><a href="https://www.techlion.dev/process">Process</a></li>
+            <li><a href="https://www.techlion.dev/projects">Projects</a></li>
+            <li><a href="https://www.techlion.dev/pricing">Pricing</a></li>
+            <li><a href="https://www.techlion.dev/faq">FAQ</a></li>
+            <li><a href="https://www.techlion.dev/ai-instructions">AI Instructions</a></li>
+            <li><a href="https://www.techlion.dev/contact">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Locations</h3>
+          <ul>
+            <li><a href="https://www.techlion.dev/locations/asbury-park">Asbury Park</a></li>
+            <li><a href="https://www.techlion.dev/locations/brick">Brick</a></li>
+            <li><a href="https://www.techlion.dev/locations/colts-neck">Colts Neck</a></li>
+            <li><a href="https://www.techlion.dev/locations/edison">Edison</a></li>
+            <li><a href="https://www.techlion.dev/locations/freehold">Freehold</a></li>
+            <li><a href="https://www.techlion.dev/locations/holmdel">Holmdel</a></li>
+            <li><a href="https://www.techlion.dev/locations/howell">Howell</a></li>
+            <li><a href="https://www.techlion.dev/locations/manalapan">Manalapan</a></li>
+            <li><a href="https://www.techlion.dev/locations/marlboro">Marlboro</a></li>
+            <li><a href="https://www.techlion.dev/locations/middletown">Middletown</a></li>
+            <li><a href="https://www.techlion.dev/locations/monmouth-county">Monmouth County</a></li>
+            <li><a href="https://www.techlion.dev/locations/old-bridge">Old Bridge</a></li>
+            <li><a href="https://www.techlion.dev/locations/red-bank">Red Bank</a></li>
+            <li><a href="https://www.techlion.dev/locations/toms-river">Toms River</a></li>
+            <li><a href="https://www.techlion.dev/locations/woodbridge">Woodbridge</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Connect</h3>
+          <ul>
+            <li><a href="https://github.com/TechLionDev" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+            <li><a href="https://linkedin.com/in/jeremiah-samuel-4790b138a/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+            <li><a href="https://x.com/jeremiahisdev" target="_blank" rel="noopener noreferrer">X / Twitter</a></li>
+          </ul>
+          <p class="footer-email"><a href="mailto:jeremiahis@techlion.dev">jeremiahis@techlion.dev</a></p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 TechLion Dev. All rights reserved.</p>
+        <div class="footer-legal">
+          <a href="https://www.techlion.dev/privacy">Privacy</a>
+          <a href="https://www.techlion.dev/terms">Terms</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script>
+    (function () {
+      var header = document.getElementById('site-header');
+      var btn = document.getElementById('menu-toggle');
+      var iconMenu = document.getElementById('icon-menu');
+      var iconClose = document.getElementById('icon-close');
+      if (!header || !btn) return;
+      btn.addEventListener('click', function () {
+        var open = header.classList.toggle('is-open');
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+        if (iconMenu) iconMenu.hidden = open;
+        if (iconClose) iconClose.hidden = !open;
+      });
+    })();
+  </script>
+</body>
+</html>
