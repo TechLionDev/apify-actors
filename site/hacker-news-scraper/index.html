@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hacker News Scraper API: Stories, Comments &amp; Who Is Hiring</title>
+  <meta name="description" content="Hacker News scraper API: front page, Show/Ask HN, search, full comment threads and Who is hiring posts with company, role, location and salary. No login.">
+  <meta name="theme-color" content="#0a0a0a">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://actors.techlion.dev/hacker-news-scraper/">
+  <link rel="preconnect" href="https://cdn.techlion.dev" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.techlion.dev">
+  <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-title" content="TLD">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="TechLion Dev">
+  <meta property="og:title" content="Hacker News Scraper API: Stories, Comments &amp; Who Is Hiring">
+  <meta property="og:description" content="Hacker News scraper API: front page, Show/Ask HN, search, full comment threads and Who is hiring posts with company, role, location and salary. No login.">
+  <meta property="og:url" content="https://actors.techlion.dev/hacker-news-scraper/">
+  <meta property="og:image" content="https://actors.techlion.dev/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Hacker News Scraper API: Stories, Comments &amp; Who Is Hiring">
+  <meta name="twitter:description" content="Hacker News scraper API: front page, Show/Ask HN, search, full comment threads and Who is hiring posts with company, role, location and salary. No login.">
+  <meta name="twitter:image" content="https://actors.techlion.dev/og.png">
+  <meta name="twitter:creator" content="@jeremiahisdev">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --background: 0 0% 4%;
+      --foreground: 0 0% 100%;
+      --card: 0 0% 6%;
+      --card-foreground: 0 0% 100%;
+      --primary: 42 54% 54%;
+      --primary-foreground: 0 0% 4%;
+      --secondary: 0 0% 10%;
+      --secondary-foreground: 0 0% 100%;
+      --muted: 0 0% 12%;
+      --muted-foreground: 0 0% 65%;
+      --accent: 42 54% 54%;
+      --accent-foreground: 0 0% 4%;
+      --border: 42 54% 54% / 0.15;
+      --ring: 42 54% 54%;
+      --radius: 0.75rem;
+      --font-syne: "Syne", ui-sans-serif, system-ui, sans-serif;
+      --font-outfit: "Outfit", ui-sans-serif, system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; border-color: hsl(var(--border)); }
+    html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: hsl(var(--background));
+      color: hsl(var(--foreground));
+      font-family: var(--font-outfit);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    ::selection { background: hsl(var(--primary) / 0.3); color: hsl(var(--foreground)); }
+    a { color: inherit; }
+    img { display: block; max-width: 100%; }
+    .font-heading { font-family: var(--font-syne); }
+    .gold-gradient {
+      background: linear-gradient(135deg, #c9a84c 0%, #e8c85a 50%, #c9a84c 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .section-padding { padding-left: 1rem; padding-right: 1rem; }
+    @media (min-width: 640px) { .section-padding { padding-left: 1.5rem; padding-right: 1.5rem; } }
+    @media (min-width: 1024px) { .section-padding { padding-left: 2rem; padding-right: 2rem; } }
+    .max-w-content { margin-left: auto; margin-right: auto; max-width: 80rem; }
+
+    /* Header / nav — from src/components/navbar.tsx */
+    .site-header {
+      position: sticky; top: 0; z-index: 50; width: 100%;
+      border-bottom: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--background) / 0.9);
+    }
+    @supports (backdrop-filter: blur(24px)) or (-webkit-backdrop-filter: blur(24px)) {
+      .site-header {
+        background: hsl(var(--background) / 0.8);
+        -webkit-backdrop-filter: blur(24px);
+        backdrop-filter: blur(24px);
+      }
+    }
+    .nav {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 4rem;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 0.5rem;
+      text-decoration: none; transition: opacity 0.15s;
+    }
+    .brand:hover { opacity: 0.8; }
+    .brand img { width: 2rem; height: 2rem; }
+    .brand-name {
+      font-family: var(--font-syne);
+      font-size: 1.125rem; font-weight: 700; letter-spacing: -0.025em;
+      white-space: nowrap; color: #fff;
+    }
+    .nav-desktop { display: none; align-items: center; gap: 0.25rem; }
+    @media (min-width: 768px) { .nav-desktop { display: flex; } }
+    .nav-link {
+      position: relative; display: inline-flex; align-items: center; gap: 0.25rem;
+      border-radius: 0.5rem; padding: 0.375rem 0.5rem;
+      font-size: 0.75rem; font-weight: 500; text-decoration: none;
+      color: hsl(var(--muted-foreground)); transition: color 0.15s;
+    }
+    .nav-link:hover { color: hsl(var(--foreground)); }
+    @media (min-width: 1024px) {
+      .nav-link { padding: 0.5rem 0.75rem; font-size: 0.875rem; }
+    }
+    .nav-dropdown { position: relative; }
+    .nav-dropdown-menu {
+      position: absolute; left: 0; top: 100%; z-index: 50;
+      margin-top: 0.25rem; width: 14rem; padding: 0.5rem;
+      border-radius: 0.75rem; border: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--card)); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+      opacity: 0; visibility: hidden; transition: opacity 0.15s, visibility 0.15s;
+    }
+    .nav-dropdown:hover .nav-dropdown-menu,
+    .nav-dropdown:focus-within .nav-dropdown-menu {
+      opacity: 1; visibility: visible;
+    }
+    .nav-dropdown-menu a {
+      display: block; border-radius: 0.5rem; padding: 0.5rem 0.75rem;
+      font-size: 0.875rem; text-decoration: none;
+      color: hsl(var(--muted-foreground));
+    }
+    .nav-dropdown-menu a:first-child {
+      font-weight: 500; color: hsl(var(--foreground));
+    }
+    .nav-dropdown-menu a:hover { background: hsl(var(--primary) / 0.05); color: hsl(var(--foreground)); }
+    .btn-gold {
+      display: inline-flex; align-items: center; justify-content: center;
+      flex-shrink: 0; height: 2.5rem; margin-left: 0.5rem; padding: 0 1.25rem;
+      border-radius: 0.75rem; white-space: nowrap; text-decoration: none;
+      font-size: 0.875rem; font-weight: 600; color: #000;
+      background-image: linear-gradient(to right, #f59e0b, #eab308);
+      transition: filter 0.15s;
+    }
+    .btn-gold:hover { background-image: linear-gradient(to right, #fbbf24, #facc15); }
+    .menu-toggle {
+      display: flex; align-items: center; justify-content: center;
+      border: 0; background: transparent; border-radius: 0.5rem; padding: 0.5rem;
+      color: hsl(var(--muted-foreground)); cursor: pointer;
+    }
+    .menu-toggle:hover { color: hsl(var(--foreground)); }
+    .menu-toggle #icon-close { display: none; }
+    .site-header.is-open .menu-toggle #icon-menu { display: none; }
+    .site-header.is-open .menu-toggle #icon-close { display: block; }
+    @media (min-width: 768px) { .menu-toggle { display: none; } }
+    .nav-mobile {
+      display: none;
+      border-top: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--background) / 0.95);
+    }
+    @supports (backdrop-filter: blur(24px)) or (-webkit-backdrop-filter: blur(24px)) {
+      .nav-mobile {
+        background: hsl(var(--background) / 0.85);
+        -webkit-backdrop-filter: blur(24px);
+        backdrop-filter: blur(24px);
+      }
+    }
+    .site-header.is-open .nav-mobile { display: block; }
+    @media (min-width: 768px) { .site-header.is-open .nav-mobile { display: none; } }
+    .nav-mobile-inner { padding-top: 1rem; padding-bottom: 1rem; }
+    .nav-mobile a, .nav-mobile summary {
+      display: block; border-radius: 0.5rem; padding: 0.5rem 0.75rem;
+      font-size: 0.875rem; font-weight: 500; color: hsl(var(--muted-foreground));
+      text-decoration: none; list-style: none; cursor: pointer;
+    }
+    .nav-mobile summary { display: flex; align-items: center; justify-content: space-between; }
+    .nav-mobile summary::-webkit-details-marker { display: none; }
+    .nav-mobile a:hover, .nav-mobile summary:hover { color: hsl(var(--foreground)); }
+    .nav-mobile details[open] > summary { color: hsl(var(--foreground)); }
+    .nav-mobile .sub { margin-left: 1rem; }
+    .nav-mobile .sub a { font-weight: 500; }
+    .nav-mobile .sub a.strong { font-weight: 600; color: hsl(var(--foreground)); }
+    .nav-mobile .btn-gold {
+      display: block; margin: 0.5rem 0 0; height: auto; padding: 0.625rem 0.75rem; text-align: center;
+    }
+    .chevron { width: 0.75rem; height: 0.75rem; flex-shrink: 0; }
+    .nav-mobile .chevron { width: 1rem; height: 1rem; transition: transform 0.2s; }
+    .nav-mobile details[open] .chevron { transform: rotate(180deg); }
+
+    /* Hero — from src/components/sections/hero.tsx */
+    .hero {
+      position: relative; overflow: hidden;
+      border-bottom: 1px solid hsl(var(--primary) / 0.1);
+    }
+    .hero-bg {
+      pointer-events: none; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at top, hsl(var(--primary) / 0.08), transparent 60%);
+    }
+    .hero-inner { position: relative; z-index: 1; padding: 6rem 0; }
+    @media (min-width: 640px) { .hero-inner { padding: 8rem 0; } }
+    @media (min-width: 1024px) { .hero-inner { padding: 10rem 0; } }
+    .hero-copy { margin: 0 auto; max-width: 48rem; text-align: center; }
+    .hero h1 {
+      margin: 0;
+      font-family: var(--font-syne);
+      font-size: 2.25rem; font-weight: 700; letter-spacing: -0.025em; line-height: 1.15;
+      color: hsl(var(--foreground));
+    }
+    @media (min-width: 640px) { .hero h1 { font-size: 3rem; } }
+    @media (min-width: 1024px) { .hero h1 { font-size: 3.75rem; } }
+    .hero .lead {
+      margin: 2rem auto 0; max-width: 32rem;
+      font-size: 1rem; color: hsl(var(--muted-foreground));
+    }
+    @media (min-width: 640px) { .hero .lead { font-size: 1.125rem; } }
+    .hero-note {
+      margin: 1.5rem auto 0;
+      font-size: 0.875rem; color: hsl(var(--muted-foreground) / 0.8);
+    }
+    .actions {
+      margin-top: 2.5rem;
+      display: flex; flex-direction: column; align-items: center; gap: 1rem;
+    }
+    @media (min-width: 640px) {
+      .actions { flex-direction: row; justify-content: center; }
+    }
+    .btn-gold-lg {
+      display: inline-flex; align-items: center; justify-content: center;
+      height: 3rem; width: 100%; padding: 0 1.5rem; border-radius: 0.75rem;
+      font-size: 0.875rem; font-weight: 600; color: #000; text-decoration: none;
+      background-image: linear-gradient(to right, #f59e0b, #eab308);
+      transition: filter 0.15s;
+    }
+    .btn-gold-lg:hover { background-image: linear-gradient(to right, #fbbf24, #facc15); }
+    @media (min-width: 640px) { .btn-gold-lg { width: auto; } }
+    .btn-outline {
+      display: inline-flex; align-items: center; justify-content: center;
+      height: 3rem; width: 100%; padding: 0 1.5rem; border-radius: 0.75rem;
+      border: 1px solid hsl(var(--primary) / 0.2);
+      font-size: 0.875rem; font-weight: 600; color: hsl(var(--foreground));
+      text-decoration: none; transition: background 0.15s;
+    }
+    .btn-outline:hover { background: hsl(var(--secondary)); }
+    @media (min-width: 640px) { .btn-outline { width: auto; } }
+
+    /* Breadcrumb-ish */
+    .crumbs {
+      border-bottom: 1px solid hsl(var(--primary) / 0.1);
+      font-size: 0.8125rem; color: hsl(var(--muted-foreground));
+    }
+    .crumbs-inner { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; min-height: 2.75rem; }
+    .crumbs a { color: hsl(var(--muted-foreground)); text-decoration: none; }
+    .crumbs a:hover { color: hsl(var(--primary)); }
+    .crumbs span[aria-current] { color: hsl(var(--foreground)); }
+
+    /* Directory */
+    main { flex: 1; }
+    .directory { padding: 3rem 0 5rem; }
+    .directory h2 {
+      margin: 2.5rem 0 1rem;
+      font-family: var(--font-syne);
+      font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em;
+      color: hsl(var(--foreground));
+    }
+    .directory h2:first-child { margin-top: 0; }
+    .grid {
+      display: grid; gap: 1.5rem;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 640px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1024px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+    /* Cards — from src/components/offer-card-client.tsx */
+    article {
+      display: flex; flex-direction: column;
+      border-radius: 1rem;
+      border: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--card));
+      padding: 1.5rem;
+      transition: border-color 0.2s;
+    }
+    @media (min-width: 640px) { article { padding: 1.5rem; } }
+    article:hover { border-color: hsl(var(--primary) / 0.3); }
+    article a { text-decoration: none; display: flex; flex-direction: column; flex: 1; color: inherit; }
+    article h3 {
+      margin: 0;
+      font-family: var(--font-syne);
+      font-size: 1.125rem; font-weight: 700; letter-spacing: -0.02em;
+      color: hsl(var(--foreground));
+    }
+    article p {
+      margin: 0.75rem 0 0;
+      font-size: 0.875rem; color: hsl(var(--muted-foreground));
+      flex: 1;
+    }
+    .price {
+      display: inline-flex; align-items: center; align-self: flex-start;
+      margin-top: 1.25rem;
+      border-radius: 999px;
+      border: 1px solid hsl(var(--primary) / 0.3);
+      background: hsl(var(--primary) / 0.1);
+      padding: 0.25rem 0.75rem;
+      font-size: 0.75rem; font-weight: 600; color: hsl(var(--primary));
+    }
+
+    /* Footer — from src/components/footer.tsx */
+    .site-footer {
+      border-top: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--card));
+    }
+    .footer-inner { padding-top: 4rem; padding-bottom: 4rem; }
+    .footer-grid {
+      display: grid; gap: 2.5rem;
+    }
+    @media (min-width: 640px) { .footer-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1024px) { .footer-grid { grid-template-columns: repeat(5, 1fr); } }
+    .footer-brand { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; }
+    .footer-brand img { width: 2rem; height: 2rem; }
+    .footer-brand span {
+      font-family: var(--font-syne); font-size: 1.125rem; font-weight: 700; color: #fff;
+    }
+    .footer-blurb {
+      margin: 1rem 0 0; font-size: 0.875rem; line-height: 1.625;
+      color: hsl(var(--muted-foreground));
+    }
+    .footer-col h3 {
+      margin: 0 0 1rem;
+      font-family: var(--font-syne);
+      font-size: 0.875rem; font-weight: 600; letter-spacing: 0.05em;
+      text-transform: uppercase; color: hsl(var(--foreground));
+    }
+    .footer-col ul { list-style: none; margin: 0; padding: 0; }
+    .footer-col li + li { margin-top: 0.5rem; }
+    .footer-col a {
+      font-size: 0.875rem; color: hsl(var(--muted-foreground));
+      text-decoration: none; transition: color 0.15s;
+    }
+    .footer-col a:hover { color: hsl(var(--primary)); }
+    .footer-email {
+      margin: 0.5rem 0 0;
+      font-size: 0.75rem; color: hsl(var(--muted-foreground) / 0.6);
+    }
+    .footer-email a {
+      font-size: 0.75rem; color: hsl(var(--muted-foreground) / 0.6);
+      text-decoration: none;
+    }
+    .footer-email a:hover { color: hsl(var(--primary)); }
+    .footer-bottom {
+      margin-top: 3rem; padding-top: 2rem;
+      border-top: 1px solid hsl(var(--primary) / 0.1);
+      display: flex; flex-direction: column; align-items: flex-start; gap: 1rem;
+      font-size: 0.75rem; color: hsl(var(--muted-foreground) / 0.6);
+    }
+    @media (min-width: 640px) {
+      .footer-bottom { flex-direction: row; align-items: center; justify-content: space-between; }
+    }
+    .footer-bottom p { margin: 0; }
+    .footer-legal { display: flex; align-items: center; gap: 1rem; }
+    .footer-legal a { color: inherit; text-decoration: none; }
+    .footer-legal a:hover { color: hsl(var(--primary)); }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: hsl(var(--background)); }
+    ::-webkit-scrollbar-thumb { background: hsl(var(--primary) / 0.3); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: hsl(var(--primary
+    .doc { padding: 1.5rem 0 5rem; max-width: 52rem; }
+    .doc h1 { font-family: var(--font-syne); font-size: clamp(1.9rem,4vw,2.8rem); line-height:1.1; letter-spacing:-.03em; margin: .75rem 0 1rem; }
+    .doc h2 { font-family: var(--font-syne); font-size: 1.5rem; letter-spacing:-.02em; margin: 2.75rem 0 .75rem; }
+    .doc h3 { font-family: var(--font-syne); font-size: 1.1rem; margin: 1.75rem 0 .5rem; }
+    .doc p, .doc li { color: hsl(0 0% 82%); line-height: 1.7; }
+    .doc a { color: hsl(var(--primary)); }
+    .doc ul, .doc ol { padding-left: 1.25rem; }
+    .doc code { background: hsl(var(--muted)); padding: .1rem .35rem; border-radius: .35rem; font-size: .88em; }
+    .doc pre { background: hsl(var(--card)); border: 1px solid hsl(var(--primary) / .12); border-radius: .75rem; padding: 1rem; overflow-x: auto; font-size: .82rem; }
+    .doc pre code { background: none; padding: 0; }
+    .doc table { width: 100%; border-collapse: collapse; display: block; overflow-x: auto; font-size: .9rem; margin: 1rem 0; }
+    .doc th, .doc td { border: 1px solid hsl(var(--primary) / .15); padding: .5rem .75rem; text-align: left; vertical-align: top; }
+    .doc th { background: hsl(var(--card)); }
+    .lede { font-size: 1.1rem; color: hsl(var(--muted-foreground)); }
+    .cta-row { display: flex; flex-wrap: wrap; gap: .75rem; margin: 1.5rem 0 .5rem; align-items: center; }
+    .related { margin-top: 3rem; }
+    .related .grid { margin-top: 1rem; }
+    article .guide { margin-top: .75rem; font-size: .8rem; color: hsl(var(--primary)); flex: 0; }
+) / 0.5); }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+  </style>
+
+  <script type="application/ld+json">[{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Hacker News Scraper API: Stories, Comments & Who Is Hiring", "applicationCategory": "DeveloperApplication", "operatingSystem": "Web", "url": "https://actors.techlion.dev/hacker-news-scraper/", "description": "Hacker News scraper API: front page, Show/Ask HN, search, full comment threads and Who is hiring posts with company, role, location and salary. No login.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD", "description": "$0.10 / 1,000 items (pay per result on Apify)"}, "author": {"@type": "Organization", "name": "TechLion Dev", "url": "https://www.techlion.dev/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.techlion.dev/"}, {"@type": "ListItem", "position": 2, "name": "Apify Actors", "item": "https://actors.techlion.dev/"}, {"@type": "ListItem", "position": 3, "name": "Hacker News Scraper", "item": "https://actors.techlion.dev/hacker-news-scraper/"}]}, {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Do I need a Hacker News account or an API key?", "acceptedAnswer": {"@type": "Answer", "text": "No. The Actor uses the official public Hacker News API and the public Hacker News search API. It runs on Apify's default infrastructure with no login and no proxy."}}, {"@type": "Question", "name": "How are the \"Who is hiring?\" columns filled?", "acceptedAnswer": {"@type": "Answer", "text": "Most job posts start with a header like Company Role Location REMOTE Salary. The Actor reads that first line and fills company, roles, location, remote and salary, then scans the whole post for visa sponsorship, emails and links. Posts that do not follow the format still appear with their full text; some columns are then empty. Always check the text before contacting a company."}}, {"@type": "Question", "name": "Why does relevance search stop at 1,000 results?", "acceptedAnswer": {"@type": "Answer", "text": "The Hacker News search API returns at most 1,000 results per query in relevance order. Choose Newest first to go further: the Actor then walks back in time with no limit."}}, {"@type": "Question", "name": "Are deleted or dead items included?", "acceptedAnswer": {"@type": "Answer", "text": "No. Deleted and dead items are skipped and never charged. Points are public only for stories, so the minimum-points filter does not remove comments."}}, {"@type": "Question", "name": "Is it legal to scrape Hacker News?", "acceptedAnswer": {"@type": "Answer", "text": "The Actor reads only public data through the official Hacker News API and the public search API that Hacker News links to. It does not log in, post or vote. You are still responsible for how you use the data (for example when contacting people from job posts), so check the rules that apply to you."}}]}]</script>
+</head>
+<body>
+  <header class="site-header" id="site-header">
+    <nav class="nav max-w-content section-padding" aria-label="Primary">
+      <a class="brand" href="https://www.techlion.dev/">
+        <img src="https://cdn.techlion.dev/logos/png/icons/Color.png" alt="TechLion Dev" width="32" height="32">
+        <span class="brand-name">TechLion<span class="gold-gradient"> Dev</span></span>
+      </a>
+      <div class="nav-desktop">
+        <a class="nav-link" href="https://www.techlion.dev/">Home</a>
+        <div class="nav-dropdown">
+          <a class="nav-link" href="https://www.techlion.dev/services">Services
+            <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+          </a>
+          <div class="nav-dropdown-menu">
+            <a href="https://www.techlion.dev/services">All Services</a>
+            <a href="https://www.techlion.dev/services/web-design">Web Design</a>
+            <a href="https://www.techlion.dev/services/web-apps">Web Apps &amp; APIs</a>
+            <a href="https://www.techlion.dev/services/automations">Automations</a>
+            <a href="https://www.techlion.dev/services/ai-integration">AI Integration</a>
+            <a href="https://www.techlion.dev/services/ai-visibility">AI Visibility</a>
+            <a href="https://www.techlion.dev/locations">Locations</a>
+          </div>
+        </div>
+        <a class="nav-link" href="https://www.techlion.dev/projects">Projects</a>
+        <a class="nav-link" href="https://www.techlion.dev/blog">Blog</a>
+        <a class="nav-link" href="https://www.techlion.dev/pricing">Pricing</a>
+        <a class="nav-link" href="https://www.techlion.dev/productized-offer">Offers</a>
+        <div class="nav-dropdown">
+          <a class="nav-link" href="https://www.techlion.dev/about">Company
+            <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+          </a>
+          <div class="nav-dropdown-menu">
+            <a href="https://www.techlion.dev/about">Company</a>
+            <a href="https://www.techlion.dev/about">About</a>
+            <a href="https://www.techlion.dev/process">Process</a>
+            <a href="https://www.techlion.dev/faq">FAQ</a>
+            <a href="https://www.techlion.dev/contact">Contact</a>
+          </div>
+        </div>
+        <a class="btn-gold" href="https://www.techlion.dev/contact">Start Your Project</a>
+      </div>
+      <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav" id="menu-toggle">
+        <svg id="icon-menu" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16"></path><path d="M4 12h16"></path><path d="M4 19h16"></path></svg>
+        <svg id="icon-close" hidden xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+      </button>
+    </nav>
+    <div class="nav-mobile" id="mobile-nav">
+      <div class="nav-mobile-inner section-padding max-w-content">
+        <a href="https://www.techlion.dev/">Home</a>
+        <details>
+          <summary>Services <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary>
+          <div class="sub">
+            <a class="strong" href="https://www.techlion.dev/services">All Services</a>
+            <a href="https://www.techlion.dev/services/web-design">Web Design</a>
+            <a href="https://www.techlion.dev/services/web-apps">Web Apps &amp; APIs</a>
+            <a href="https://www.techlion.dev/services/automations">Automations</a>
+            <a href="https://www.techlion.dev/services/ai-integration">AI Integration</a>
+            <a href="https://www.techlion.dev/services/ai-visibility">AI Visibility</a>
+            <a href="https://www.techlion.dev/locations">Locations</a>
+          </div>
+        </details>
+        <a href="https://www.techlion.dev/projects">Projects</a>
+        <a href="https://www.techlion.dev/blog">Blog</a>
+        <a href="https://www.techlion.dev/pricing">Pricing</a>
+        <a href="https://www.techlion.dev/productized-offer">Offers</a>
+        <details>
+          <summary>Company <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary>
+          <div class="sub">
+            <a class="strong" href="https://www.techlion.dev/about">Company</a>
+            <a href="https://www.techlion.dev/about">About</a>
+            <a href="https://www.techlion.dev/process">Process</a>
+            <a href="https://www.techlion.dev/faq">FAQ</a>
+            <a href="https://www.techlion.dev/contact">Contact</a>
+          </div>
+        </details>
+        <a class="btn-gold" href="https://www.techlion.dev/contact">Start Your Project</a>
+      </div>
+    </div>
+  </header>
+<nav class="crumbs" aria-label="Breadcrumb"><div class="crumbs-inner max-w-content section-padding"><a href="https://www.techlion.dev/">Home</a><span aria-hidden="true">/</span><a href="/">Apify Actors</a><span aria-hidden="true">/</span><span aria-current="page">Hacker News Scraper</span></div></nav>
+<main>
+    <div class="max-w-content section-padding">
+<div class="doc">
+<h1>Hacker News Scraper API: Stories, Comments &amp; Who Is Hiring</h1>
+<p class="lede">Hacker News scraper API: front page, Show/Ask HN, search, full comment threads and Who is hiring posts with company, role, location and salary. No login.</p>
+<div class="cta-row"><a class="btn-gold" href="https://apify.com/techliondev/hacker-news-scraper">Run it on Apify</a><a class="btn-outline" href="/">All 23 TechLion Dev Actors</a><span class="price">$0.10 / 1,000 items</span></div>
+<p class="lede" style="font-size:.9rem">A first test run is usually under a cent. No login to the source site. Pay only for the results you get. Built and maintained by <a href="https://www.techlion.dev/">TechLion Dev</a>.</p>
+<p><strong>Hacker News Scraper</strong> collects <strong>stories, comments and job posts from Hacker News</strong> (news.ycombinator.com) into one clean table: titles, links, points, comment counts, authors, dates and full comment text. Grab the live front page, search all of Hacker News for any word, export a full comment thread, or turn the monthly <strong>"Ask HN: Who is hiring?"</strong> thread into a job list with company, role, location, remote, salary and visa columns.</p>
+<p>It is for founders, marketers, developer-relations teams, recruiters, job seekers, researchers and AI (artificial intelligence) agents.</p>
+<p>It reads the official Hacker News API (application programming interface) and the public Hacker News search API. There is no browser, no login and no proxy, so runs are <strong>fast, cheap and reliable</strong>: thousands of items in a few seconds.</p>
+<ul>
+<li><strong>Watch for mentions</strong> of your product, company or competitors, and get only new ones on a schedule.</li>
+<li><strong>Track the front page, Show HN and Ask HN</strong> with rank, points and comment counts.</li>
+<li><strong>Export full discussions</strong> with every comment and its reply depth.</li>
+<li><strong>Build a tech job list</strong> from "Who is hiring?" with parsed company, role, location, remote, salary, visa, emails and links.</li>
+<li><strong>Feed AI tools and research</strong> with clean, plain-text stories and comments.</li>
+</ul><h3>What data does it extract?</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>📰 Title, link, website and Hacker News link</td>
+<td>⬆️ Points and comment count</td>
+</tr>
+<tr>
+<td>👤 Author and author profile link</td>
+<td>📅 Date (ISO 8601), weekday and age in hours</td>
+</tr>
+<tr>
+<td>💬 Story and comment text as plain text (links kept)</td>
+<td>🧵 Story ID and title for comments, parent ID and reply depth</td>
+</tr>
+<tr>
+<td>🏆 Rank on the list (front page, newest, best, Ask, Show, Jobs)</td>
+<td>🏷️ Tags (story, comment, show_hn, ask_hn, front_page)</td>
+</tr>
+<tr>
+<td>💼 Who is hiring: company, roles, location, remote, salary</td>
+<td>🛂 Who is hiring: visa sponsorship, emails and links</td>
+</tr>
+</tbody>
+</table><h3>Why this scraper?</h3>
+<ul>
+<li><strong>Half the price of the most-used Hacker News scraper:</strong> $0.10 per 1,000 items instead of $0.20, no extra start fee, and all filters are free.</li>
+<li><strong>Everything in one Actor:</strong> live lists, search, full threads and hiring threads. Other tools usually do one of these.</li>
+<li><strong>Search with no 1,000-result cap.</strong> "Newest first" walks back in time, so brand monitoring never misses older mentions.</li>
+<li><strong>Parsed "Who is hiring?" posts</strong> at a fraction of the price of dedicated job-thread scrapers ($3.50 per 1,000).</li>
+<li><strong>Built-in new-item tracking.</strong> Turn on <strong>Only new items</strong>, schedule the Actor, and later runs save only items you have not collected yet.</li>
+</ul><h2>Input</h2><p>Use any mix of these sources. Each one is collected separately, up to <strong>Maximum items per source</strong>.</p>
+<ul>
+<li><strong>Hacker News lists:</strong> <code>top</code> (front page), <code>new</code>, <code>best</code>, <code>ask</code>, <code>show</code>, <code>job</code>.</li>
+<li><strong>Search terms:</strong> any word or phrase. Choose stories, comments or both, and most relevant or newest first.</li>
+<li><strong>Story links:</strong> <code>https://news.ycombinator.com/item?id=1</code> or just <code>1</code>. Saves the story and every comment.</li>
+<li><strong>Monthly hiring thread:</strong> Who is hiring (job posts), Who wants to be hired (candidates), or Freelancer, for 1 to 24 months.</li>
+</ul>
+<p>Example input:</p>
+<pre><code class="language-json">{
+    &quot;lists&quot;: [&quot;top&quot;, &quot;show&quot;],
+    &quot;searchTerms&quot;: [&quot;supabase&quot;, &quot;\&quot;open source\&quot;&quot;],
+    &quot;searchType&quot;: &quot;all&quot;,
+    &quot;searchSort&quot;: &quot;newest&quot;,
+    &quot;storyUrls&quot;: [&quot;https://news.ycombinator.com/item?id=1&quot;],
+    &quot;hiringThread&quot;: &quot;whoIsHiring&quot;,
+    &quot;hiringMonths&quot;: 1,
+    &quot;maxItemsPerSource&quot;: 500,
+    &quot;minPoints&quot;: 10,
+    &quot;since&quot;: &quot;30 days&quot;,
+    &quot;onlyNew&quot;: true
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Search in</td>
+<td>Stories, comments, or both</td>
+</tr>
+<tr>
+<td>Search order</td>
+<td><strong>Most relevant</strong> (best matches, up to 1,000 per term) or <strong>Newest first</strong> (no limit, best for monitoring)</td>
+</tr>
+<tr>
+<td>Minimum points / comments, dates, keywords, websites</td>
+<td>Free filters. Removed items are not charged</td>
+</tr>
+<tr>
+<td>Months of hiring threads</td>
+<td>1 = this month only; up to 24 months back</td>
+</tr>
+<tr>
+<td>Only new items + Tracking name</td>
+<td>Save only items not seen in earlier runs</td>
+</tr>
+</tbody>
+</table><h2>Output</h2><p>You get one row per story, comment or job post, with the same columns on every row. The dataset has three views: <strong>Overview</strong>, <strong>Who is hiring</strong> and <strong>Threads</strong>. A <code>RUN_SUMMARY</code> record lists every source with items seen, items saved and any error.</p>
+<h3>Table view</h3>
+<table>
+<thead>
+<tr>
+<th>Rank</th>
+<th>Title</th>
+<th>Site</th>
+<th>Points</th>
+<th>Comments</th>
+<th>Author</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Anthropic employee claims general proof of the Riemann Hypo…</td>
+<td>alpo.ge</td>
+<td>475</td>
+<td>218</td>
+<td>iamronaldo</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Signal Is Serious About Protecting Your Privacy</td>
+<td>signal.org</td>
+<td>122</td>
+<td>38</td>
+<td>dotcoma</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Show HN: Tinnitus frequency finder and audio notch tool</td>
+<td>trynotched.com</td>
+<td>93</td>
+<td>54</td>
+<td>brianrhea</td>
+</tr>
+<tr>
+<td>16</td>
+<td>If you stop writing code, you also get worse at reviewing it</td>
+<td>cekrem.github.io</td>
+<td>91</td>
+<td>25</td>
+<td>theanonymousone</td>
+</tr>
+<tr>
+<td>21</td>
+<td>Postgres 19 Repack: Faster, Built-In Table Bloat Cleanup</td>
+<td>snowflake.com</td>
+<td>150</td>
+<td>26</td>
+<td>craigkerstiens</td>
+</tr>
+<tr>
+<td>26</td>
+<td>Jujutsu Primer</td>
+<td>ethanlowman.com</td>
+<td>184</td>
+<td>122</td>
+<td>renehsz</td>
+</tr>
+</tbody>
+</table>
+<h3>Who is hiring example</h3>
+<table>
+<thead>
+<tr>
+<th>Company</th>
+<th>Roles</th>
+<th>Location</th>
+<th>Remote</th>
+<th>Salary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Simple Analytics</td>
+<td>DevOps Engineer</td>
+<td>REMOTE (worldwide, any timezone)</td>
+<td>yes</td>
+<td>€5,000/month (full-time)</td>
+</tr>
+<tr>
+<td>Synteq</td>
+<td>Growth Lead &amp; Systems Administrator</td>
+<td>Austin, TX / REMOTE (US)</td>
+<td>yes</td>
+<td></td>
+</tr>
+<tr>
+<td>Open Education Applications /…</td>
+<td>Senior Frontend Engineer</td>
+<td>Utrecht, The Netherlands / HYBRID</td>
+<td>no</td>
+<td></td>
+</tr>
+<tr>
+<td>Bridge AI Consulting</td>
+<td>AI Consultant, Junior AI Consultant</td>
+<td>REMOTE (US)</td>
+<td>yes</td>
+<td>$60K–$100K base + upside for …</td>
+</tr>
+<tr>
+<td>United Risk</td>
+<td>Early-Career AI Engineers – Full-Stack, Data…</td>
+<td>New York, NY / HYBRID (2 days/week…</td>
+<td>no</td>
+<td>$100K–$120K</td>
+</tr>
+<tr>
+<td>We The Flywheel</td>
+<td>Brand Identity Designer (AI-agent team)</td>
+<td>Remote</td>
+<td>yes</td>
+<td></td>
+</tr>
+</tbody>
+</table><h2>How to use it</h2><ol>
+<li>Click <strong>Try for free</strong> (an Apify account is free to create).</li>
+<li>Pick lists, add search terms or story links, or choose a hiring thread.</li>
+<li>Set <strong>Maximum items per source</strong> and any filters. Filters are free.</li>
+<li>Click <strong>Start</strong>. The default run (the current front page, 30 stories) finishes in a few seconds.</li>
+<li>Download the results from the <strong>Output</strong> tab as Excel, CSV (comma-separated values) or JSON (JavaScript Object Notation), or connect them to another tool.</li>
+</ol>
+<h3>Monitoring Hacker News on a schedule</h3>
+<p>Add your brand or competitor names as <strong>Search terms</strong>, choose <strong>Stories and comments</strong> and <strong>Newest first</strong>, and turn on <strong>Only new items</strong>. Then create a schedule (for example every hour). The first run saves and remembers everything it finds. After that, each run saves only new mentions, so a quiet hour costs almost nothing.</p><h2>How much does it cost?</h2><p>This Actor uses <strong>pay-per-event pricing</strong>: you pay only for the items you get, never for the computer time behind them.</p>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Price (free plan)</th>
+<th>When it is charged</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actor start</td>
+<td>$0.00005</td>
+<td>Once per run</td>
+</tr>
+<tr>
+<td><strong>Item saved</strong></td>
+<td><strong>$0.0001</strong> ($0.10 per 1,000 items)</td>
+<td>For each story, comment or job post saved, after your filters</td>
+</tr>
+</tbody>
+</table>
+<p>Paid Apify plans get lower prices automatically (for example $0.08 per 1,000 items on the Silver plan). See the <strong>Pricing</strong> tab for every plan.</p>
+<p><strong>Worked examples</strong></p>
+<ul>
+<li><strong>Default test run, front page (30 stories):</strong> $0.00005 + 30 × $0.0001 = <strong>about $0.003</strong>.</li>
+<li><strong>This month's "Who is hiring?" thread (about 400 job posts):</strong> <strong>about $0.04</strong>.</li>
+<li><strong>Hourly brand monitor, only new items, about 20 new mentions a day:</strong> 720 runs × $0.00005 + 600 items × $0.0001 = <strong>about $0.10 per month</strong>.</li>
+</ul><h2>Use cases</h2><ul>
+<li><strong>Launch tracking:</strong> follow your Show HN post, its rank, points and every comment.</li>
+<li><strong>Brand and competitor monitoring:</strong> get new mentions of any name, in stories and comments.</li>
+<li><strong>Recruiting and job search:</strong> filter "Who is hiring?" posts by remote, location, salary or keyword, or find candidates in "Who wants to be hired?".</li>
+<li><strong>Market and trend research:</strong> see which websites, tools and topics reach the front page.</li>
+<li><strong>AI and research datasets:</strong> export clean discussions with structure and dates.</li>
+</ul><h2>Frequently asked questions</h2><h3>Do I need a Hacker News account or an API key?</h3><p>No. The Actor uses the official public Hacker News API and the public Hacker News search API. It runs on Apify's default infrastructure with no login and no proxy.</p><h3>How are the &quot;Who is hiring?&quot; columns filled?</h3><p>Most job posts start with a header like <code>Company | Role | Location | REMOTE | Salary</code>. The Actor reads that first line and fills company, roles, location, remote and salary, then scans the whole post for visa sponsorship, emails and links. Posts that do not follow the format still appear with their full text; some columns are then empty. Always check the text before contacting a company.</p><h3>Why does relevance search stop at 1,000 results?</h3><p>The Hacker News search API returns at most 1,000 results per query in relevance order. Choose <strong>Newest first</strong> to go further: the Actor then walks back in time with no limit.</p><h3>Are deleted or dead items included?</h3><p>No. Deleted and dead items are skipped and never charged. Points are public only for stories, so the minimum-points filter does not remove comments.</p><h3>Is it legal to scrape Hacker News?</h3><p>The Actor reads only public data through the official Hacker News API and the public search API that Hacker News links to. It does not log in, post or vote. You are still responsible for how you use the data (for example when contacting people from job posts), so check the rules that apply to you.</p>
+<div class="cta-row"><a class="btn-gold" href="https://apify.com/techliondev/hacker-news-scraper">Try Hacker News Scraper on Apify</a></div>
+<section class="related"><h2>More TechLion Dev Actors</h2><div class="grid"><article><a href="/ats-job-feed/"><h3>Greenhouse Jobs Scraper</h3><p>Greenhouse, Lever, Ashby and Workday career pages.</p><span class="price">$1.50 / 1,000 jobs</span></a></article><article><a href="/remote-jobs-scraper/"><h3>Remote Jobs Scraper</h3><p>RemoteOK, We Work Remotely, Himalayas and similar boards.</p><span class="price">$0.80 / 1,000 jobs</span></a></article><article><a href="/domain-whois-lookup/"><h3>WHOIS Lookup</h3><p>Bulk domain expiry, registrar, availability and DNS records.</p><span class="price">$0.50 / 1,000 domains</span></a></article><article><a href="/wayback-machine-scraper/"><h3>Wayback Machine Scraper</h3><p>archive.org snapshot history, closest capture, first and last dates.</p><span class="price">$0.30 / 1,000 snapshots</span></a></article></div></section>
+<p>Need a custom data pipeline or integration? <a href="https://www.techlion.dev/contact">Talk to TechLion Dev</a>.</p>
+</div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner max-w-content section-padding">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <a class="footer-brand" href="https://www.techlion.dev/">
+            <img src="https://cdn.techlion.dev/logos/png/icons/Color.png" alt="TechLion Dev" width="32" height="32">
+            <span>TechLion<span class="gold-gradient"> Dev</span></span>
+          </a>
+          <p class="footer-blurb">Web development for small and medium businesses nationwide. Built by Jeremiah Samuel.</p>
+        </div>
+        <div class="footer-col">
+          <h3>Services</h3>
+          <ul>
+            <li><a href="https://www.techlion.dev/services/web-design">Websites</a></li>
+            <li><a href="https://www.techlion.dev/services/web-apps">Web Apps &amp; APIs</a></li>
+            <li><a href="https://www.techlion.dev/services/automations">Automations</a></li>
+            <li><a href="https://www.techlion.dev/services/ai-integration">AI Integration</a></li>
+            <li><a href="https://www.techlion.dev/services/ai-visibility">AI Visibility</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Company</h3>
+          <ul>
+            <li><a href="https://www.techlion.dev/about">About</a></li>
+            <li><a href="https://www.techlion.dev/process">Process</a></li>
+            <li><a href="https://www.techlion.dev/projects">Projects</a></li>
+            <li><a href="https://www.techlion.dev/pricing">Pricing</a></li>
+            <li><a href="https://www.techlion.dev/faq">FAQ</a></li>
+            <li><a href="https://www.techlion.dev/ai-instructions">AI Instructions</a></li>
+            <li><a href="https://www.techlion.dev/contact">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Locations</h3>
+          <ul>
+            <li><a href="https://www.techlion.dev/locations/asbury-park">Asbury Park</a></li>
+            <li><a href="https://www.techlion.dev/locations/brick">Brick</a></li>
+            <li><a href="https://www.techlion.dev/locations/colts-neck">Colts Neck</a></li>
+            <li><a href="https://www.techlion.dev/locations/edison">Edison</a></li>
+            <li><a href="https://www.techlion.dev/locations/freehold">Freehold</a></li>
+            <li><a href="https://www.techlion.dev/locations/holmdel">Holmdel</a></li>
+            <li><a href="https://www.techlion.dev/locations/howell">Howell</a></li>
+            <li><a href="https://www.techlion.dev/locations/manalapan">Manalapan</a></li>
+            <li><a href="https://www.techlion.dev/locations/marlboro">Marlboro</a></li>
+            <li><a href="https://www.techlion.dev/locations/middletown">Middletown</a></li>
+            <li><a href="https://www.techlion.dev/locations/monmouth-county">Monmouth County</a></li>
+            <li><a href="https://www.techlion.dev/locations/old-bridge">Old Bridge</a></li>
+            <li><a href="https://www.techlion.dev/locations/red-bank">Red Bank</a></li>
+            <li><a href="https://www.techlion.dev/locations/toms-river">Toms River</a></li>
+            <li><a href="https://www.techlion.dev/locations/woodbridge">Woodbridge</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Connect</h3>
+          <ul>
+            <li><a href="https://github.com/TechLionDev" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+            <li><a href="https://linkedin.com/in/jeremiah-samuel-4790b138a/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+            <li><a href="https://x.com/jeremiahisdev" target="_blank" rel="noopener noreferrer">X / Twitter</a></li>
+          </ul>
+          <p class="footer-email"><a href="mailto:jeremiahis@techlion.dev">jeremiahis@techlion.dev</a></p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 TechLion Dev. All rights reserved.</p>
+        <div class="footer-legal">
+          <a href="https://www.techlion.dev/privacy">Privacy</a>
+          <a href="https://www.techlion.dev/terms">Terms</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script>
+    (function () {
+      var header = document.getElementById('site-header');
+      var btn = document.getElementById('menu-toggle');
+      var iconMenu = document.getElementById('icon-menu');
+      var iconClose = document.getElementById('icon-close');
+      if (!header || !btn) return;
+      btn.addEventListener('click', function () {
+        var open = header.classList.toggle('is-open');
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+        if (iconMenu) iconMenu.hidden = open;
+        if (iconClose) iconClose.hidden = !open;
+      });
+    })();
+  </script>
+</body>
+</html>
