@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Remote Jobs Scraper: RemoteOK, We Work Remotely &amp; Himalayas</title>
+  <meta name="description" content="Remote jobs scraper for RemoteOK, We Work Remotely, Himalayas, Jobicy and Working Nomads: salary, location, seniority and tags. Free filters and job alerts.">
+  <meta name="theme-color" content="#0a0a0a">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://actors.techlion.dev/remote-jobs-scraper/">
+  <link rel="preconnect" href="https://cdn.techlion.dev" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.techlion.dev">
+  <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-title" content="TLD">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="TechLion Dev">
+  <meta property="og:title" content="Remote Jobs Scraper: RemoteOK, We Work Remotely &amp; Himalayas">
+  <meta property="og:description" content="Remote jobs scraper for RemoteOK, We Work Remotely, Himalayas, Jobicy and Working Nomads: salary, location, seniority and tags. Free filters and job alerts.">
+  <meta property="og:url" content="https://actors.techlion.dev/remote-jobs-scraper/">
+  <meta property="og:image" content="https://actors.techlion.dev/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Remote Jobs Scraper: RemoteOK, We Work Remotely &amp; Himalayas">
+  <meta name="twitter:description" content="Remote jobs scraper for RemoteOK, We Work Remotely, Himalayas, Jobicy and Working Nomads: salary, location, seniority and tags. Free filters and job alerts.">
+  <meta name="twitter:image" content="https://actors.techlion.dev/og.png">
+  <meta name="twitter:creator" content="@jeremiahisdev">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --background: 0 0% 4%;
+      --foreground: 0 0% 100%;
+      --card: 0 0% 6%;
+      --card-foreground: 0 0% 100%;
+      --primary: 42 54% 54%;
+      --primary-foreground: 0 0% 4%;
+      --secondary: 0 0% 10%;
+      --secondary-foreground: 0 0% 100%;
+      --muted: 0 0% 12%;
+      --muted-foreground: 0 0% 65%;
+      --accent: 42 54% 54%;
+      --accent-foreground: 0 0% 4%;
+      --border: 42 54% 54% / 0.15;
+      --ring: 42 54% 54%;
+      --radius: 0.75rem;
+      --font-syne: "Syne", ui-sans-serif, system-ui, sans-serif;
+      --font-outfit: "Outfit", ui-sans-serif, system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; border-color: hsl(var(--border)); }
+    html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: hsl(var(--background));
+      color: hsl(var(--foreground));
+      font-family: var(--font-outfit);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    ::selection { background: hsl(var(--primary) / 0.3); color: hsl(var(--foreground)); }
+    a { color: inherit; }
+    img { display: block; max-width: 100%; }
+    .font-heading { font-family: var(--font-syne); }
+    .gold-gradient {
+      background: linear-gradient(135deg, #c9a84c 0%, #e8c85a 50%, #c9a84c 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .section-padding { padding-left: 1rem; padding-right: 1rem; }
+    @media (min-width: 640px) { .section-padding { padding-left: 1.5rem; padding-right: 1.5rem; } }
+    @media (min-width: 1024px) { .section-padding { padding-left: 2rem; padding-right: 2rem; } }
+    .max-w-content { margin-left: auto; margin-right: auto; max-width: 80rem; }
+
+    /* Header / nav — from src/components/navbar.tsx */
+    .site-header {
+      position: sticky; top: 0; z-index: 50; width: 100%;
+      border-bottom: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--background) / 0.9);
+    }
+    @supports (backdrop-filter: blur(24px)) or (-webkit-backdrop-filter: blur(24px)) {
+      .site-header {
+        background: hsl(var(--background) / 0.8);
+        -webkit-backdrop-filter: blur(24px);
+        backdrop-filter: blur(24px);
+      }
+    }
+    .nav {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 4rem;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 0.5rem;
+      text-decoration: none; transition: opacity 0.15s;
+    }
+    .brand:hover { opacity: 0.8; }
+    .brand img { width: 2rem; height: 2rem; }
+    .brand-name {
+      font-family: var(--font-syne);
+      font-size: 1.125rem; font-weight: 700; letter-spacing: -0.025em;
+      white-space: nowrap; color: #fff;
+    }
+    .nav-desktop { display: none; align-items: center; gap: 0.25rem; }
+    @media (min-width: 768px) { .nav-desktop { display: flex; } }
+    .nav-link {
+      position: relative; display: inline-flex; align-items: center; gap: 0.25rem;
+      border-radius: 0.5rem; padding: 0.375rem 0.5rem;
+      font-size: 0.75rem; font-weight: 500; text-decoration: none;
+      color: hsl(var(--muted-foreground)); transition: color 0.15s;
+    }
+    .nav-link:hover { color: hsl(var(--foreground)); }
+    @media (min-width: 1024px) {
+      .nav-link { padding: 0.5rem 0.75rem; font-size: 0.875rem; }
+    }
+    .nav-dropdown { position: relative; }
+    .nav-dropdown-menu {
+      position: absolute; left: 0; top: 100%; z-index: 50;
+      margin-top: 0.25rem; width: 14rem; padding: 0.5rem;
+      border-radius: 0.75rem; border: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--card)); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+      opacity: 0; visibility: hidden; transition: opacity 0.15s, visibility 0.15s;
+    }
+    .nav-dropdown:hover .nav-dropdown-menu,
+    .nav-dropdown:focus-within .nav-dropdown-menu {
+      opacity: 1; visibility: visible;
+    }
+    .nav-dropdown-menu a {
+      display: block; border-radius: 0.5rem; padding: 0.5rem 0.75rem;
+      font-size: 0.875rem; text-decoration: none;
+      color: hsl(var(--muted-foreground));
+    }
+    .nav-dropdown-menu a:first-child {
+      font-weight: 500; color: hsl(var(--foreground));
+    }
+    .nav-dropdown-menu a:hover { background: hsl(var(--primary) / 0.05); color: hsl(var(--foreground)); }
+    .btn-gold {
+      display: inline-flex; align-items: center; justify-content: center;
+      flex-shrink: 0; height: 2.5rem; margin-left: 0.5rem; padding: 0 1.25rem;
+      border-radius: 0.75rem; white-space: nowrap; text-decoration: none;
+      font-size: 0.875rem; font-weight: 600; color: #000;
+      background-image: linear-gradient(to right, #f59e0b, #eab308);
+      transition: filter 0.15s;
+    }
+    .btn-gold:hover { background-image: linear-gradient(to right, #fbbf24, #facc15); }
+    .menu-toggle {
+      display: flex; align-items: center; justify-content: center;
+      border: 0; background: transparent; border-radius: 0.5rem; padding: 0.5rem;
+      color: hsl(var(--muted-foreground)); cursor: pointer;
+    }
+    .menu-toggle:hover { color: hsl(var(--foreground)); }
+    .menu-toggle #icon-close { display: none; }
+    .site-header.is-open .menu-toggle #icon-menu { display: none; }
+    .site-header.is-open .menu-toggle #icon-close { display: block; }
+    @media (min-width: 768px) { .menu-toggle { display: none; } }
+    .nav-mobile {
+      display: none;
+      border-top: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--background) / 0.95);
+    }
+    @supports (backdrop-filter: blur(24px)) or (-webkit-backdrop-filter: blur(24px)) {
+      .nav-mobile {
+        background: hsl(var(--background) / 0.85);
+        -webkit-backdrop-filter: blur(24px);
+        backdrop-filter: blur(24px);
+      }
+    }
+    .site-header.is-open .nav-mobile { display: block; }
+    @media (min-width: 768px) { .site-header.is-open .nav-mobile { display: none; } }
+    .nav-mobile-inner { padding-top: 1rem; padding-bottom: 1rem; }
+    .nav-mobile a, .nav-mobile summary {
+      display: block; border-radius: 0.5rem; padding: 0.5rem 0.75rem;
+      font-size: 0.875rem; font-weight: 500; color: hsl(var(--muted-foreground));
+      text-decoration: none; list-style: none; cursor: pointer;
+    }
+    .nav-mobile summary { display: flex; align-items: center; justify-content: space-between; }
+    .nav-mobile summary::-webkit-details-marker { display: none; }
+    .nav-mobile a:hover, .nav-mobile summary:hover { color: hsl(var(--foreground)); }
+    .nav-mobile details[open] > summary { color: hsl(var(--foreground)); }
+    .nav-mobile .sub { margin-left: 1rem; }
+    .nav-mobile .sub a { font-weight: 500; }
+    .nav-mobile .sub a.strong { font-weight: 600; color: hsl(var(--foreground)); }
+    .nav-mobile .btn-gold {
+      display: block; margin: 0.5rem 0 0; height: auto; padding: 0.625rem 0.75rem; text-align: center;
+    }
+    .chevron { width: 0.75rem; height: 0.75rem; flex-shrink: 0; }
+    .nav-mobile .chevron { width: 1rem; height: 1rem; transition: transform 0.2s; }
+    .nav-mobile details[open] .chevron { transform: rotate(180deg); }
+
+    /* Hero — from src/components/sections/hero.tsx */
+    .hero {
+      position: relative; overflow: hidden;
+      border-bottom: 1px solid hsl(var(--primary) / 0.1);
+    }
+    .hero-bg {
+      pointer-events: none; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at top, hsl(var(--primary) / 0.08), transparent 60%);
+    }
+    .hero-inner { position: relative; z-index: 1; padding: 6rem 0; }
+    @media (min-width: 640px) { .hero-inner { padding: 8rem 0; } }
+    @media (min-width: 1024px) { .hero-inner { padding: 10rem 0; } }
+    .hero-copy { margin: 0 auto; max-width: 48rem; text-align: center; }
+    .hero h1 {
+      margin: 0;
+      font-family: var(--font-syne);
+      font-size: 2.25rem; font-weight: 700; letter-spacing: -0.025em; line-height: 1.15;
+      color: hsl(var(--foreground));
+    }
+    @media (min-width: 640px) { .hero h1 { font-size: 3rem; } }
+    @media (min-width: 1024px) { .hero h1 { font-size: 3.75rem; } }
+    .hero .lead {
+      margin: 2rem auto 0; max-width: 32rem;
+      font-size: 1rem; color: hsl(var(--muted-foreground));
+    }
+    @media (min-width: 640px) { .hero .lead { font-size: 1.125rem; } }
+    .hero-note {
+      margin: 1.5rem auto 0;
+      font-size: 0.875rem; color: hsl(var(--muted-foreground) / 0.8);
+    }
+    .actions {
+      margin-top: 2.5rem;
+      display: flex; flex-direction: column; align-items: center; gap: 1rem;
+    }
+    @media (min-width: 640px) {
+      .actions { flex-direction: row; justify-content: center; }
+    }
+    .btn-gold-lg {
+      display: inline-flex; align-items: center; justify-content: center;
+      height: 3rem; width: 100%; padding: 0 1.5rem; border-radius: 0.75rem;
+      font-size: 0.875rem; font-weight: 600; color: #000; text-decoration: none;
+      background-image: linear-gradient(to right, #f59e0b, #eab308);
+      transition: filter 0.15s;
+    }
+    .btn-gold-lg:hover { background-image: linear-gradient(to right, #fbbf24, #facc15); }
+    @media (min-width: 640px) { .btn-gold-lg { width: auto; } }
+    .btn-outline {
+      display: inline-flex; align-items: center; justify-content: center;
+      height: 3rem; width: 100%; padding: 0 1.5rem; border-radius: 0.75rem;
+      border: 1px solid hsl(var(--primary) / 0.2);
+      font-size: 0.875rem; font-weight: 600; color: hsl(var(--foreground));
+      text-decoration: none; transition: background 0.15s;
+    }
+    .btn-outline:hover { background: hsl(var(--secondary)); }
+    @media (min-width: 640px) { .btn-outline { width: auto; } }
+
+    /* Breadcrumb-ish */
+    .crumbs {
+      border-bottom: 1px solid hsl(var(--primary) / 0.1);
+      font-size: 0.8125rem; color: hsl(var(--muted-foreground));
+    }
+    .crumbs-inner { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; min-height: 2.75rem; }
+    .crumbs a { color: hsl(var(--muted-foreground)); text-decoration: none; }
+    .crumbs a:hover { color: hsl(var(--primary)); }
+    .crumbs span[aria-current] { color: hsl(var(--foreground)); }
+
+    /* Directory */
+    main { flex: 1; }
+    .directory { padding: 3rem 0 5rem; }
+    .directory h2 {
+      margin: 2.5rem 0 1rem;
+      font-family: var(--font-syne);
+      font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em;
+      color: hsl(var(--foreground));
+    }
+    .directory h2:first-child { margin-top: 0; }
+    .grid {
+      display: grid; gap: 1.5rem;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 640px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1024px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+    /* Cards — from src/components/offer-card-client.tsx */
+    article {
+      display: flex; flex-direction: column;
+      border-radius: 1rem;
+      border: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--card));
+      padding: 1.5rem;
+      transition: border-color 0.2s;
+    }
+    @media (min-width: 640px) { article { padding: 1.5rem; } }
+    article:hover { border-color: hsl(var(--primary) / 0.3); }
+    article a { text-decoration: none; display: flex; flex-direction: column; flex: 1; color: inherit; }
+    article h3 {
+      margin: 0;
+      font-family: var(--font-syne);
+      font-size: 1.125rem; font-weight: 700; letter-spacing: -0.02em;
+      color: hsl(var(--foreground));
+    }
+    article p {
+      margin: 0.75rem 0 0;
+      font-size: 0.875rem; color: hsl(var(--muted-foreground));
+      flex: 1;
+    }
+    .price {
+      display: inline-flex; align-items: center; align-self: flex-start;
+      margin-top: 1.25rem;
+      border-radius: 999px;
+      border: 1px solid hsl(var(--primary) / 0.3);
+      background: hsl(var(--primary) / 0.1);
+      padding: 0.25rem 0.75rem;
+      font-size: 0.75rem; font-weight: 600; color: hsl(var(--primary));
+    }
+
+    /* Footer — from src/components/footer.tsx */
+    .site-footer {
+      border-top: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--card));
+    }
+    .footer-inner { padding-top: 4rem; padding-bottom: 4rem; }
+    .footer-grid {
+      display: grid; gap: 2.5rem;
+    }
+    @media (min-width: 640px) { .footer-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1024px) { .footer-grid { grid-template-columns: repeat(5, 1fr); } }
+    .footer-brand { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; }
+    .footer-brand img { width: 2rem; height: 2rem; }
+    .footer-brand span {
+      font-family: var(--font-syne); font-size: 1.125rem; font-weight: 700; color: #fff;
+    }
+    .footer-blurb {
+      margin: 1rem 0 0; font-size: 0.875rem; line-height: 1.625;
+      color: hsl(var(--muted-foreground));
+    }
+    .footer-col h3 {
+      margin: 0 0 1rem;
+      font-family: var(--font-syne);
+      font-size: 0.875rem; font-weight: 600; letter-spacing: 0.05em;
+      text-transform: uppercase; color: hsl(var(--foreground));
+    }
+    .footer-col ul { list-style: none; margin: 0; padding: 0; }
+    .footer-col li + li { margin-top: 0.5rem; }
+    .footer-col a {
+      font-size: 0.875rem; color: hsl(var(--muted-foreground));
+      text-decoration: none; transition: color 0.15s;
+    }
+    .footer-col a:hover { color: hsl(var(--primary)); }
+    .footer-email {
+      margin: 0.5rem 0 0;
+      font-size: 0.75rem; color: hsl(var(--muted-foreground) / 0.6);
+    }
+    .footer-email a {
+      font-size: 0.75rem; color: hsl(var(--muted-foreground) / 0.6);
+      text-decoration: none;
+    }
+    .footer-email a:hover { color: hsl(var(--primary)); }
+    .footer-bottom {
+      margin-top: 3rem; padding-top: 2rem;
+      border-top: 1px solid hsl(var(--primary) / 0.1);
+      display: flex; flex-direction: column; align-items: flex-start; gap: 1rem;
+      font-size: 0.75rem; color: hsl(var(--muted-foreground) / 0.6);
+    }
+    @media (min-width: 640px) {
+      .footer-bottom { flex-direction: row; align-items: center; justify-content: space-between; }
+    }
+    .footer-bottom p { margin: 0; }
+    .footer-legal { display: flex; align-items: center; gap: 1rem; }
+    .footer-legal a { color: inherit; text-decoration: none; }
+    .footer-legal a:hover { color: hsl(var(--primary)); }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: hsl(var(--background)); }
+    ::-webkit-scrollbar-thumb { background: hsl(var(--primary) / 0.3); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: hsl(v
+    .doc { padding: 1.5rem 0 5rem; max-width: 52rem; }
+    .doc h1 { font-family: var(--font-syne); font-size: clamp(1.9rem,4vw,2.8rem); line-height:1.1; letter-spacing:-.03em; margin: .75rem 0 1rem; }
+    .doc h2 { font-family: var(--font-syne); font-size: 1.5rem; letter-spacing:-.02em; margin: 2.75rem 0 .75rem; }
+    .doc h3 { font-family: var(--font-syne); font-size: 1.1rem; margin: 1.75rem 0 .5rem; }
+    .doc p, .doc li { color: hsl(0 0% 82%); line-height: 1.7; }
+    .doc a { color: hsl(var(--primary)); }
+    .doc ul, .doc ol { padding-left: 1.25rem; }
+    .doc code { background: hsl(var(--muted)); padding: .1rem .35rem; border-radius: .35rem; font-size: .88em; }
+    .doc pre { background: hsl(var(--card)); border: 1px solid hsl(var(--primary) / .12); border-radius: .75rem; padding: 1rem; overflow-x: auto; font-size: .82rem; }
+    .doc pre code { background: none; padding: 0; }
+    .doc table { width: 100%; border-collapse: collapse; display: block; overflow-x: auto; font-size: .9rem; margin: 1rem 0; }
+    .doc th, .doc td { border: 1px solid hsl(var(--primary) / .15); padding: .5rem .75rem; text-align: left; vertical-align: top; }
+    .doc th { background: hsl(var(--card)); }
+    .lede { font-size: 1.1rem; color: hsl(var(--muted-foreground)); }
+    .cta-row { display: flex; flex-wrap: wrap; gap: .75rem; margin: 1.5rem 0 .5rem; align-items: center; }
+    .related { margin-top: 3rem; }
+    .related .grid { margin-top: 1rem; }
+    article .guide { margin-top: .75rem; font-size: .8rem; color: hsl(var(--primary)); flex: 0; }
+ar(--primary) / 0.5); }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+  </style>
+
+  <script type="application/ld+json">[{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Remote Jobs Scraper: RemoteOK, We Work Remotely & Himalayas", "applicationCategory": "DeveloperApplication", "operatingSystem": "Web", "url": "https://actors.techlion.dev/remote-jobs-scraper/", "description": "Remote jobs scraper for RemoteOK, We Work Remotely, Himalayas, Jobicy and Working Nomads: salary, location, seniority and tags. Free filters and job alerts.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD", "description": "$0.80 / 1,000 jobs (pay per result on Apify)"}, "author": {"@type": "Organization", "name": "TechLion Dev", "url": "https://www.techlion.dev/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.techlion.dev/"}, {"@type": "ListItem", "position": 2, "name": "Apify Actors", "item": "https://actors.techlion.dev/"}, {"@type": "ListItem", "position": 3, "name": "Remote Jobs Scraper", "item": "https://actors.techlion.dev/remote-jobs-scraper/"}]}, {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Do I need an account or API key for these job boards?", "acceptedAnswer": {"@type": "Answer", "text": "No. Every board is read through its own public job feed. The Actor runs on Apify's default infrastructure with no login and no proxy."}}, {"@type": "Question", "name": "Which job board has the most jobs?", "acceptedAnswer": {"@type": "Answer", "text": "Himalayas is by far the largest (over 100,000 remote jobs, searchable). Remote OK, We Work Remotely, Jobicy and Working Nomads publish their newest jobs (from about 35 to a few hundred each). Arbeitnow focuses on Europe and also lists on-site jobs; keep Remote jobs only on to drop those."}}, {"@type": "Question", "name": "How are duplicates removed?", "acceptedAnswer": {"@type": "Answer", "text": "The same job is often posted on several boards. With Remove duplicates across boards on, a job with the same company and title (ignoring case, punctuation and text in brackets) is saved once, from the first board that returned it."}}, {"@type": "Question", "name": "How does the salary filter work?", "acceptedAnswer": {"@type": "Answer", "text": "Salaries are published in many forms (per hour, per month, per year, in different currencies). The Actor keeps the original numbers and also converts them to a yearly amount (hours × 2,080, months × 12...). Minimum yearly salary compares the top of the range with your number. Currencies are not converted."}}, {"@type": "Question", "name": "How are locations matched?", "acceptedAnswer": {"@type": "Answer", "text": "Each job has a location text and a locationRestrictions list (empty means open worldwide). The Locations filter keeps a job when any of your words appears there. Add worldwide to also keep jobs that are open to everyone."}}, {"@type": "Question", "name": "Is it legal to scrape these job boards?", "acceptedAnswer": {"@type": "Answer", "text": "The Actor reads only public job listings through the feeds the boards publish for developers. It does not log in or apply to jobs. Each row keeps the original job link and the board name: if you republish jobs, link back to the original listing and credit the board, as their feed terms ask. You are responsible for how you use the data."}}]}]</script>
+</head>
+<body>
+  <header class="site-header" id="site-header">
+    <nav class="nav max-w-content section-padding" aria-label="Primary">
+      <a class="brand" href="https://www.techlion.dev/">
+        <img src="https://cdn.techlion.dev/logos/png/icons/Color.png" alt="TechLion Dev" width="32" height="32">
+        <span class="brand-name">TechLion<span class="gold-gradient"> Dev</span></span>
+      </a>
+      <div class="nav-desktop">
+        <a class="nav-link" href="https://www.techlion.dev/">Home</a>
+        <div class="nav-dropdown">
+          <a class="nav-link" href="https://www.techlion.dev/services">Services
+            <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+          </a>
+          <div class="nav-dropdown-menu">
+            <a href="https://www.techlion.dev/services">All Services</a>
+            <a href="https://www.techlion.dev/services/web-design">Web Design</a>
+            <a href="https://www.techlion.dev/services/web-apps">Web Apps &amp; APIs</a>
+            <a href="https://www.techlion.dev/services/automations">Automations</a>
+            <a href="https://www.techlion.dev/services/ai-integration">AI Integration</a>
+            <a href="https://www.techlion.dev/services/ai-visibility">AI Visibility</a>
+            <a href="https://www.techlion.dev/locations">Locations</a>
+          </div>
+        </div>
+        <a class="nav-link" href="https://www.techlion.dev/projects">Projects</a>
+        <a class="nav-link" href="https://www.techlion.dev/blog">Blog</a>
+        <a class="nav-link" href="https://www.techlion.dev/pricing">Pricing</a>
+        <a class="nav-link" href="https://www.techlion.dev/productized-offer">Offers</a>
+        <div class="nav-dropdown">
+          <a class="nav-link" href="https://www.techlion.dev/about">Company
+            <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+          </a>
+          <div class="nav-dropdown-menu">
+            <a href="https://www.techlion.dev/about">Company</a>
+            <a href="https://www.techlion.dev/about">About</a>
+            <a href="https://www.techlion.dev/process">Process</a>
+            <a href="https://www.techlion.dev/faq">FAQ</a>
+            <a href="https://www.techlion.dev/contact">Contact</a>
+          </div>
+        </div>
+        <a class="btn-gold" href="https://www.techlion.dev/contact">Start Your Project</a>
+      </div>
+      <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav" id="menu-toggle">
+        <svg id="icon-menu" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16"></path><path d="M4 12h16"></path><path d="M4 19h16"></path></svg>
+        <svg id="icon-close" hidden xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+      </button>
+    </nav>
+    <div class="nav-mobile" id="mobile-nav">
+      <div class="nav-mobile-inner section-padding max-w-content">
+        <a href="https://www.techlion.dev/">Home</a>
+        <details>
+          <summary>Services <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary>
+          <div class="sub">
+            <a class="strong" href="https://www.techlion.dev/services">All Services</a>
+            <a href="https://www.techlion.dev/services/web-design">Web Design</a>
+            <a href="https://www.techlion.dev/services/web-apps">Web Apps &amp; APIs</a>
+            <a href="https://www.techlion.dev/services/automations">Automations</a>
+            <a href="https://www.techlion.dev/services/ai-integration">AI Integration</a>
+            <a href="https://www.techlion.dev/services/ai-visibility">AI Visibility</a>
+            <a href="https://www.techlion.dev/locations">Locations</a>
+          </div>
+        </details>
+        <a href="https://www.techlion.dev/projects">Projects</a>
+        <a href="https://www.techlion.dev/blog">Blog</a>
+        <a href="https://www.techlion.dev/pricing">Pricing</a>
+        <a href="https://www.techlion.dev/productized-offer">Offers</a>
+        <details>
+          <summary>Company <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary>
+          <div class="sub">
+            <a class="strong" href="https://www.techlion.dev/about">Company</a>
+            <a href="https://www.techlion.dev/about">About</a>
+            <a href="https://www.techlion.dev/process">Process</a>
+            <a href="https://www.techlion.dev/faq">FAQ</a>
+            <a href="https://www.techlion.dev/contact">Contact</a>
+          </div>
+        </details>
+        <a class="btn-gold" href="https://www.techlion.dev/contact">Start Your Project</a>
+      </div>
+    </div>
+  </header>
+<nav class="crumbs" aria-label="Breadcrumb"><div class="crumbs-inner max-w-content section-padding"><a href="https://www.techlion.dev/">Home</a><span aria-hidden="true">/</span><a href="/">Apify Actors</a><span aria-hidden="true">/</span><span aria-current="page">Remote Jobs Scraper</span></div></nav>
+<main>
+    <div class="max-w-content section-padding">
+<div class="doc">
+<h1>Remote Jobs Scraper: RemoteOK, We Work Remotely &amp; Himalayas</h1>
+<p class="lede">Remote jobs scraper for RemoteOK, We Work Remotely, Himalayas, Jobicy and Working Nomads: salary, location, seniority and tags. Free filters and job alerts.</p>
+<div class="cta-row"><a class="btn-gold" href="https://apify.com/techliondev/remote-jobs-scraper">Run it on Apify</a><a class="btn-outline" href="/">All 23 TechLion Dev Actors</a><span class="price">$0.80 / 1,000 jobs</span></div>
+<p class="lede" style="font-size:.9rem">A first test run is usually under a cent. No login to the source site. Pay only for the results you get. Built and maintained by <a href="https://www.techlion.dev/">TechLion Dev</a>.</p>
+<p><strong>Remote Jobs Scraper</strong> collects <strong>remote job listings from six popular remote job boards</strong> into one clean table: <strong>Himalayas, Remote OK, We Work Remotely, Jobicy, Working Nomads and Arbeitnow</strong>. You get the job title, company, where the job is open to, employment type, seniority, salary range (also converted to a yearly amount), tags, posting date, job link and the full description as plain text.</p>
+<p>It is for job seekers, recruiters, remote job board owners, newsletter writers, sales teams looking for hiring companies, researchers and AI (artificial intelligence) agents.</p>
+<p>Every board is read through its own <strong>public job feed</strong>: no browser, no login and no proxy. Runs are <strong>fast, cheap and reliable</strong>: 150 fresh jobs from five boards in a few seconds.</p>
+<ul>
+<li><strong>Build job alerts:</strong> search for "python" or "product designer", filter by country and salary, and get only new jobs on a schedule.</li>
+<li><strong>Fill a remote job board or newsletter</strong> with fresh, de-duplicated listings from several sources at once.</li>
+<li><strong>Find companies that are hiring</strong> for sales prospecting and recruiting outreach.</li>
+<li><strong>Track remote salaries</strong> by role, seniority and region.</li>
+<li><strong>Feed AI tools</strong> with clean, plain-text job descriptions.</li>
+</ul><h3>What data does it extract?</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>💼 Job title, company and company logo</td>
+<td>🌐 Location the job is open to, plus a country/region list</td>
+</tr>
+<tr>
+<td>🕒 Employment type (full-time, part-time, contract, freelance, internship)</td>
+<td>🎚️ Seniority (intern to executive)</td>
+</tr>
+<tr>
+<td>💰 Salary min/max, currency and period</td>
+<td>📈 Salary converted to yearly amounts for easy sorting</td>
+</tr>
+<tr>
+<td>🏷️ Category and tags/skills</td>
+<td>📅 Posted date, days ago and expiry date</td>
+</tr>
+<tr>
+<td>🔗 Job link and apply link</td>
+<td>📝 Full description as plain text, with word count</td>
+</tr>
+</tbody>
+</table><h3>Why this scraper?</h3>
+<ul>
+<li><strong>Six boards in one run</strong>, with the same columns for every board and <strong>duplicates removed</strong> (the same job posted on several boards is saved once).</li>
+<li><strong>Cheaper than other remote job aggregators:</strong> $0.80 per 1,000 jobs, with no extra start fee and no charge for filtered-out jobs. Popular alternatives charge $1 to $6 per 1,000.</li>
+<li><strong>Free filters:</strong> posted date, location, employment type, seniority, minimum salary, salary required, include and exclude words, excluded companies.</li>
+<li><strong>Built-in new-job tracking.</strong> Turn on <strong>Only new jobs</strong>, schedule the Actor, and later runs save only jobs you have not collected yet.</li>
+<li><strong>No browser, no proxy:</strong> official public feeds only, so runs rarely fail.</li>
+</ul><h2>Input</h2><p>Pick the job boards, add search terms (optional), and set the filters you need. Leave <strong>Search terms</strong> empty to get the newest jobs from every board.</p>
+<p>Example input:</p>
+<pre><code class="language-json">{
+    &quot;sources&quot;: [&quot;himalayas&quot;, &quot;remoteok&quot;, &quot;weworkremotely&quot;, &quot;jobicy&quot;, &quot;workingnomads&quot;],
+    &quot;searchTerms&quot;: [&quot;python&quot;, &quot;product designer&quot;],
+    &quot;maxJobsPerSource&quot;: 100,
+    &quot;postedSince&quot;: &quot;7 days&quot;,
+    &quot;locations&quot;: [&quot;USA&quot;, &quot;worldwide&quot;],
+    &quot;employmentTypes&quot;: [&quot;full-time&quot;],
+    &quot;minSalary&quot;: 80000,
+    &quot;excludeKeywords&quot;: [&quot;intern&quot;],
+    &quot;onlyNew&quot;: true
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Job boards</td>
+<td>Himalayas, Remote OK, We Work Remotely, Jobicy, Working Nomads, Arbeitnow (Europe, includes on-site jobs)</td>
+</tr>
+<tr>
+<td>Search terms</td>
+<td>Job titles, skills or keywords. Each term is searched on every board</td>
+</tr>
+<tr>
+<td>Match search terms in</td>
+<td><strong>Precise</strong> (title, category, tags) or <strong>Broad</strong> (also company and full description)</td>
+</tr>
+<tr>
+<td>Max jobs per board and search term</td>
+<td>Stops each board after this many saved jobs (after filters)</td>
+</tr>
+<tr>
+<td>Posted since</td>
+<td>A date (2026-01-31) or relative value (24 hours, 7 days)</td>
+</tr>
+<tr>
+<td>Locations</td>
+<td>Countries or regions (USA, Europe, Canada, LATAM...). Add <code>worldwide</code> to keep jobs open to anyone</td>
+</tr>
+<tr>
+<td>Employment types, seniority</td>
+<td>Keep only the types and levels you want</td>
+</tr>
+<tr>
+<td>Minimum yearly salary, only jobs with a salary</td>
+<td>Salary filters, using the yearly amount</td>
+</tr>
+<tr>
+<td>Include / exclude words, exclude companies</td>
+<td>Keyword and company filters on title, category and tags</td>
+</tr>
+<tr>
+<td>Remove duplicates across boards</td>
+<td>Save the same company + title only once</td>
+</tr>
+<tr>
+<td>Only new jobs + Tracking name</td>
+<td>Save only jobs not seen in earlier runs</td>
+</tr>
+</tbody>
+</table><h2>Output</h2><p>You get one row per job, with the same columns on every row. The dataset has three views: <strong>Overview</strong>, <strong>Salary</strong> and <strong>Details</strong>. A <code>RUN_SUMMARY</code> record lists every board (and search term) with jobs seen, jobs saved and any error.</p>
+<h3>Table view</h3>
+<table>
+<thead>
+<tr>
+<th>Job title</th>
+<th>Company</th>
+<th>Location</th>
+<th>Salary</th>
+<th>Posted</th>
+<th>Board</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Senior UI/UX Designer</td>
+<td>Bright Vision Technol…</td>
+<td>United States</td>
+<td>USD 135,000–155,000 per year</td>
+<td>2026-11-21</td>
+<td>Himalayas</td>
+</tr>
+<tr>
+<td>Director, Design</td>
+<td>USAA</td>
+<td>United States</td>
+<td>USD 164,780–314,960 per year</td>
+<td>2026-11-20</td>
+<td>Himalayas</td>
+</tr>
+<tr>
+<td>Senior Staff Site Reliability Engineer</td>
+<td>SecurityScorecard</td>
+<td>Anguilla, Antigua and Barbu…</td>
+<td>USD 150,000–160,000 per year</td>
+<td>2026-11-21</td>
+<td>Himalayas</td>
+</tr>
+<tr>
+<td>Software Engineer, Front End</td>
+<td>Veilant</td>
+<td>United States</td>
+<td>USD 100,000–145,000 per year</td>
+<td>2026-11-21</td>
+<td>Himalayas</td>
+</tr>
+<tr>
+<td>Staff Product Designer</td>
+<td>Enverus</td>
+<td>United States</td>
+<td></td>
+<td>2026-11-19</td>
+<td>Himalayas</td>
+</tr>
+<tr>
+<td>AI Creative Engineer (Social Media)</td>
+<td>Elvoro</td>
+<td>Anywhere in the World</td>
+<td></td>
+<td>2026-11-18</td>
+<td>We Work Remotely</td>
+</tr>
+</tbody>
+</table><h2>How to use it</h2><ol>
+<li>Click <strong>Try for free</strong> (an Apify account is free to create).</li>
+<li>Choose the job boards and add search terms, or leave them empty for the newest jobs.</li>
+<li>Set <strong>Max jobs per board</strong> and any filters. Filters are free.</li>
+<li>Click <strong>Start</strong>. The default run (30 newest jobs from each of five boards) finishes in a few seconds.</li>
+<li>Download the results from the <strong>Output</strong> tab as Excel, CSV (comma-separated values) or JSON (JavaScript Object Notation), or connect them to another tool.</li>
+</ol>
+<h3>Job alerts on a schedule</h3>
+<p>Add your search terms and filters, turn on <strong>Only new jobs</strong>, and create a schedule (for example every morning). The first run only remembers the current jobs. After that, each run saves only new jobs, so a quiet day costs almost nothing. Connect the dataset to email, Slack or Google Sheets with Apify's integrations.</p><h2>How much does it cost?</h2><p>This Actor uses <strong>pay-per-event pricing</strong>: you pay only for the jobs you get, never for the computer time behind them.</p>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Price (free plan)</th>
+<th>When it is charged</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actor start</td>
+<td>$0.00005</td>
+<td>Once per run</td>
+</tr>
+<tr>
+<td><strong>Job saved</strong></td>
+<td><strong>$0.0008</strong> ($0.80 per 1,000 jobs)</td>
+<td>For each job saved, after your filters and de-duplication</td>
+</tr>
+</tbody>
+</table>
+<p>Paid Apify plans get lower prices automatically (for example $0.64 per 1,000 jobs on the Silver plan). See the <strong>Pricing</strong> tab for every plan.</p>
+<p><strong>Worked examples</strong></p>
+<ul>
+<li><strong>Default test run (150 newest jobs from five boards):</strong> $0.00005 + 150 × $0.0008 = <strong>about $0.12</strong>.</li>
+<li><strong>1,000 Python jobs:</strong> <strong>about $0.80</strong>.</li>
+<li><strong>Daily job alert, only new jobs, about 30 new matches a day:</strong> 30 runs × $0.00005 + 900 jobs × $0.0008 = <strong>about $0.72 per month</strong>.</li>
+</ul><h2>Use cases</h2><ul>
+<li><strong>Job search automation:</strong> daily alerts for your role, country and salary, with duplicates removed.</li>
+<li><strong>Remote job boards and newsletters:</strong> fresh listings with title, company, salary and tags ready to publish (keep the original job link and board name on each listing).</li>
+<li><strong>Sales prospecting:</strong> companies hiring for roles that signal they need your product.</li>
+<li><strong>Recruiting and market research:</strong> who is hiring, for which roles, at which salary, in which regions.</li>
+<li><strong>AI and data projects:</strong> clean, structured job descriptions for matching, classification or analysis.</li>
+</ul><h2>Frequently asked questions</h2><h3>Do I need an account or API key for these job boards?</h3><p>No. Every board is read through its own public job feed. The Actor runs on Apify's default infrastructure with no login and no proxy.</p><h3>Which job board has the most jobs?</h3><p>Himalayas is by far the largest (over 100,000 remote jobs, searchable). Remote OK, We Work Remotely, Jobicy and Working Nomads publish their newest jobs (from about 35 to a few hundred each). Arbeitnow focuses on Europe and also lists on-site jobs; keep <strong>Remote jobs only</strong> on to drop those.</p><h3>How are duplicates removed?</h3><p>The same job is often posted on several boards. With <strong>Remove duplicates across boards</strong> on, a job with the same company and title (ignoring case, punctuation and text in brackets) is saved once, from the first board that returned it.</p><h3>How does the salary filter work?</h3><p>Salaries are published in many forms (per hour, per month, per year, in different currencies). The Actor keeps the original numbers and also converts them to a yearly amount (hours × 2,080, months × 12...). <strong>Minimum yearly salary</strong> compares the top of the range with your number. Currencies are not converted.</p><h3>How are locations matched?</h3><p>Each job has a <code>location</code> text and a <code>locationRestrictions</code> list (empty means open worldwide). The <strong>Locations</strong> filter keeps a job when any of your words appears there. Add <code>worldwide</code> to also keep jobs that are open to everyone.</p><h3>Is it legal to scrape these job boards?</h3><p>The Actor reads only public job listings through the feeds the boards publish for developers. It does not log in or apply to jobs. Each row keeps the original job link and the board name: if you republish jobs, link back to the original listing and credit the board, as their feed terms ask. You are responsible for how you use the data.</p>
+<div class="cta-row"><a class="btn-gold" href="https://apify.com/techliondev/remote-jobs-scraper">Try Remote Jobs Scraper on Apify</a></div>
+<section class="related"><h2>More TechLion Dev Actors</h2><div class="grid"><article><a href="/ats-job-feed/"><h3>Greenhouse Jobs Scraper</h3><p>Greenhouse, Lever, Ashby and Workday career pages.</p><span class="price">$1.50 / 1,000 jobs</span></a></article><article><a href="/hacker-news-scraper/"><h3>Hacker News Scraper</h3><p>Stories, comment threads and monthly Who Is Hiring posts.</p><span class="price">$0.10 / 1,000 items</span></a></article><article><a href="/bluesky-scraper/"><h3>Bluesky Scraper</h3><p>Posts by search, hashtag, profile or thread.</p><span class="price">$0.30 / 1,000 posts</span></a></article><article><a href="/rss-feed-reader/"><h3>RSS Feed Reader</h3><p>RSS, Atom and podcasts converted to JSON.</p><span class="price">$0.50 / 1,000 items</span></a></article></div></section>
+<p>Need a custom data pipeline or integration? <a href="https://www.techlion.dev/contact">Talk to TechLion Dev</a>.</p>
+</div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner max-w-content section-padding">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <a class="footer-brand" href="https://www.techlion.dev/">
+            <img src="https://cdn.techlion.dev/logos/png/icons/Color.png" alt="TechLion Dev" width="32" height="32">
+            <span>TechLion<span class="gold-gradient"> Dev</span></span>
+          </a>
+          <p class="footer-blurb">Web development for small and medium businesses nationwide. Built by Jeremiah Samuel.</p>
+        </div>
+        <div class="footer-col">
+          <h3>Services</h3>
+          <ul>
+            <li><a href="https://www.techlion.dev/services/web-design">Websites</a></li>
+            <li><a href="https://www.techlion.dev/services/web-apps">Web Apps &amp; APIs</a></li>
+            <li><a href="https://www.techlion.dev/services/automations">Automations</a></li>
+            <li><a href="https://www.techlion.dev/services/ai-integration">AI Integration</a></li>
+            <li><a href="https://www.techlion.dev/services/ai-visibility">AI Visibility</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Company</h3>
+          <ul>
+            <li><a href="https://www.techlion.dev/about">About</a></li>
+            <li><a href="https://www.techlion.dev/process">Process</a></li>
+            <li><a href="https://www.techlion.dev/projects">Projects</a></li>
+            <li><a href="https://www.techlion.dev/pricing">Pricing</a></li>
+            <li><a href="https://www.techlion.dev/faq">FAQ</a></li>
+            <li><a href="https://www.techlion.dev/ai-instructions">AI Instructions</a></li>
+            <li><a href="https://www.techlion.dev/contact">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Locations</h3>
+          <ul>
+            <li><a href="https://www.techlion.dev/locations/asbury-park">Asbury Park</a></li>
+            <li><a href="https://www.techlion.dev/locations/brick">Brick</a></li>
+            <li><a href="https://www.techlion.dev/locations/colts-neck">Colts Neck</a></li>
+            <li><a href="https://www.techlion.dev/locations/edison">Edison</a></li>
+            <li><a href="https://www.techlion.dev/locations/freehold">Freehold</a></li>
+            <li><a href="https://www.techlion.dev/locations/holmdel">Holmdel</a></li>
+            <li><a href="https://www.techlion.dev/locations/howell">Howell</a></li>
+            <li><a href="https://www.techlion.dev/locations/manalapan">Manalapan</a></li>
+            <li><a href="https://www.techlion.dev/locations/marlboro">Marlboro</a></li>
+            <li><a href="https://www.techlion.dev/locations/middletown">Middletown</a></li>
+            <li><a href="https://www.techlion.dev/locations/monmouth-county">Monmouth County</a></li>
+            <li><a href="https://www.techlion.dev/locations/old-bridge">Old Bridge</a></li>
+            <li><a href="https://www.techlion.dev/locations/red-bank">Red Bank</a></li>
+            <li><a href="https://www.techlion.dev/locations/toms-river">Toms River</a></li>
+            <li><a href="https://www.techlion.dev/locations/woodbridge">Woodbridge</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Connect</h3>
+          <ul>
+            <li><a href="https://github.com/TechLionDev" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+            <li><a href="https://linkedin.com/in/jeremiah-samuel-4790b138a/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+            <li><a href="https://x.com/jeremiahisdev" target="_blank" rel="noopener noreferrer">X / Twitter</a></li>
+          </ul>
+          <p class="footer-email"><a href="mailto:jeremiahis@techlion.dev">jeremiahis@techlion.dev</a></p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 TechLion Dev. All rights reserved.</p>
+        <div class="footer-legal">
+          <a href="https://www.techlion.dev/privacy">Privacy</a>
+          <a href="https://www.techlion.dev/terms">Terms</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script>
+    (function () {
+      var header = document.getElementById('site-header');
+      var btn = document.getElementById('menu-toggle');
+      var iconMenu = document.getElementById('icon-menu');
+      var iconClose = document.getElementById('icon-close');
+      if (!header || !btn) return;
+      btn.addEventListener('click', function () {
+        var open = header.classList.toggle('is-open');
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+        if (iconMenu) iconMenu.hidden = open;
+        if (iconClose) iconClose.hidden = !open;
+      });
+    })();
+  </script>
+</body>
+</html>
