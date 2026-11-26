@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Email Validator: Bulk Email Checker &amp; Disposable Detection</title>
+  <meta name="description" content="Bulk email validator and email checker: syntax, MX records, disposable, role and free-provider checks, typo fixes and a 0-100 score. No mailbox login.">
+  <meta name="theme-color" content="#0a0a0a">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://actors.techlion.dev/email-validator/">
+  <link rel="preconnect" href="https://cdn.techlion.dev" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.techlion.dev">
+  <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-title" content="TLD">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="TechLion Dev">
+  <meta property="og:title" content="Email Validator: Bulk Email Checker &amp; Disposable Detection">
+  <meta property="og:description" content="Bulk email validator and email checker: syntax, MX records, disposable, role and free-provider checks, typo fixes and a 0-100 score. No mailbox login.">
+  <meta property="og:url" content="https://actors.techlion.dev/email-validator/">
+  <meta property="og:image" content="https://actors.techlion.dev/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Email Validator: Bulk Email Checker &amp; Disposable Detection">
+  <meta name="twitter:description" content="Bulk email validator and email checker: syntax, MX records, disposable, role and free-provider checks, typo fixes and a 0-100 score. No mailbox login.">
+  <meta name="twitter:image" content="https://actors.techlion.dev/og.png">
+  <meta name="twitter:creator" content="@jeremiahisdev">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --background: 0 0% 4%;
+      --foreground: 0 0% 100%;
+      --card: 0 0% 6%;
+      --card-foreground: 0 0% 100%;
+      --primary: 42 54% 54%;
+      --primary-foreground: 0 0% 4%;
+      --secondary: 0 0% 10%;
+      --secondary-foreground: 0 0% 100%;
+      --muted: 0 0% 12%;
+      --muted-foreground: 0 0% 65%;
+      --accent: 42 54% 54%;
+      --accent-foreground: 0 0% 4%;
+      --border: 42 54% 54% / 0.15;
+      --ring: 42 54% 54%;
+      --radius: 0.75rem;
+      --font-syne: "Syne", ui-sans-serif, system-ui, sans-serif;
+      --font-outfit: "Outfit", ui-sans-serif, system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; border-color: hsl(var(--border)); }
+    html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: hsl(var(--background));
+      color: hsl(var(--foreground));
+      font-family: var(--font-outfit);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    ::selection { background: hsl(var(--primary) / 0.3); color: hsl(var(--foreground)); }
+    a { color: inherit; }
+    img { display: block; max-width: 100%; }
+    .font-heading { font-family: var(--font-syne); }
+    .gold-gradient {
+      background: linear-gradient(135deg, #c9a84c 0%, #e8c85a 50%, #c9a84c 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .section-padding { padding-left: 1rem; padding-right: 1rem; }
+    @media (min-width: 640px) { .section-padding { padding-left: 1.5rem; padding-right: 1.5rem; } }
+    @media (min-width: 1024px) { .section-padding { padding-left: 2rem; padding-right: 2rem; } }
+    .max-w-content { margin-left: auto; margin-right: auto; max-width: 80rem; }
+
+    /* Header / nav — from src/components/navbar.tsx */
+    .site-header {
+      position: sticky; top: 0; z-index: 50; width: 100%;
+      border-bottom: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--background) / 0.9);
+    }
+    @supports (backdrop-filter: blur(24px)) or (-webkit-backdrop-filter: blur(24px)) {
+      .site-header {
+        background: hsl(var(--background) / 0.8);
+        -webkit-backdrop-filter: blur(24px);
+        backdrop-filter: blur(24px);
+      }
+    }
+    .nav {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 4rem;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 0.5rem;
+      text-decoration: none; transition: opacity 0.15s;
+    }
+    .brand:hover { opacity: 0.8; }
+    .brand img { width: 2rem; height: 2rem; }
+    .brand-name {
+      font-family: var(--font-syne);
+      font-size: 1.125rem; font-weight: 700; letter-spacing: -0.025em;
+      white-space: nowrap; color: #fff;
+    }
+    .nav-desktop { display: none; align-items: center; gap: 0.25rem; }
+    @media (min-width: 768px) { .nav-desktop { display: flex; } }
+    .nav-link {
+      position: relative; display: inline-flex; align-items: center; gap: 0.25rem;
+      border-radius: 0.5rem; padding: 0.375rem 0.5rem;
+      font-size: 0.75rem; font-weight: 500; text-decoration: none;
+      color: hsl(var(--muted-foreground)); transition: color 0.15s;
+    }
+    .nav-link:hover { color: hsl(var(--foreground)); }
+    @media (min-width: 1024px) {
+      .nav-link { padding: 0.5rem 0.75rem; font-size: 0.875rem; }
+    }
+    .nav-dropdown { position: relative; }
+    .nav-dropdown-menu {
+      position: absolute; left: 0; top: 100%; z-index: 50;
+      margin-top: 0.25rem; width: 14rem; padding: 0.5rem;
+      border-radius: 0.75rem; border: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--card)); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+      opacity: 0; visibility: hidden; transition: opacity 0.15s, visibility 0.15s;
+    }
+    .nav-dropdown:hover .nav-dropdown-menu,
+    .nav-dropdown:focus-within .nav-dropdown-menu {
+      opacity: 1; visibility: visible;
+    }
+    .nav-dropdown-menu a {
+      display: block; border-radius: 0.5rem; padding: 0.5rem 0.75rem;
+      font-size: 0.875rem; text-decoration: none;
+      color: hsl(var(--muted-foreground));
+    }
+    .nav-dropdown-menu a:first-child {
+      font-weight: 500; color: hsl(var(--foreground));
+    }
+    .nav-dropdown-menu a:hover { background: hsl(var(--primary) / 0.05); color: hsl(var(--foreground)); }
+    .btn-gold {
+      display: inline-flex; align-items: center; justify-content: center;
+      flex-shrink: 0; height: 2.5rem; margin-left: 0.5rem; padding: 0 1.25rem;
+      border-radius: 0.75rem; white-space: nowrap; text-decoration: none;
+      font-size: 0.875rem; font-weight: 600; color: #000;
+      background-image: linear-gradient(to right, #f59e0b, #eab308);
+      transition: filter 0.15s;
+    }
+    .btn-gold:hover { background-image: linear-gradient(to right, #fbbf24, #facc15); }
+    .menu-toggle {
+      display: flex; align-items: center; justify-content: center;
+      border: 0; background: transparent; border-radius: 0.5rem; padding: 0.5rem;
+      color: hsl(var(--muted-foreground)); cursor: pointer;
+    }
+    .menu-toggle:hover { color: hsl(var(--foreground)); }
+    .menu-toggle #icon-close { display: none; }
+    .site-header.is-open .menu-toggle #icon-menu { display: none; }
+    .site-header.is-open .menu-toggle #icon-close { display: block; }
+    @media (min-width: 768px) { .menu-toggle { display: none; } }
+    .nav-mobile {
+      display: none;
+      border-top: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--background) / 0.95);
+    }
+    @supports (backdrop-filter: blur(24px)) or (-webkit-backdrop-filter: blur(24px)) {
+      .nav-mobile {
+        background: hsl(var(--background) / 0.85);
+        -webkit-backdrop-filter: blur(24px);
+        backdrop-filter: blur(24px);
+      }
+    }
+    .site-header.is-open .nav-mobile { display: block; }
+    @media (min-width: 768px) { .site-header.is-open .nav-mobile { display: none; } }
+    .nav-mobile-inner { padding-top: 1rem; padding-bottom: 1rem; }
+    .nav-mobile a, .nav-mobile summary {
+      display: block; border-radius: 0.5rem; padding: 0.5rem 0.75rem;
+      font-size: 0.875rem; font-weight: 500; color: hsl(var(--muted-foreground));
+      text-decoration: none; list-style: none; cursor: pointer;
+    }
+    .nav-mobile summary { display: flex; align-items: center; justify-content: space-between; }
+    .nav-mobile summary::-webkit-details-marker { display: none; }
+    .nav-mobile a:hover, .nav-mobile summary:hover { color: hsl(var(--foreground)); }
+    .nav-mobile details[open] > summary { color: hsl(var(--foreground)); }
+    .nav-mobile .sub { margin-left: 1rem; }
+    .nav-mobile .sub a { font-weight: 500; }
+    .nav-mobile .sub a.strong { font-weight: 600; color: hsl(var(--foreground)); }
+    .nav-mobile .btn-gold {
+      display: block; margin: 0.5rem 0 0; height: auto; padding: 0.625rem 0.75rem; text-align: center;
+    }
+    .chevron { width: 0.75rem; height: 0.75rem; flex-shrink: 0; }
+    .nav-mobile .chevron { width: 1rem; height: 1rem; transition: transform 0.2s; }
+    .nav-mobile details[open] .chevron { transform: rotate(180deg); }
+
+    /* Hero — from src/components/sections/hero.tsx */
+    .hero {
+      position: relative; overflow: hidden;
+      border-bottom: 1px solid hsl(var(--primary) / 0.1);
+    }
+    .hero-bg {
+      pointer-events: none; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at top, hsl(var(--primary) / 0.08), transparent 60%);
+    }
+    .hero-inner { position: relative; z-index: 1; padding: 6rem 0; }
+    @media (min-width: 640px) { .hero-inner { padding: 8rem 0; } }
+    @media (min-width: 1024px) { .hero-inner { padding: 10rem 0; } }
+    .hero-copy { margin: 0 auto; max-width: 48rem; text-align: center; }
+    .hero h1 {
+      margin: 0;
+      font-family: var(--font-syne);
+      font-size: 2.25rem; font-weight: 700; letter-spacing: -0.025em; line-height: 1.15;
+      color: hsl(var(--foreground));
+    }
+    @media (min-width: 640px) { .hero h1 { font-size: 3rem; } }
+    @media (min-width: 1024px) { .hero h1 { font-size: 3.75rem; } }
+    .hero .lead {
+      margin: 2rem auto 0; max-width: 32rem;
+      font-size: 1rem; color: hsl(var(--muted-foreground));
+    }
+    @media (min-width: 640px) { .hero .lead { font-size: 1.125rem; } }
+    .hero-note {
+      margin: 1.5rem auto 0;
+      font-size: 0.875rem; color: hsl(var(--muted-foreground) / 0.8);
+    }
+    .actions {
+      margin-top: 2.5rem;
+      display: flex; flex-direction: column; align-items: center; gap: 1rem;
+    }
+    @media (min-width: 640px) {
+      .actions { flex-direction: row; justify-content: center; }
+    }
+    .btn-gold-lg {
+      display: inline-flex; align-items: center; justify-content: center;
+      height: 3rem; width: 100%; padding: 0 1.5rem; border-radius: 0.75rem;
+      font-size: 0.875rem; font-weight: 600; color: #000; text-decoration: none;
+      background-image: linear-gradient(to right, #f59e0b, #eab308);
+      transition: filter 0.15s;
+    }
+    .btn-gold-lg:hover { background-image: linear-gradient(to right, #fbbf24, #facc15); }
+    @media (min-width: 640px) { .btn-gold-lg { width: auto; } }
+    .btn-outline {
+      display: inline-flex; align-items: center; justify-content: center;
+      height: 3rem; width: 100%; padding: 0 1.5rem; border-radius: 0.75rem;
+      border: 1px solid hsl(var(--primary) / 0.2);
+      font-size: 0.875rem; font-weight: 600; color: hsl(var(--foreground));
+      text-decoration: none; transition: background 0.15s;
+    }
+    .btn-outline:hover { background: hsl(var(--secondary)); }
+    @media (min-width: 640px) { .btn-outline { width: auto; } }
+
+    /* Breadcrumb-ish */
+    .crumbs {
+      border-bottom: 1px solid hsl(var(--primary) / 0.1);
+      font-size: 0.8125rem; color: hsl(var(--muted-foreground));
+    }
+    .crumbs-inner { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; min-height: 2.75rem; }
+    .crumbs a { color: hsl(var(--muted-foreground)); text-decoration: none; }
+    .crumbs a:hover { color: hsl(var(--primary)); }
+    .crumbs span[aria-current] { color: hsl(var(--foreground)); }
+
+    /* Directory */
+    main { flex: 1; }
+    .directory { padding: 3rem 0 5rem; }
+    .directory h2 {
+      margin: 2.5rem 0 1rem;
+      font-family: var(--font-syne);
+      font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em;
+      color: hsl(var(--foreground));
+    }
+    .directory h2:first-child { margin-top: 0; }
+    .grid {
+      display: grid; gap: 1.5rem;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 640px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1024px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+    /* Cards — from src/components/offer-card-client.tsx */
+    article {
+      display: flex; flex-direction: column;
+      border-radius: 1rem;
+      border: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--card));
+      padding: 1.5rem;
+      transition: border-color 0.2s;
+    }
+    @media (min-width: 640px) { article { padding: 1.5rem; } }
+    article:hover { border-color: hsl(var(--primary) / 0.3); }
+    article a { text-decoration: none; display: flex; flex-direction: column; flex: 1; color: inherit; }
+    article h3 {
+      margin: 0;
+      font-family: var(--font-syne);
+      font-size: 1.125rem; font-weight: 700; letter-spacing: -0.02em;
+      color: hsl(var(--foreground));
+    }
+    article p {
+      margin: 0.75rem 0 0;
+      font-size: 0.875rem; color: hsl(var(--muted-foreground));
+      flex: 1;
+    }
+    .price {
+      display: inline-flex; align-items: center; align-self: flex-start;
+      margin-top: 1.25rem;
+      border-radius: 999px;
+      border: 1px solid hsl(var(--primary) / 0.3);
+      background: hsl(var(--primary) / 0.1);
+      padding: 0.25rem 0.75rem;
+      font-size: 0.75rem; font-weight: 600; color: hsl(var(--primary));
+    }
+
+    /* Footer — from src/components/footer.tsx */
+    .site-footer {
+      border-top: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--card));
+    }
+    .footer-inner { padding-top: 4rem; padding-bottom: 4rem; }
+    .footer-grid {
+      display: grid; gap: 2.5rem;
+    }
+    @media (min-width: 640px) { .footer-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1024px) { .footer-grid { grid-template-columns: repeat(5, 1fr); } }
+    .footer-brand { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; }
+    .footer-brand img { width: 2rem; height: 2rem; }
+    .footer-brand span {
+      font-family: var(--font-syne); font-size: 1.125rem; font-weight: 700; color: #fff;
+    }
+    .footer-blurb {
+      margin: 1rem 0 0; font-size: 0.875rem; line-height: 1.625;
+      color: hsl(var(--muted-foreground));
+    }
+    .footer-col h3 {
+      margin: 0 0 1rem;
+      font-family: var(--font-syne);
+      font-size: 0.875rem; font-weight: 600; letter-spacing: 0.05em;
+      text-transform: uppercase; color: hsl(var(--foreground));
+    }
+    .footer-col ul { list-style: none; margin: 0; padding: 0; }
+    .footer-col li + li { margin-top: 0.5rem; }
+    .footer-col a {
+      font-size: 0.875rem; color: hsl(var(--muted-foreground));
+      text-decoration: none; transition: color 0.15s;
+    }
+    .footer-col a:hover { color: hsl(var(--primary)); }
+    .footer-email {
+      margin: 0.5rem 0 0;
+      font-size: 0.75rem; color: hsl(var(--muted-foreground) / 0.6);
+    }
+    .footer-email a {
+      font-size: 0.75rem; color: hsl(var(--muted-foreground) / 0.6);
+      text-decoration: none;
+    }
+    .footer-email a:hover { color: hsl(var(--primary)); }
+    .footer-bottom {
+      margin-top: 3rem; padding-top: 2rem;
+      border-top: 1px solid hsl(var(--primary) / 0.1);
+      display: flex; flex-direction: column; align-items: flex-start; gap: 1rem;
+      font-size: 0.75rem; color: hsl(var(--muted-foreground) / 0.6);
+    }
+    @media (min-width: 640px) {
+      .footer-bottom { flex-direction: row; align-items: center; justify-content: space-between; }
+    }
+    .footer-bottom p { margin: 0; }
+    .footer-legal { display: flex; align-items: center; gap: 1rem; }
+    .footer-legal a { color: inherit; text-decoration: none; }
+    .footer-legal a:hover { color: hsl(var(--primary)); }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: hsl(var(--background)); }
+    ::-webkit-scrollbar-thumb { background: hsl(var(--primary) / 0.3); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: hsl(var(--primary) / 0.5); }
+
+    
+    .doc { padding: 1.5rem 0 5rem; max-width: 52rem; }
+    .doc h1 { font-family: var(--font-syne); font-size: clamp(1.9rem,4vw,2.8rem); line-height:1.1; letter-spacing:-.03em; margin: .75rem 0 1rem; }
+    .doc h2 { font-family: var(--font-syne); font-size: 1.5rem; letter-spacing:-.02em; margin: 2.75rem 0 .75rem; }
+    .doc h3 { font-family: var(--font-syne); font-size: 1.1rem; margin: 1.75rem 0 .5rem; }
+    .doc p, .doc li { color: hsl(0 0% 82%); line-height: 1.7; }
+    .doc a { color: hsl(var(--primary)); }
+    .doc ul, .doc ol { padding-left: 1.25rem; }
+    .doc code { background: hsl(var(--muted)); padding: .1rem .35rem; border-radius: .35rem; font-size: .88em; }
+    .doc pre { background: hsl(var(--card)); border: 1px solid hsl(var(--primary) / .12); border-radius: .75rem; padding: 1rem; overflow-x: auto; font-size: .82rem; }
+    .doc pre code { background: none; padding: 0; }
+    .doc table { width: 100%; border-collapse: collapse; display: block; overflow-x: auto; font-size: .9rem; margin: 1rem 0; }
+    .doc th, .doc td { border: 1px solid hsl(var(--primary) / .15); padding: .5rem .75rem; text-align: left; vertical-align: top; }
+    .doc th { background: hsl(var(--card)); }
+    .lede { font-size: 1.1rem; color: hsl(var(--muted-foreground)); }
+    .cta-row { display: flex; flex-wrap: wrap; gap: .75rem; margin: 1.5rem 0 .5rem; align-items: center; }
+    .related { margin-top: 3rem; }
+    .related .grid { margin-top: 1rem; }
+    article .guide { margin-top: .75rem; font-size: .8rem; color: hsl(var(--primary)); flex: 0; }
+@media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+  </style>
+
+  <script type="application/ld+json">[{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Email Validator: Bulk Email Checker & Disposable Detection", "applicationCategory": "DeveloperApplication", "operatingSystem": "Web", "url": "https://actors.techlion.dev/email-validator/", "description": "Bulk email validator and email checker: syntax, MX records, disposable, role and free-provider checks, typo fixes and a 0-100 score. No mailbox login.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD", "description": "$0.20 / 1,000 emails (pay per result on Apify)"}, "author": {"@type": "Organization", "name": "TechLion Dev", "url": "https://www.techlion.dev/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.techlion.dev/"}, {"@type": "ListItem", "position": 2, "name": "Apify Actors", "item": "https://actors.techlion.dev/"}, {"@type": "ListItem", "position": 3, "name": "Email Validator", "item": "https://actors.techlion.dev/email-validator/"}]}, {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Does it send emails or contact the mailbox?", "acceptedAnswer": {"@type": "Answer", "text": "No. Nothing is sent and no mail server is contacted. The Actor uses syntax rules, DNS (Domain Name System) lookups and reference lists. That is why it is fast, cheap and private."}}, {"@type": "Question", "name": "Can it tell whether a specific mailbox exists?", "acceptedAnswer": {"@type": "Answer", "text": "Not on domains that accept mail: confirming a single mailbox requires talking to the mail server, which many providers block or answer with \"accept everything\". This validator removes everything that is certain to bounce (bad syntax, missing or broken domains, no mail server) and flags low-quality addresses (disposable, role, typos)."}}, {"@type": "Question", "name": "How is the score calculated?", "acceptedAnswer": {"@type": "Answer", "text": "Valid addresses on a domain with MX records start at 80; SPF and DMARC records add 5 each. Role accounts lose 15 points; disposable addresses and likely typos are capped at 15–25. Invalid addresses score 0. Use the status for decisions and the score for sorting."}}, {"@type": "Question", "name": "Where does the disposable list come from?", "acceptedAnswer": {"@type": "Answer", "text": "From a community-maintained public list of more than 10,000 throwaway email domains, bundled with the Actor and refreshed with new versions."}}, {"@type": "Question", "name": "Is it legal to validate emails?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, checking the format of an address and public DNS records is standard practice. You remain responsible for how you collect and use email addresses (for example consent rules for marketing emails), so check the rules that apply to you."}}]}]</script>
+</head>
+<body>
+  <header class="site-header" id="site-header">
+    <nav class="nav max-w-content section-padding" aria-label="Primary">
+      <a class="brand" href="https://www.techlion.dev/">
+        <img src="https://cdn.techlion.dev/logos/png/icons/Color.png" alt="TechLion Dev" width="32" height="32">
+        <span class="brand-name">TechLion<span class="gold-gradient"> Dev</span></span>
+      </a>
+      <div class="nav-desktop">
+        <a class="nav-link" href="https://www.techlion.dev/">Home</a>
+        <div class="nav-dropdown">
+          <a class="nav-link" href="https://www.techlion.dev/services">Services
+            <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+          </a>
+          <div class="nav-dropdown-menu">
+            <a href="https://www.techlion.dev/services">All Services</a>
+            <a href="https://www.techlion.dev/services/web-design">Web Design</a>
+            <a href="https://www.techlion.dev/services/web-apps">Web Apps &amp; APIs</a>
+            <a href="https://www.techlion.dev/services/automations">Automations</a>
+            <a href="https://www.techlion.dev/services/ai-integration">AI Integration</a>
+            <a href="https://www.techlion.dev/services/ai-visibility">AI Visibility</a>
+            <a href="https://www.techlion.dev/locations">Locations</a>
+          </div>
+        </div>
+        <a class="nav-link" href="https://www.techlion.dev/projects">Projects</a>
+        <a class="nav-link" href="https://www.techlion.dev/blog">Blog</a>
+        <a class="nav-link" href="https://www.techlion.dev/pricing">Pricing</a>
+        <a class="nav-link" href="https://www.techlion.dev/productized-offer">Offers</a>
+        <div class="nav-dropdown">
+          <a class="nav-link" href="https://www.techlion.dev/about">Company
+            <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+          </a>
+          <div class="nav-dropdown-menu">
+            <a href="https://www.techlion.dev/about">Company</a>
+            <a href="https://www.techlion.dev/about">About</a>
+            <a href="https://www.techlion.dev/process">Process</a>
+            <a href="https://www.techlion.dev/faq">FAQ</a>
+            <a href="https://www.techlion.dev/contact">Contact</a>
+          </div>
+        </div>
+        <a class="btn-gold" href="https://www.techlion.dev/contact">Start Your Project</a>
+      </div>
+      <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav" id="menu-toggle">
+        <svg id="icon-menu" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16"></path><path d="M4 12h16"></path><path d="M4 19h16"></path></svg>
+        <svg id="icon-close" hidden xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+      </button>
+    </nav>
+    <div class="nav-mobile" id="mobile-nav">
+      <div class="nav-mobile-inner section-padding max-w-content">
+        <a href="https://www.techlion.dev/">Home</a>
+        <details>
+          <summary>Services <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary>
+          <div class="sub">
+            <a class="strong" href="https://www.techlion.dev/services">All Services</a>
+            <a href="https://www.techlion.dev/services/web-design">Web Design</a>
+            <a href="https://www.techlion.dev/services/web-apps">Web Apps &amp; APIs</a>
+            <a href="https://www.techlion.dev/services/automations">Automations</a>
+            <a href="https://www.techlion.dev/services/ai-integration">AI Integration</a>
+            <a href="https://www.techlion.dev/services/ai-visibility">AI Visibility</a>
+            <a href="https://www.techlion.dev/locations">Locations</a>
+          </div>
+        </details>
+        <a href="https://www.techlion.dev/projects">Projects</a>
+        <a href="https://www.techlion.dev/blog">Blog</a>
+        <a href="https://www.techlion.dev/pricing">Pricing</a>
+        <a href="https://www.techlion.dev/productized-offer">Offers</a>
+        <details>
+          <summary>Company <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary>
+          <div class="sub">
+            <a class="strong" href="https://www.techlion.dev/about">Company</a>
+            <a href="https://www.techlion.dev/about">About</a>
+            <a href="https://www.techlion.dev/process">Process</a>
+            <a href="https://www.techlion.dev/faq">FAQ</a>
+            <a href="https://www.techlion.dev/contact">Contact</a>
+          </div>
+        </details>
+        <a class="btn-gold" href="https://www.techlion.dev/contact">Start Your Project</a>
+      </div>
+    </div>
+  </header>
+<nav class="crumbs" aria-label="Breadcrumb"><div class="crumbs-inner max-w-content section-padding"><a href="https://www.techlion.dev/">Home</a><span aria-hidden="true">/</span><a href="/">Apify Actors</a><span aria-hidden="true">/</span><span aria-current="page">Email Validator</span></div></nav>
+<main>
+    <div class="max-w-content section-padding">
+<div class="doc">
+<h1>Email Validator: Bulk Email Checker &amp; Disposable Detection</h1>
+<p class="lede">Bulk email validator and email checker: syntax, MX records, disposable, role and free-provider checks, typo fixes and a 0-100 score. No mailbox login.</p>
+<div class="cta-row"><a class="btn-gold" href="https://apify.com/techliondev/email-validator">Run it on Apify</a><a class="btn-outline" href="/">All 23 TechLion Dev Actors</a><span class="price">$0.20 / 1,000 emails</span></div>
+<p class="lede" style="font-size:.9rem">A first test run is usually under a cent. No login to the source site. Pay only for the results you get. Built and maintained by <a href="https://www.techlion.dev/">TechLion Dev</a>.</p>
+<p><strong>Email Validator</strong> checks a list of email addresses and tells you which ones are <strong>valid, risky or invalid</strong>, with a plain-English <strong>reason</strong> and a <strong>0–100 score</strong> for each. It checks the <strong>syntax</strong>, whether the <strong>domain exists and has a mail server (MX records)</strong>, and flags <strong>disposable (throwaway) addresses</strong>, <strong>role accounts</strong> (info@, sales@), <strong>free providers</strong> (Gmail, Yahoo, Outlook) and <strong>typos</strong> such as <code>gmial.com</code> with a suggested fix.</p>
+<p>It is for marketers cleaning a mailing list, sales teams checking scraped leads, founders validating sign-ups, and developers and AI (artificial intelligence) agents that need a quick email check.</p>
+<p>No browser, no login, no proxy and no emails are sent: <strong>thousands of emails per minute</strong>, at <strong>$0.20 per 1,000 emails</strong>.</p>
+<ul>
+<li><strong>Clean a list before a campaign</strong> and protect your sender reputation by removing dead domains and typos.</li>
+<li><strong>Check leads</strong> from a contact or lead scraper (read them straight from an Apify dataset).</li>
+<li><strong>Block throwaway sign-ups</strong> from 10,000+ disposable email domains.</li>
+<li><strong>Separate personal and business emails</strong> with the free-provider flag, and shared inboxes with the role flag.</li>
+<li><strong>Fix typos</strong> with "did you mean" suggestions (<code>john@gmial.com</code> → <code>john@gmail.com</code>).</li>
+</ul><h3>What does it check?</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>✅ Status: valid, risky, invalid or unknown</td>
+<td>💬 Reason in plain English</td>
+</tr>
+<tr>
+<td>💯 Score from 0 to 100</td>
+<td>✍️ Syntax (well-formed address)</td>
+</tr>
+<tr>
+<td>🌐 Domain exists, has a mail server (MX, or A record fallback)</td>
+<td>📮 MX records and mail provider (Google, Microsoft, Zoho...)</td>
+</tr>
+<tr>
+<td>🗑️ Disposable / throwaway provider (10,000+ domains)</td>
+<td>👥 Role account (info@, sales@, support@, noreply@...)</td>
+</tr>
+<tr>
+<td>🆓 Free provider (Gmail, Yahoo, Outlook, iCloud...)</td>
+<td>🔤 Typo suggestion ("did you mean")</td>
+</tr>
+<tr>
+<td>➕ Plus tag (jane+news@...)</td>
+<td>🛡️ Domain SPF and DMARC records</td>
+</tr>
+</tbody>
+</table><h3>Statuses</h3>
+<table>
+<thead>
+<tr>
+<th>Status</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>valid</strong></td>
+<td>Well-formed address on a domain with a working mail server, not disposable, not a role account</td>
+</tr>
+<tr>
+<td><strong>risky</strong></td>
+<td>Deliverable domain but disposable, a role account, a likely typo, or DNS that fails to answer</td>
+</tr>
+<tr>
+<td><strong>invalid</strong></td>
+<td>Bad syntax, the domain does not exist, it has no mail server, or it refuses email (null MX)</td>
+</tr>
+<tr>
+<td><strong>unknown</strong></td>
+<td>The DNS lookup timed out; try again later</td>
+</tr>
+</tbody>
+</table><h3>Why this validator?</h3>
+<ul>
+<li><strong>Cheap:</strong> $0.20 per 1,000 emails, no start fee worth mentioning, and filtered-out emails are free.</li>
+<li><strong>Fast:</strong> DNS answers are cached per domain, so 10,000 emails on a few hundred domains finish in seconds.</li>
+<li><strong>Clear output:</strong> one row per email with status, reason, score and every individual check, ready for Excel or your CRM (customer relationship management) tool.</li>
+<li><strong>Works with your scrapers:</strong> give it a dataset ID and the name of the email field.</li>
+</ul>
+<p><strong>What it does not do:</strong> it does not log in to mail servers or send test emails, so it cannot confirm that a specific mailbox exists on a working domain (for example, <code>nobody123@gmail.com</code> is reported as valid because Gmail accepts mail). It removes the addresses that are certain to bounce or are low quality, which is most of the cleanup for scraped or user-entered lists.</p><h2>Input</h2><ul>
+<li><strong>Emails:</strong> one per line. <code>Jane Doe &lt;jane@company.com&gt;</code>, comma-separated lists and <code>mailto:</code> links are understood. Duplicates are removed.</li>
+<li><strong>Dataset ID</strong> and <strong>Dataset email field</strong> (optional): check the emails of another Apify run, for example a contact details scraper.</li>
+<li><strong>Keep only these results</strong> (optional): for example only <code>valid</code> for a clean list. Filtered-out emails are not charged.</li>
+</ul>
+<p>Example input:</p>
+<pre><code class="language-json">{
+    &quot;emails&quot;: [
+        &quot;support@apify.com&quot;,
+        &quot;john.doe@gmial.com&quot;,
+        &quot;test@mailinator.com&quot;,
+        &quot;Jane Doe &lt;jane.doe@outlook.com&gt;&quot;,
+        &quot;info@example.com&quot;
+    ],
+    &quot;keepStatuses&quot;: [&quot;valid&quot;, &quot;risky&quot;]
+}
+</code></pre><h2>Output</h2><p>You get one row per email, with the same columns on every row. The dataset has three views: <strong>Overview</strong>, <strong>Domain and DNS</strong> and <strong>Flags</strong>. A <code>RUN_SUMMARY</code> record has the counts by status.</p>
+<h3>Table view</h3>
+<table>
+<thead>
+<tr>
+<th>Email</th>
+<th>Status</th>
+<th>Score</th>
+<th>Reason</th>
+<th>Did you mean</th>
+<th>Provider</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>not-an-email</td>
+<td>invalid</td>
+<td>0</td>
+<td>Missing @</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>jane.doe@outlook.com</td>
+<td>valid</td>
+<td>90</td>
+<td>Valid address on a free email provider</td>
+<td></td>
+<td>Microsoft</td>
+</tr>
+<tr>
+<td>info@example.com</td>
+<td>invalid</td>
+<td>0</td>
+<td>Domain does not accept email (null MX)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>test@mailinator.com</td>
+<td>risky</td>
+<td>10</td>
+<td>Disposable (throwaway) email provider; Role account (shared…</td>
+<td></td>
+<td>Mailinator</td>
+</tr>
+<tr>
+<td>ceo@nonexistent-company-zz9.com</td>
+<td>invalid</td>
+<td>0</td>
+<td>Domain does not exist</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>maria@gmail.con</td>
+<td>invalid</td>
+<td>0</td>
+<td>Domain does not exist</td>
+<td>maria@gmail.com</td>
+<td></td>
+</tr>
+<tr>
+<td>support@apify.com</td>
+<td>risky</td>
+<td>75</td>
+<td>Role account (shared inbox)</td>
+<td></td>
+<td>Google</td>
+</tr>
+<tr>
+<td>alex+news@proton.me</td>
+<td>valid</td>
+<td>90</td>
+<td>Valid address on a free email provider</td>
+<td></td>
+<td>Proton Mail</td>
+</tr>
+<tr>
+<td>sales@stripe.com</td>
+<td>risky</td>
+<td>75</td>
+<td>Role account (shared inbox)</td>
+<td></td>
+<td>Google</td>
+</tr>
+<tr>
+<td>john.doe@gmial.com</td>
+<td>invalid</td>
+<td>0</td>
+<td>The domain's DNS servers fail to answer (SERVFAIL), so mail…</td>
+<td>john.doe@gmail.com</td>
+<td></td>
+</tr>
+</tbody>
+</table><h2>How to use it</h2><ol>
+<li>Click <strong>Try for free</strong> (an Apify account is free to create).</li>
+<li>Paste your emails, or enter the dataset ID of a scraper run.</li>
+<li>Optionally choose which statuses to keep.</li>
+<li>Click <strong>Start</strong>. The sample list finishes in about 2 seconds.</li>
+<li>Download the results from the <strong>Output</strong> tab as Excel, CSV (comma-separated values) or JSON (JavaScript Object Notation), or connect them to another tool.</li>
+</ol><h2>How much does it cost?</h2><p>This Actor uses <strong>pay-per-event pricing</strong>: you pay only for the emails you get back, never for the computer time behind them.</p>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Price (free plan)</th>
+<th>When it is charged</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actor start</td>
+<td>$0.00005</td>
+<td>Once per run</td>
+</tr>
+<tr>
+<td><strong>Email checked</strong></td>
+<td><strong>$0.0002</strong> ($0.20 per 1,000 emails)</td>
+<td>For each email saved to the dataset, after your status filter</td>
+</tr>
+</tbody>
+</table>
+<p>Paid Apify plans get lower prices automatically (for example $0.16 per 1,000 emails on the Silver plan). See the <strong>Pricing</strong> tab for every plan.</p>
+<p><strong>Worked examples</strong></p>
+<ul>
+<li><strong>Sample run (5 emails):</strong> <strong>about $0.001</strong>.</li>
+<li><strong>10,000 scraped leads:</strong> <strong>about $2.00</strong>.</li>
+<li><strong>Daily check of 200 new sign-ups:</strong> 30 runs × 200 × $0.0002 = <strong>about $1.20 per month</strong>.</li>
+</ul><h2>Use cases</h2><ul>
+<li><strong>Email marketing:</strong> remove dead domains, typos and throwaway addresses before you send, to cut bounces.</li>
+<li><strong>Lead generation:</strong> score and filter emails found by contact and lead scrapers; keep business emails, drop role inboxes.</li>
+<li><strong>Sign-up quality:</strong> spot disposable and mistyped addresses in your user list.</li>
+<li><strong>CRM hygiene:</strong> add a status and score column to every contact.</li>
+<li><strong>AI agents and automations:</strong> a fast, structured email check you can call from any workflow.</li>
+</ul><h2>Frequently asked questions</h2><h3>Does it send emails or contact the mailbox?</h3><p>No. Nothing is sent and no mail server is contacted. The Actor uses syntax rules, DNS (Domain Name System) lookups and reference lists. That is why it is fast, cheap and private.</p><h3>Can it tell whether a specific mailbox exists?</h3><p>Not on domains that accept mail: confirming a single mailbox requires talking to the mail server, which many providers block or answer with "accept everything". This validator removes everything that is certain to bounce (bad syntax, missing or broken domains, no mail server) and flags low-quality addresses (disposable, role, typos).</p><h3>How is the score calculated?</h3><p>Valid addresses on a domain with MX records start at 80; SPF and DMARC records add 5 each. Role accounts lose 15 points; disposable addresses and likely typos are capped at 15–25. Invalid addresses score 0. Use the status for decisions and the score for sorting.</p><h3>Where does the disposable list come from?</h3><p>From a community-maintained public list of more than 10,000 throwaway email domains, bundled with the Actor and refreshed with new versions.</p><h3>Is it legal to validate emails?</h3><p>Yes, checking the format of an address and public DNS records is standard practice. You remain responsible for how you collect and use email addresses (for example consent rules for marketing emails), so check the rules that apply to you.</p>
+<div class="cta-row"><a class="btn-gold" href="https://apify.com/techliondev/email-validator">Try Email Validator on Apify</a></div>
+<section class="related"><h2>More TechLion Dev Actors</h2><div class="grid"><article><a href="/yellow-pages-scraper/"><h3>Yellow Pages Scraper</h3><p>US business leads, phones, addresses and optional emails.</p><span class="price">$1.00 / 1,000 businesses</span></a></article><article><a href="/bbb-business-scraper/"><h3>BBB Scraper</h3><p>Better Business Bureau listings, ratings and accreditation.</p><span class="price">$0.80 / 1,000 businesses</span></a></article><article><a href="/contractor-license-scraper/"><h3>Contractor License Scraper</h3><p>Official license data for Washington, Oregon, Texas and New York.</p><span class="price">$1.00 / 1,000 licenses</span></a></article><article><a href="/website-contact-scraper/"><h3>Website Email &amp; Contact Scraper</h3><p>Emails, phones and social links from any website.</p><span class="price">$0.50 / 1,000 pages</span></a></article></div></section>
+<p>Need a custom data pipeline or integration? <a href="https://www.techlion.dev/contact">Talk to TechLion Dev</a>.</p>
+</div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner max-w-content section-padding">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <a class="footer-brand" href="https://www.techlion.dev/">
+            <img src="https://cdn.techlion.dev/logos/png/icons/Color.png" alt="TechLion Dev" width="32" height="32">
+            <span>TechLion<span class="gold-gradient"> Dev</span></span>
+          </a>
+          <p class="footer-blurb">Web development for small and medium businesses nationwide. Built by Jeremiah Samuel.</p>
+        </div>
+        <div class="footer-col">
+          <h3>Services</h3>
+          <ul>
+            <li><a href="https://www.techlion.dev/services/web-design">Websites</a></li>
+            <li><a href="https://www.techlion.dev/services/web-apps">Web Apps &amp; APIs</a></li>
+            <li><a href="https://www.techlion.dev/services/automations">Automations</a></li>
+            <li><a href="https://www.techlion.dev/services/ai-integration">AI Integration</a></li>
+            <li><a href="https://www.techlion.dev/services/ai-visibility">AI Visibility</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Company</h3>
+          <ul>
+            <li><a href="https://www.techlion.dev/about">About</a></li>
+            <li><a href="https://www.techlion.dev/process">Process</a></li>
+            <li><a href="https://www.techlion.dev/projects">Projects</a></li>
+            <li><a href="https://www.techlion.dev/pricing">Pricing</a></li>
+            <li><a href="https://www.techlion.dev/faq">FAQ</a></li>
+            <li><a href="https://www.techlion.dev/ai-instructions">AI Instructions</a></li>
+            <li><a href="https://www.techlion.dev/contact">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Locations</h3>
+          <ul>
+            <li><a href="https://www.techlion.dev/locations/asbury-park">Asbury Park</a></li>
+            <li><a href="https://www.techlion.dev/locations/brick">Brick</a></li>
+            <li><a href="https://www.techlion.dev/locations/colts-neck">Colts Neck</a></li>
+            <li><a href="https://www.techlion.dev/locations/edison">Edison</a></li>
+            <li><a href="https://www.techlion.dev/locations/freehold">Freehold</a></li>
+            <li><a href="https://www.techlion.dev/locations/holmdel">Holmdel</a></li>
+            <li><a href="https://www.techlion.dev/locations/howell">Howell</a></li>
+            <li><a href="https://www.techlion.dev/locations/manalapan">Manalapan</a></li>
+            <li><a href="https://www.techlion.dev/locations/marlboro">Marlboro</a></li>
+            <li><a href="https://www.techlion.dev/locations/middletown">Middletown</a></li>
+            <li><a href="https://www.techlion.dev/locations/monmouth-county">Monmouth County</a></li>
+            <li><a href="https://www.techlion.dev/locations/old-bridge">Old Bridge</a></li>
+            <li><a href="https://www.techlion.dev/locations/red-bank">Red Bank</a></li>
+            <li><a href="https://www.techlion.dev/locations/toms-river">Toms River</a></li>
+            <li><a href="https://www.techlion.dev/locations/woodbridge">Woodbridge</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Connect</h3>
+          <ul>
+            <li><a href="https://github.com/TechLionDev" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+            <li><a href="https://linkedin.com/in/jeremiah-samuel-4790b138a/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+            <li><a href="https://x.com/jeremiahisdev" target="_blank" rel="noopener noreferrer">X / Twitter</a></li>
+          </ul>
+          <p class="footer-email"><a href="mailto:jeremiahis@techlion.dev">jeremiahis@techlion.dev</a></p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 TechLion Dev. All rights reserved.</p>
+        <div class="footer-legal">
+          <a href="https://www.techlion.dev/privacy">Privacy</a>
+          <a href="https://www.techlion.dev/terms">Terms</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script>
+    (function () {
+      var header = document.getElementById('site-header');
+      var btn = document.getElementById('menu-toggle');
+      var iconMenu = document.getElementById('icon-menu');
+      var iconClose = document.getElementById('icon-close');
+      if (!header || !btn) return;
+      btn.addEventListener('click', function () {
+        var open = header.classList.toggle('is-open');
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+        if (iconMenu) iconMenu.hidden = open;
+        if (iconClose) iconClose.hidden = !open;
+      });
+    })();
+  </script>
+</body>
+</html>
