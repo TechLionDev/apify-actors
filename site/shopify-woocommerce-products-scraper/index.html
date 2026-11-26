@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shopify &amp; WooCommerce Scraper: Products, Prices &amp; Stock | TechLion Dev</title>
+  <meta name="description" content="Shopify scraper and WooCommerce products scraper: prices, discounts, variants, stock, SKUs and images. Free filters and price-change alerts.">
+  <meta name="theme-color" content="#0a0a0a">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://actors.techlion.dev/shopify-woocommerce-products-scraper/">
+  <link rel="preconnect" href="https://cdn.techlion.dev" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.techlion.dev">
+  <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-title" content="TLD">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="TechLion Dev">
+  <meta property="og:title" content="Shopify &amp; WooCommerce Scraper: Products, Prices &amp; Stock | TechLion Dev">
+  <meta property="og:description" content="Shopify scraper and WooCommerce products scraper: prices, discounts, variants, stock, SKUs and images. Free filters and price-change alerts.">
+  <meta property="og:url" content="https://actors.techlion.dev/shopify-woocommerce-products-scraper/">
+  <meta property="og:image" content="https://actors.techlion.dev/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Shopify &amp; WooCommerce Scraper: Products, Prices &amp; Stock | TechLion Dev">
+  <meta name="twitter:description" content="Shopify scraper and WooCommerce products scraper: prices, discounts, variants, stock, SKUs and images. Free filters and price-change alerts.">
+  <meta name="twitter:image" content="https://actors.techlion.dev/og.png">
+  <meta name="twitter:creator" content="@jeremiahisdev">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --background: 0 0% 4%;
+      --foreground: 0 0% 100%;
+      --card: 0 0% 6%;
+      --card-foreground: 0 0% 100%;
+      --primary: 42 54% 54%;
+      --primary-foreground: 0 0% 4%;
+      --secondary: 0 0% 10%;
+      --secondary-foreground: 0 0% 100%;
+      --muted: 0 0% 12%;
+      --muted-foreground: 0 0% 65%;
+      --accent: 42 54% 54%;
+      --accent-foreground: 0 0% 4%;
+      --border: 42 54% 54% / 0.15;
+      --ring: 42 54% 54%;
+      --radius: 0.75rem;
+      --font-syne: "Syne", ui-sans-serif, system-ui, sans-serif;
+      --font-outfit: "Outfit", ui-sans-serif, system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; border-color: hsl(var(--border)); }
+    html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: hsl(var(--background));
+      color: hsl(var(--foreground));
+      font-family: var(--font-outfit);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    ::selection { background: hsl(var(--primary) / 0.3); color: hsl(var(--foreground)); }
+    a { color: inherit; }
+    img { display: block; max-width: 100%; }
+    .font-heading { font-family: var(--font-syne); }
+    .gold-gradient {
+      background: linear-gradient(135deg, #c9a84c 0%, #e8c85a 50%, #c9a84c 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .section-padding { padding-left: 1rem; padding-right: 1rem; }
+    @media (min-width: 640px) { .section-padding { padding-left: 1.5rem; padding-right: 1.5rem; } }
+    @media (min-width: 1024px) { .section-padding { padding-left: 2rem; padding-right: 2rem; } }
+    .max-w-content { margin-left: auto; margin-right: auto; max-width: 80rem; }
+
+    /* Header / nav — from src/components/navbar.tsx */
+    .site-header {
+      position: sticky; top: 0; z-index: 50; width: 100%;
+      border-bottom: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--background) / 0.9);
+    }
+    @supports (backdrop-filter: blur(24px)) or (-webkit-backdrop-filter: blur(24px)) {
+      .site-header {
+        background: hsl(var(--background) / 0.8);
+        -webkit-backdrop-filter: blur(24px);
+        backdrop-filter: blur(24px);
+      }
+    }
+    .nav {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 4rem;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 0.5rem;
+      text-decoration: none; transition: opacity 0.15s;
+    }
+    .brand:hover { opacity: 0.8; }
+    .brand img { width: 2rem; height: 2rem; }
+    .brand-name {
+      font-family: var(--font-syne);
+      font-size: 1.125rem; font-weight: 700; letter-spacing: -0.025em;
+      white-space: nowrap; color: #fff;
+    }
+    .nav-desktop { display: none; align-items: center; gap: 0.25rem; }
+    @media (min-width: 768px) { .nav-desktop { display: flex; } }
+    .nav-link {
+      position: relative; display: inline-flex; align-items: center; gap: 0.25rem;
+      border-radius: 0.5rem; padding: 0.375rem 0.5rem;
+      font-size: 0.75rem; font-weight: 500; text-decoration: none;
+      color: hsl(var(--muted-foreground)); transition: color 0.15s;
+    }
+    .nav-link:hover { color: hsl(var(--foreground)); }
+    @media (min-width: 1024px) {
+      .nav-link { padding: 0.5rem 0.75rem; font-size: 0.875rem; }
+    }
+    .nav-dropdown { position: relative; }
+    .nav-dropdown-menu {
+      position: absolute; left: 0; top: 100%; z-index: 50;
+      margin-top: 0.25rem; width: 14rem; padding: 0.5rem;
+      border-radius: 0.75rem; border: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--card)); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+      opacity: 0; visibility: hidden; transition: opacity 0.15s, visibility 0.15s;
+    }
+    .nav-dropdown:hover .nav-dropdown-menu,
+    .nav-dropdown:focus-within .nav-dropdown-menu {
+      opacity: 1; visibility: visible;
+    }
+    .nav-dropdown-menu a {
+      display: block; border-radius: 0.5rem; padding: 0.5rem 0.75rem;
+      font-size: 0.875rem; text-decoration: none;
+      color: hsl(var(--muted-foreground));
+    }
+    .nav-dropdown-menu a:first-child {
+      font-weight: 500; color: hsl(var(--foreground));
+    }
+    .nav-dropdown-menu a:hover { background: hsl(var(--primary) / 0.05); color: hsl(var(--foreground)); }
+    .btn-gold {
+      display: inline-flex; align-items: center; justify-content: center;
+      flex-shrink: 0; height: 2.5rem; margin-left: 0.5rem; padding: 0 1.25rem;
+      border-radius: 0.75rem; white-space: nowrap; text-decoration: none;
+      font-size: 0.875rem; font-weight: 600; color: #000;
+      background-image: linear-gradient(to right, #f59e0b, #eab308);
+      transition: filter 0.15s;
+    }
+    .btn-gold:hover { background-image: linear-gradient(to right, #fbbf24, #facc15); }
+    .menu-toggle {
+      display: flex; align-items: center; justify-content: center;
+      border: 0; background: transparent; border-radius: 0.5rem; padding: 0.5rem;
+      color: hsl(var(--muted-foreground)); cursor: pointer;
+    }
+    .menu-toggle:hover { color: hsl(var(--foreground)); }
+    .menu-toggle #icon-close { display: none; }
+    .site-header.is-open .menu-toggle #icon-menu { display: none; }
+    .site-header.is-open .menu-toggle #icon-close { display: block; }
+    @media (min-width: 768px) { .menu-toggle { display: none; } }
+    .nav-mobile {
+      display: none;
+      border-top: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--background) / 0.95);
+    }
+    @supports (backdrop-filter: blur(24px)) or (-webkit-backdrop-filter: blur(24px)) {
+      .nav-mobile {
+        background: hsl(var(--background) / 0.85);
+        -webkit-backdrop-filter: blur(24px);
+        backdrop-filter: blur(24px);
+      }
+    }
+    .site-header.is-open .nav-mobile { display: block; }
+    @media (min-width: 768px) { .site-header.is-open .nav-mobile { display: none; } }
+    .nav-mobile-inner { padding-top: 1rem; padding-bottom: 1rem; }
+    .nav-mobile a, .nav-mobile summary {
+      display: block; border-radius: 0.5rem; padding: 0.5rem 0.75rem;
+      font-size: 0.875rem; font-weight: 500; color: hsl(var(--muted-foreground));
+      text-decoration: none; list-style: none; cursor: pointer;
+    }
+    .nav-mobile summary { display: flex; align-items: center; justify-content: space-between; }
+    .nav-mobile summary::-webkit-details-marker { display: none; }
+    .nav-mobile a:hover, .nav-mobile summary:hover { color: hsl(var(--foreground)); }
+    .nav-mobile details[open] > summary { color: hsl(var(--foreground)); }
+    .nav-mobile .sub { margin-left: 1rem; }
+    .nav-mobile .sub a { font-weight: 500; }
+    .nav-mobile .sub a.strong { font-weight: 600; color: hsl(var(--foreground)); }
+    .nav-mobile .btn-gold {
+      display: block; margin: 0.5rem 0 0; height: auto; padding: 0.625rem 0.75rem; text-align: center;
+    }
+    .chevron { width: 0.75rem; height: 0.75rem; flex-shrink: 0; }
+    .nav-mobile .chevron { width: 1rem; height: 1rem; transition: transform 0.2s; }
+    .nav-mobile details[open] .chevron { transform: rotate(180deg); }
+
+    /* Hero — from src/components/sections/hero.tsx */
+    .hero {
+      position: relative; overflow: hidden;
+      border-bottom: 1px solid hsl(var(--primary) / 0.1);
+    }
+    .hero-bg {
+      pointer-events: none; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at top, hsl(var(--primary) / 0.08), transparent 60%);
+    }
+    .hero-inner { position: relative; z-index: 1; padding: 6rem 0; }
+    @media (min-width: 640px) { .hero-inner { padding: 8rem 0; } }
+    @media (min-width: 1024px) { .hero-inner { padding: 10rem 0; } }
+    .hero-copy { margin: 0 auto; max-width: 48rem; text-align: center; }
+    .hero h1 {
+      margin: 0;
+      font-family: var(--font-syne);
+      font-size: 2.25rem; font-weight: 700; letter-spacing: -0.025em; line-height: 1.15;
+      color: hsl(var(--foreground));
+    }
+    @media (min-width: 640px) { .hero h1 { font-size: 3rem; } }
+    @media (min-width: 1024px) { .hero h1 { font-size: 3.75rem; } }
+    .hero .lead {
+      margin: 2rem auto 0; max-width: 32rem;
+      font-size: 1rem; color: hsl(var(--muted-foreground));
+    }
+    @media (min-width: 640px) { .hero .lead { font-size: 1.125rem; } }
+    .hero-note {
+      margin: 1.5rem auto 0;
+      font-size: 0.875rem; color: hsl(var(--muted-foreground) / 0.8);
+    }
+    .actions {
+      margin-top: 2.5rem;
+      display: flex; flex-direction: column; align-items: center; gap: 1rem;
+    }
+    @media (min-width: 640px) {
+      .actions { flex-direction: row; justify-content: center; }
+    }
+    .btn-gold-lg {
+      display: inline-flex; align-items: center; justify-content: center;
+      height: 3rem; width: 100%; padding: 0 1.5rem; border-radius: 0.75rem;
+      font-size: 0.875rem; font-weight: 600; color: #000; text-decoration: none;
+      background-image: linear-gradient(to right, #f59e0b, #eab308);
+      transition: filter 0.15s;
+    }
+    .btn-gold-lg:hover { background-image: linear-gradient(to right, #fbbf24, #facc15); }
+    @media (min-width: 640px) { .btn-gold-lg { width: auto; } }
+    .btn-outline {
+      display: inline-flex; align-items: center; justify-content: center;
+      height: 3rem; width: 100%; padding: 0 1.5rem; border-radius: 0.75rem;
+      border: 1px solid hsl(var(--primary) / 0.2);
+      font-size: 0.875rem; font-weight: 600; color: hsl(var(--foreground));
+      text-decoration: none; transition: background 0.15s;
+    }
+    .btn-outline:hover { background: hsl(var(--secondary)); }
+    @media (min-width: 640px) { .btn-outline { width: auto; } }
+
+    /* Breadcrumb-ish */
+    .crumbs {
+      border-bottom: 1px solid hsl(var(--primary) / 0.1);
+      font-size: 0.8125rem; color: hsl(var(--muted-foreground));
+    }
+    .crumbs-inner { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; min-height: 2.75rem; }
+    .crumbs a { color: hsl(var(--muted-foreground)); text-decoration: none; }
+    .crumbs a:hover { color: hsl(var(--primary)); }
+    .crumbs span[aria-current] { color: hsl(var(--foreground)); }
+
+    /* Directory */
+    main { flex: 1; }
+    .directory { padding: 3rem 0 5rem; }
+    .directory h2 {
+      margin: 2.5rem 0 1rem;
+      font-family: var(--font-syne);
+      font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em;
+      color: hsl(var(--foreground));
+    }
+    .directory h2:first-child { margin-top: 0; }
+    .grid {
+      display: grid; gap: 1.5rem;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 640px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1024px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+    /* Cards — from src/components/offer-card-client.tsx */
+    article {
+      display: flex; flex-direction: column;
+      border-radius: 1rem;
+      border: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--card));
+      padding: 1.5rem;
+      transition: border-color 0.2s;
+    }
+    @media (min-width: 640px) { article { padding: 1.5rem; } }
+    article:hover { border-color: hsl(var(--primary) / 0.3); }
+    article a { text-decoration: none; display: flex; flex-direction: column; flex: 1; color: inherit; }
+    article h3 {
+      margin: 0;
+      font-family: var(--font-syne);
+      font-size: 1.125rem; font-weight: 700; letter-spacing: -0.02em;
+      color: hsl(var(--foreground));
+    }
+    article p {
+      margin: 0.75rem 0 0;
+      font-size: 0.875rem; color: hsl(var(--muted-foreground));
+      flex: 1;
+    }
+    .price {
+      display: inline-flex; align-items: center; align-self: flex-start;
+      margin-top: 1.25rem;
+      border-radius: 999px;
+      border: 1px solid hsl(var(--primary) / 0.3);
+      background: hsl(var(--primary) / 0.1);
+      padding: 0.25rem 0.75rem;
+      font-size: 0.75rem; font-weight: 600; color: hsl(var(--primary));
+    }
+
+    /* Footer — from src/components/footer.tsx */
+    .site-footer {
+      border-top: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--card));
+    }
+    .footer-inner { padding-top: 4rem; padding-bottom: 4rem; }
+    .footer-grid {
+      display: grid; gap: 2.5rem;
+    }
+    @media (min-width: 640px) { .footer-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1024px) { .footer-grid { grid-template-columns: repeat(5, 1fr); } }
+    .footer-brand { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; }
+    .footer-brand img { width: 2rem; height: 2rem; }
+    .footer-brand span {
+      font-family: var(--font-syne); font-size: 1.125rem; font-weight: 700; color: #fff;
+    }
+    .footer-blurb {
+      margin: 1rem 0 0; font-size: 0.875rem; line-height: 1.625;
+      color: hsl(var(--muted-foreground));
+    }
+    .footer-col h3 {
+      margin: 0 0 1rem;
+      font-family: var(--font-syne);
+      font-size: 0.875rem; font-weight: 600; letter-spacing: 0.05em;
+      text-transform: uppercase; color: hsl(var(--foreground));
+    }
+    .footer-col ul { list-style: none; margin: 0; padding: 0; }
+    .footer-col li + li { margin-top: 0.5rem; }
+    .footer-col a {
+      font-size: 0.875rem; color: hsl(var(--muted-foreground));
+      text-decoration: none; transition: color 0.15s;
+    }
+    .footer-col a:hover { color: hsl(var(--primary)); }
+    .footer-email {
+      margin: 0.5rem 0 0;
+      font-size: 0.75rem; color: hsl(var(--muted-foreground) / 0.6);
+    }
+    .footer-email a {
+      font-size: 0.75rem; color: hsl(var(--muted-foreground) / 0.6);
+      text-decoration: none;
+    }
+    .footer-email a:hover { color: hsl(var(--primary)); }
+    .footer-bottom {
+      margin-top: 3rem; padding-top: 2rem;
+      border-top: 1px solid hsl(var(--primary) / 0.1);
+      display: flex; flex-direction: column; align-items: flex-start; gap: 1rem;
+      font-size: 0.75rem; color: hsl(var(--muted-foreground) / 0.6);
+    }
+    @media (min-width: 640px) {
+      .footer-bottom { flex-direction: row; align-items: center; justify-content: space-between; }
+    }
+    .footer-bottom p { margin: 0; }
+    .footer-legal { display: flex; align-items: center; gap: 1rem; }
+    .footer-legal a { color: inherit; text-decoration: none; }
+    .footer-legal a:hover { color: hsl(var(--primary)); }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: hsl(var(--background)); }
+    ::-webkit-scrollbar-thumb { background: hsl(var(--primary) / 0.3); border-radius: 4px; }
+    ::-webkit-scrollbar-
+    .doc { padding: 1.5rem 0 5rem; max-width: 52rem; }
+    .doc h1 { font-family: var(--font-syne); font-size: clamp(1.9rem,4vw,2.8rem); line-height:1.1; letter-spacing:-.03em; margin: .75rem 0 1rem; }
+    .doc h2 { font-family: var(--font-syne); font-size: 1.5rem; letter-spacing:-.02em; margin: 2.75rem 0 .75rem; }
+    .doc h3 { font-family: var(--font-syne); font-size: 1.1rem; margin: 1.75rem 0 .5rem; }
+    .doc p, .doc li { color: hsl(0 0% 82%); line-height: 1.7; }
+    .doc a { color: hsl(var(--primary)); }
+    .doc ul, .doc ol { padding-left: 1.25rem; }
+    .doc code { background: hsl(var(--muted)); padding: .1rem .35rem; border-radius: .35rem; font-size: .88em; }
+    .doc pre { background: hsl(var(--card)); border: 1px solid hsl(var(--primary) / .12); border-radius: .75rem; padding: 1rem; overflow-x: auto; font-size: .82rem; }
+    .doc pre code { background: none; padding: 0; }
+    .doc table { width: 100%; border-collapse: collapse; display: block; overflow-x: auto; font-size: .9rem; margin: 1rem 0; }
+    .doc th, .doc td { border: 1px solid hsl(var(--primary) / .15); padding: .5rem .75rem; text-align: left; vertical-align: top; }
+    .doc th { background: hsl(var(--card)); }
+    .lede { font-size: 1.1rem; color: hsl(var(--muted-foreground)); }
+    .cta-row { display: flex; flex-wrap: wrap; gap: .75rem; margin: 1.5rem 0 .5rem; align-items: center; }
+    .related { margin-top: 3rem; }
+    .related .grid { margin-top: 1rem; }
+    article .guide { margin-top: .75rem; font-size: .8rem; color: hsl(var(--primary)); flex: 0; }
+thumb:hover { background: hsl(var(--primary) / 0.5); }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+  </style>
+
+  <script type="application/ld+json">[{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Shopify & WooCommerce Scraper: Products, Prices & Stock", "applicationCategory": "DeveloperApplication", "operatingSystem": "Web", "url": "https://actors.techlion.dev/shopify-woocommerce-products-scraper/", "description": "Shopify scraper and WooCommerce products scraper: prices, discounts, variants, stock, SKUs and images. Free filters and price-change alerts.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD", "description": "$0.50 / 1,000 products (pay per result on Apify)"}, "author": {"@type": "Organization", "name": "TechLion Dev", "url": "https://www.techlion.dev/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.techlion.dev/"}, {"@type": "ListItem", "position": 2, "name": "Apify Actors", "item": "https://actors.techlion.dev/"}, {"@type": "ListItem", "position": 3, "name": "Shopify & WooCommerce Products", "item": "https://actors.techlion.dev/shopify-woocommerce-products-scraper/"}]}, {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I know if a store uses Shopify or WooCommerce?", "acceptedAnswer": {"@type": "Answer", "text": "You don't need to. Paste the address and the Actor checks both. The platform column and the run summary tell you which one it found. If a store uses neither (for example Magento or a custom shop), the run summary says so and you are not charged for it."}}, {"@type": "Question", "name": "Can I scrape a whole Shopify store?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Set Maximum products per store high enough (for example 100,000) and the Actor reads the store's full public product list, 250 products per request."}}, {"@type": "Question", "name": "Is there a Shopify products API or WooCommerce products API I can call?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, through this Actor. Every run is available through the Apify API (see the code examples above), so you get one products API for both platforms, with the same columns for every store."}}, {"@type": "Question", "name": "Can I get the exact number of items in stock?", "acceptedAnswer": {"@type": "Answer", "text": "Stores don't publish exact stock counts in their public feeds. You get inStock for every product and variant, variantsInStock on Shopify, and lowStockRemaining on WooCommerce stores that show \"only X left\"."}}, {"@type": "Question", "name": "Why are some columns empty?", "acceptedAnswer": {"@type": "Answer", "text": "Each platform publishes slightly different data. Brands, product types, weights and dates come from Shopify only; ratings, reviews, categories and low-stock counts come from WooCommerce only. The columns are always there so your spreadsheet lines up."}}, {"@type": "Question", "name": "A store failed. Why?", "acceptedAnswer": {"@type": "Answer", "text": "The store may have turned off its public product feed, blocked automated requests, or run on another platform. The exact reason is in RUN_SUMMARY. Failed stores are not charged, and the rest of the run still finishes."}}, {"@type": "Question", "name": "Is it legal to scrape Shopify and WooCommerce stores?", "acceptedAnswer": {"@type": "Answer", "text": "The Actor reads only public product information that stores publish so shoppers and search engines can see it. It does not log in, buy anything or collect personal data. You are still responsible for how you use the data, so check the rules that apply to you."}}]}]</script>
+</head>
+<body>
+  <header class="site-header" id="site-header">
+    <nav class="nav max-w-content section-padding" aria-label="Primary">
+      <a class="brand" href="https://www.techlion.dev/">
+        <img src="https://cdn.techlion.dev/logos/png/icons/Color.png" alt="TechLion Dev" width="32" height="32">
+        <span class="brand-name">TechLion<span class="gold-gradient"> Dev</span></span>
+      </a>
+      <div class="nav-desktop">
+        <a class="nav-link" href="https://www.techlion.dev/">Home</a>
+        <div class="nav-dropdown">
+          <a class="nav-link" href="https://www.techlion.dev/services">Services
+            <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+          </a>
+          <div class="nav-dropdown-menu">
+            <a href="https://www.techlion.dev/services">All Services</a>
+            <a href="https://www.techlion.dev/services/web-design">Web Design</a>
+            <a href="https://www.techlion.dev/services/web-apps">Web Apps &amp; APIs</a>
+            <a href="https://www.techlion.dev/services/automations">Automations</a>
+            <a href="https://www.techlion.dev/services/ai-integration">AI Integration</a>
+            <a href="https://www.techlion.dev/services/ai-visibility">AI Visibility</a>
+            <a href="https://www.techlion.dev/locations">Locations</a>
+          </div>
+        </div>
+        <a class="nav-link" href="https://www.techlion.dev/projects">Projects</a>
+        <a class="nav-link" href="https://www.techlion.dev/blog">Blog</a>
+        <a class="nav-link" href="https://www.techlion.dev/pricing">Pricing</a>
+        <a class="nav-link" href="https://www.techlion.dev/productized-offer">Offers</a>
+        <div class="nav-dropdown">
+          <a class="nav-link" href="https://www.techlion.dev/about">Company
+            <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+          </a>
+          <div class="nav-dropdown-menu">
+            <a href="https://www.techlion.dev/about">Company</a>
+            <a href="https://www.techlion.dev/about">About</a>
+            <a href="https://www.techlion.dev/process">Process</a>
+            <a href="https://www.techlion.dev/faq">FAQ</a>
+            <a href="https://www.techlion.dev/contact">Contact</a>
+          </div>
+        </div>
+        <a class="btn-gold" href="https://www.techlion.dev/contact">Start Your Project</a>
+      </div>
+      <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav" id="menu-toggle">
+        <svg id="icon-menu" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16"></path><path d="M4 12h16"></path><path d="M4 19h16"></path></svg>
+        <svg id="icon-close" hidden xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+      </button>
+    </nav>
+    <div class="nav-mobile" id="mobile-nav">
+      <div class="nav-mobile-inner section-padding max-w-content">
+        <a href="https://www.techlion.dev/">Home</a>
+        <details>
+          <summary>Services <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary>
+          <div class="sub">
+            <a class="strong" href="https://www.techlion.dev/services">All Services</a>
+            <a href="https://www.techlion.dev/services/web-design">Web Design</a>
+            <a href="https://www.techlion.dev/services/web-apps">Web Apps &amp; APIs</a>
+            <a href="https://www.techlion.dev/services/automations">Automations</a>
+            <a href="https://www.techlion.dev/services/ai-integration">AI Integration</a>
+            <a href="https://www.techlion.dev/services/ai-visibility">AI Visibility</a>
+            <a href="https://www.techlion.dev/locations">Locations</a>
+          </div>
+        </details>
+        <a href="https://www.techlion.dev/projects">Projects</a>
+        <a href="https://www.techlion.dev/blog">Blog</a>
+        <a href="https://www.techlion.dev/pricing">Pricing</a>
+        <a href="https://www.techlion.dev/productized-offer">Offers</a>
+        <details>
+          <summary>Company <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary>
+          <div class="sub">
+            <a class="strong" href="https://www.techlion.dev/about">Company</a>
+            <a href="https://www.techlion.dev/about">About</a>
+            <a href="https://www.techlion.dev/process">Process</a>
+            <a href="https://www.techlion.dev/faq">FAQ</a>
+            <a href="https://www.techlion.dev/contact">Contact</a>
+          </div>
+        </details>
+        <a class="btn-gold" href="https://www.techlion.dev/contact">Start Your Project</a>
+      </div>
+    </div>
+  </header>
+<nav class="crumbs" aria-label="Breadcrumb"><div class="crumbs-inner max-w-content section-padding"><a href="https://www.techlion.dev/">Home</a><span aria-hidden="true">/</span><a href="/">Apify Actors</a><span aria-hidden="true">/</span><span aria-current="page">Shopify &amp; WooCommerce Products</span></div></nav>
+<main>
+    <div class="max-w-content section-padding">
+<div class="doc">
+<h1>Shopify &amp; WooCommerce Scraper: Products, Prices &amp; Stock</h1>
+<p class="lede">Shopify scraper and WooCommerce products scraper: prices, discounts, variants, stock, SKUs and images. Free filters and price-change alerts.</p>
+<div class="cta-row"><a class="btn-gold" href="https://apify.com/techliondev/shopify-woocommerce-products-scraper">Run it on Apify</a><a class="btn-outline" href="/">All 23 TechLion Dev Actors</a><span class="price">$0.50 / 1,000 products</span></div>
+<p class="lede" style="font-size:.9rem">A first test run is usually under a cent. No login to the source site. Pay only for the results you get. Built and maintained by <a href="https://www.techlion.dev/">TechLion Dev</a>.</p>
+<p><strong>Shopify Scraper</strong> also works as a <strong>WooCommerce products scraper</strong>. It collects <strong>every product from any Shopify or WooCommerce online store</strong> into one clean table: names, prices, sale prices, discounts, variants (sizes, colors), stock status, SKUs (stock keeping units), images, brands, tags, collections and categories. Paste store website addresses and press <strong>Start</strong>. The Actor works out which platform each store uses, so you can mix Shopify and WooCommerce stores in one run.</p>
+<p>It is for ecommerce teams, price-monitoring tools and catalog builders who need Shopify or WooCommerce product, price and stock data without a login.</p>
+<p>It reads the public product feeds that both platforms publish for every store (Shopify's product feed and the WooCommerce Store API, the application programming interface that powers WooCommerce shop pages). There is no browser, no login and no proxy, so runs are <strong>fast, cheap and reliable</strong>.</p>
+<ul>
+<li><strong>Monitor competitor prices:</strong> schedule a daily run and get only the products whose price or stock changed.</li>
+<li><strong>Build product feeds and catalogs:</strong> export a whole store to Excel, CSV (comma-separated values) or JSON (JavaScript Object Notation).</li>
+<li><strong>Find deals:</strong> keep only products on sale, with the discount already worked out.</li>
+<li><strong>Research a market:</strong> compare brands, price ranges and product types across many stores.</li>
+<li><strong>Feed AI (artificial intelligence) tools and automations</strong> with clean, structured product data.</li>
+</ul><h3>What data does it extract?</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🏷️ Product name, brand and product type</td>
+<td>🆔 Product ID, variant ID and SKU</td>
+</tr>
+<tr>
+<td>💲 Price, regular price, sale flag and discount %</td>
+<td>📊 Lowest and highest variant price</td>
+</tr>
+<tr>
+<td>✅ In stock, variants in stock, low-stock count</td>
+<td>🎨 Options (size, color...) and every variant</td>
+</tr>
+<tr>
+<td>🖼️ Main image and all image links</td>
+<td>🗂️ Tags, Shopify collections, WooCommerce categories</td>
+</tr>
+<tr>
+<td>⭐ Rating and review count (WooCommerce)</td>
+<td>📝 Description as text (and HTML if you want it)</td>
+</tr>
+<tr>
+<td>📅 Created, published and updated dates (Shopify)</td>
+<td>🔁 Price and stock changes since the last run</td>
+</tr>
+</tbody>
+</table><h3>Why this scraper?</h3>
+<ul>
+<li><strong>Two platforms in one Actor.</strong> Shopify and WooCommerce stores in the same run, with the <strong>same columns</strong> for both.</li>
+<li><strong>Half the price of the most-used Shopify scrapers:</strong> $0.50 per 1,000 products instead of $1.00, and all filters are free.</li>
+<li><strong>Built-in price and stock monitoring.</strong> Turn on tracking and every row says whether it is new, cheaper, more expensive, back in stock or sold out, with the previous price.</li>
+<li><strong>Product rows or variant rows.</strong> Get one row per product with all variants listed inside it, or one row per size and color with its own price, stock, SKU and image.</li>
+<li><strong>Keeps going when a store fails.</strong> A wrong link or a store that turned its feed off is listed in the run summary, and the rest of the run carries on. Stores that fail are never charged.</li>
+</ul><h2>Input</h2><p>The only required field is <strong>Stores</strong>: one store per line. Any of these work:</p>
+<ul>
+<li>A store's home page: <code>https://colourpop.com</code> or just <code>colourpop.com</code></li>
+<li>A Shopify collection: <code>https://gymshark.com/collections/2-inch</code> (only products in that collection)</li>
+<li>A WooCommerce category: <code>https://&lt;store&gt;/product-category/shoes/</code>, or the store's own category address such as <code>https://www.nutribullet.com/shop/blenders/</code></li>
+<li>A single product: <code>https://colourpop.com/products/&lt;product-name&gt;</code> (Shopify) or <code>https://&lt;store&gt;/product/&lt;product-name&gt;/</code> (WooCommerce)</li>
+</ul>
+<p>Example input:</p>
+<pre><code class="language-json">{
+    &quot;stores&quot;: [
+        &quot;https://colourpop.com&quot;,
+        &quot;https://gymshark.com/collections/2-inch&quot;,
+        &quot;https://www.nutribullet.com/shop/blenders/&quot;
+    ],
+    &quot;maxProductsPerStore&quot;: 200,
+    &quot;outputLevel&quot;: &quot;variant&quot;,
+    &quot;onlyInStock&quot;: true,
+    &quot;maxPrice&quot;: 100,
+    &quot;excludeKeywords&quot;: [&quot;gift card&quot;],
+    &quot;trackChanges&quot;: true
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Maximum products per store</strong></td>
+<td>Stops after this many rows per store. Filtered-out products don't count.</td>
+</tr>
+<tr>
+<td><strong>Rows</strong></td>
+<td>One row per product, or one row per variant.</td>
+</tr>
+<tr>
+<td><strong>Filters (free)</strong></td>
+<td>Keywords to keep or skip, in stock only, on sale only, minimum and maximum price, brands, product types/tags/categories, updated since.</td>
+</tr>
+<tr>
+<td><strong>Extra data (free)</strong></td>
+<td>Plain-text description, HTML description, Shopify collection names.</td>
+</tr>
+<tr>
+<td><strong>Price and stock monitoring</strong></td>
+<td>Track changes between runs, or save only the changes.</td>
+</tr>
+</tbody>
+</table><h2>Output</h2><p>You can download the results as Excel, CSV, JSON, HTML or XML, or read them through the Apify API. The <strong>Overview</strong>, <strong>Prices and stock</strong> and <strong>Catalog details</strong> views show the most useful columns for each job.</p>
+<h3>Table view</h3>
+<table>
+<thead>
+<tr>
+<th>Store</th>
+<th>Product</th>
+<th>Price</th>
+<th>Regular</th>
+<th>Off%</th>
+<th>In stock</th>
+<th>Variants</th>
+<th>Platform</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ColourPop</td>
+<td>Liked Christmas a Lot…</td>
+<td>16</td>
+<td></td>
+<td></td>
+<td>yes</td>
+<td>1</td>
+<td>shopify</td>
+</tr>
+<tr>
+<td>ColourPop</td>
+<td>Play it Cool</td>
+<td>15</td>
+<td></td>
+<td></td>
+<td>yes</td>
+<td>1</td>
+<td>shopify</td>
+</tr>
+<tr>
+<td>Gymshark US</td>
+<td>Gymshark Graphic Shaker Crew Sock Singl…</td>
+<td>7.50</td>
+<td>15</td>
+<td>50</td>
+<td>yes</td>
+<td>3</td>
+<td>shopify</td>
+</tr>
+<tr>
+<td>Gymshark US</td>
+<td>Gymshark Power Washed Cropped Full Zip…</td>
+<td>44.80</td>
+<td>64</td>
+<td>30</td>
+<td>yes</td>
+<td>7</td>
+<td>shopify</td>
+</tr>
+<tr>
+<td>nutribullet</td>
+<td>nutribullet Pro 900</td>
+<td>99.99</td>
+<td></td>
+<td></td>
+<td>no</td>
+<td>6</td>
+<td>woocommerce</td>
+</tr>
+<tr>
+<td>nutribullet</td>
+<td>nutribullet 32 oz Bullet Cup</td>
+<td>16.99</td>
+<td></td>
+<td></td>
+<td>yes</td>
+<td>0</td>
+<td>woocommerce</td>
+</tr>
+</tbody>
+</table><h2>How to use it</h2><ol>
+<li>Click <strong>Try for free</strong> (an Apify account is free to create).</li>
+<li>Paste store addresses into <strong>Stores</strong>.</li>
+<li>Pick <strong>Rows</strong> (products or variants) and any filters. Filters are free.</li>
+<li>Click <strong>Start</strong>. The default run (30 products from each of 3 stores) takes about 20 seconds.</li>
+<li>Download your products from the <strong>Output</strong> tab, or connect them to another tool (see Integrations).</li>
+</ol>
+<h3>Monitoring prices and stock on a schedule</h3>
+<p>Turn on <strong>Only save changes</strong>, then create a schedule (for example every morning). The first run remembers every product. After that, each run saves only new products and products whose price or stock changed, with <code>changeType</code> and <code>previousPrice</code> columns, so a quiet day costs almost nothing. Use a different <strong>Tracking name</strong> for each separate watch list.</p><h2>How much does it cost?</h2><p>This Actor uses <strong>pay-per-event pricing</strong>: you pay only for the rows you get, never for the computer time behind them.</p>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Price (free plan)</th>
+<th>When it is charged</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actor start</td>
+<td>$0.00005</td>
+<td>Once per run</td>
+</tr>
+<tr>
+<td><strong>Product saved</strong></td>
+<td><strong>$0.0005</strong> ($0.50 per 1,000 rows)</td>
+<td>For each product (or variant) row saved, after your filters</td>
+</tr>
+</tbody>
+</table>
+<p>Paid Apify plans get lower prices automatically (for example $0.40 per 1,000 rows on the Silver plan). See the <strong>Pricing</strong> tab for every plan.</p>
+<p><strong>Worked examples</strong></p>
+<ul>
+<li><strong>Default test run, 90 products from 3 stores:</strong> $0.00005 + 90 × $0.0005 = <strong>about $0.05</strong>.</li>
+<li><strong>A whole 10,000-product store:</strong> 10,000 × $0.0005 = <strong>$5.00</strong>.</li>
+<li><strong>Daily price watch on 5 competitors, only changes (about 200 changed products a day):</strong> 30 runs × $0.00005 + 6,000 rows × $0.0005 = <strong>about $3.00 per month</strong>.</li>
+</ul>
+<p>The most-used Shopify scrapers in Apify Store charge $1.00 per 1,000 products, and some add a start fee. Filters, collection names and descriptions never add to the price here. Apify's free plan includes monthly credit, which covers thousands of products.</p><h2>Use cases</h2><ul>
+<li><strong>Ecommerce price monitoring:</strong> track competitors' prices, discounts and stock every day.</li>
+<li><strong>Dropshipping and product research:</strong> find best sellers, price ranges and suppliers' full catalogs.</li>
+<li><strong>Market and brand research:</strong> compare product ranges and pricing across a whole niche.</li>
+<li><strong>Catalog migration and backups:</strong> export every product, variant and image link from a store you run.</li>
+<li><strong>Lead generation for agencies:</strong> see which brands sell what, at which prices, and how big their catalogs are.</li>
+</ul><h2>Frequently asked questions</h2><h3>How do I know if a store uses Shopify or WooCommerce?</h3><p>You don't need to. Paste the address and the Actor checks both. The <code>platform</code> column and the run summary tell you which one it found. If a store uses neither (for example Magento or a custom shop), the run summary says so and you are not charged for it.</p><h3>Can I scrape a whole Shopify store?</h3><p>Yes. Set <strong>Maximum products per store</strong> high enough (for example 100,000) and the Actor reads the store's full public product list, 250 products per request.</p><h3>Is there a Shopify products API or WooCommerce products API I can call?</h3><p>Yes, through this Actor. Every run is available through the Apify API (see the code examples above), so you get one products API for both platforms, with the same columns for every store.</p><h3>Can I get the exact number of items in stock?</h3><p>Stores don't publish exact stock counts in their public feeds. You get <code>inStock</code> for every product and variant, <code>variantsInStock</code> on Shopify, and <code>lowStockRemaining</code> on WooCommerce stores that show "only X left".</p><h3>Why are some columns empty?</h3><p>Each platform publishes slightly different data. Brands, product types, weights and dates come from Shopify only; ratings, reviews, categories and low-stock counts come from WooCommerce only. The columns are always there so your spreadsheet lines up.</p><h3>A store failed. Why?</h3><p>The store may have turned off its public product feed, blocked automated requests, or run on another platform. The exact reason is in <code>RUN_SUMMARY</code>. Failed stores are not charged, and the rest of the run still finishes.</p><h3>Is it legal to scrape Shopify and WooCommerce stores?</h3><p>The Actor reads only public product information that stores publish so shoppers and search engines can see it. It does not log in, buy anything or collect personal data. You are still responsible for how you use the data, so check the rules that apply to you.</p>
+<div class="cta-row"><a class="btn-gold" href="https://apify.com/techliondev/shopify-woocommerce-products-scraper">Try Shopify &amp; WooCommerce Products on Apify</a></div>
+<section class="related"><h2>More TechLion Dev Actors</h2><div class="grid"><article><a href="/federal-contracts-feed/"><h3>Federal Contracts Scraper</h3><p>USAspending and SAM.gov awards and bids.</p><span class="price">$2.00 / 1,000 records</span></a></article><article><a href="/luma-events-scraper/"><h3>Luma Events Scraper</h3><p>lu.ma events, hosts, tickets and guest counts.</p><span class="price">$1.50 / 1,000 events</span></a></article><article><a href="/isbn-book-lookup/"><h3>ISBN Lookup API</h3><p>Book metadata and covers by ISBN-10, ISBN-13 or title. Misses are free.</p><span class="price">$0.50 / 1,000 books</span></a></article><article><a href="/domain-whois-lookup/"><h3>WHOIS Lookup</h3><p>Bulk domain expiry, registrar, availability and DNS records.</p><span class="price">$0.50 / 1,000 domains</span></a></article></div></section>
+<p>Need a custom data pipeline or integration? <a href="https://www.techlion.dev/contact">Talk to TechLion Dev</a>.</p>
+</div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner max-w-content section-padding">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <a class="footer-brand" href="https://www.techlion.dev/">
+            <img src="https://cdn.techlion.dev/logos/png/icons/Color.png" alt="TechLion Dev" width="32" height="32">
+            <span>TechLion<span class="gold-gradient"> Dev</span></span>
+          </a>
+          <p class="footer-blurb">Web development for small and medium businesses nationwide. Built by Jeremiah Samuel.</p>
+        </div>
+        <div class="footer-col">
+          <h3>Services</h3>
+          <ul>
+            <li><a href="https://www.techlion.dev/services/web-design">Websites</a></li>
+            <li><a href="https://www.techlion.dev/services/web-apps">Web Apps &amp; APIs</a></li>
+            <li><a href="https://www.techlion.dev/services/automations">Automations</a></li>
+            <li><a href="https://www.techlion.dev/services/ai-integration">AI Integration</a></li>
+            <li><a href="https://www.techlion.dev/services/ai-visibility">AI Visibility</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Company</h3>
+          <ul>
+            <li><a href="https://www.techlion.dev/about">About</a></li>
+            <li><a href="https://www.techlion.dev/process">Process</a></li>
+            <li><a href="https://www.techlion.dev/projects">Projects</a></li>
+            <li><a href="https://www.techlion.dev/pricing">Pricing</a></li>
+            <li><a href="https://www.techlion.dev/faq">FAQ</a></li>
+            <li><a href="https://www.techlion.dev/ai-instructions">AI Instructions</a></li>
+            <li><a href="https://www.techlion.dev/contact">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Locations</h3>
+          <ul>
+            <li><a href="https://www.techlion.dev/locations/asbury-park">Asbury Park</a></li>
+            <li><a href="https://www.techlion.dev/locations/brick">Brick</a></li>
+            <li><a href="https://www.techlion.dev/locations/colts-neck">Colts Neck</a></li>
+            <li><a href="https://www.techlion.dev/locations/edison">Edison</a></li>
+            <li><a href="https://www.techlion.dev/locations/freehold">Freehold</a></li>
+            <li><a href="https://www.techlion.dev/locations/holmdel">Holmdel</a></li>
+            <li><a href="https://www.techlion.dev/locations/howell">Howell</a></li>
+            <li><a href="https://www.techlion.dev/locations/manalapan">Manalapan</a></li>
+            <li><a href="https://www.techlion.dev/locations/marlboro">Marlboro</a></li>
+            <li><a href="https://www.techlion.dev/locations/middletown">Middletown</a></li>
+            <li><a href="https://www.techlion.dev/locations/monmouth-county">Monmouth County</a></li>
+            <li><a href="https://www.techlion.dev/locations/old-bridge">Old Bridge</a></li>
+            <li><a href="https://www.techlion.dev/locations/red-bank">Red Bank</a></li>
+            <li><a href="https://www.techlion.dev/locations/toms-river">Toms River</a></li>
+            <li><a href="https://www.techlion.dev/locations/woodbridge">Woodbridge</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Connect</h3>
+          <ul>
+            <li><a href="https://github.com/TechLionDev" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+            <li><a href="https://linkedin.com/in/jeremiah-samuel-4790b138a/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+            <li><a href="https://x.com/jeremiahisdev" target="_blank" rel="noopener noreferrer">X / Twitter</a></li>
+          </ul>
+          <p class="footer-email"><a href="mailto:jeremiahis@techlion.dev">jeremiahis@techlion.dev</a></p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 TechLion Dev. All rights reserved.</p>
+        <div class="footer-legal">
+          <a href="https://www.techlion.dev/privacy">Privacy</a>
+          <a href="https://www.techlion.dev/terms">Terms</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script>
+    (function () {
+      var header = document.getElementById('site-header');
+      var btn = document.getElementById('menu-toggle');
+      var iconMenu = document.getElementById('icon-menu');
+      var iconClose = document.getElementById('icon-close');
+      if (!header || !btn) return;
+      btn.addEventListener('click', function () {
+        var open = header.classList.toggle('is-open');
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+        if (iconMenu) iconMenu.hidden = open;
+        if (iconClose) iconClose.hidden = !open;
+      });
+    })();
+  </script>
+</body>
+</html>
