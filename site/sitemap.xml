@@ -1,8 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://actors.techlion.dev/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>
+  <url><loc>https://actors.techlion.dev/</loc><lastmod>2026-11-26</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://actors.techlion.dev/google-play-reviews-scraper/</loc><lastmod>2026-11-26</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://actors.techlion.dev/apple-app-store-reviews-scraper/</loc><lastmod>2026-11-26</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://actors.techlion.dev/app-store-scraper/</loc><lastmod>2026-11-26</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://actors.techlion.dev/trustpilot-reviews-scraper/</loc><lastmod>2026-11-26</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://actors.techlion.dev/ats-job-feed/</loc><lastmod>2026-11-26</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://actors.techlion.dev/remote-jobs-scraper/</loc><lastmod>2026-11-26</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://actors.techlion.dev/hacker-news-scraper/</loc><lastmod>2026-11-26</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://actors.techlion.dev/yellow-pages-scraper/</loc><lastmod>2026-11-26</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://actors.techlion.dev/bbb-business-scraper/</loc><lastmod>2026-11-26</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://actors.techlion.dev/contractor-license-scraper/</loc><lastmod>2026-11-26</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://actors.techlion.dev/website-contact-scraper/</loc><lastmod>2026-11-26</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://actors.techlion.dev/email-validator/</loc><lastmod>2026-11-26</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://actors.techlion.dev/shopify-woocommerce-products-scraper/</loc><lastmod>2026-11-26</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://actors.techlion.dev/federal-contracts-feed/</loc><lastmod>2026-11-26</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://actors.techlion.dev/luma-events-scraper/</loc><lastmod>2026-11-26</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://actors.techlion.dev/isbn-book-lookup/</loc><lastmod>2026-11-26</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://actors.techlion.dev/telegram-channel-scraper/</loc><lastmod>2026-11-26</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://actors.techlion.dev/substack-scraper/</loc><lastmod>2026-11-26</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://actors.techlion.dev/bluesky-scraper/</loc><lastmod>2026-11-26</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://actors.techlion.dev/rss-feed-reader/</loc><lastmod>2026-11-26</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://actors.techlion.dev/sitemap-url-extractor/</loc><lastmod>2026-11-26</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://actors.techlion.dev/domain-whois-lookup/</loc><lastmod>2026-11-26</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://actors.techlion.dev/wayback-machine-scraper/</loc><lastmod>2026-11-26</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 </urlset>
