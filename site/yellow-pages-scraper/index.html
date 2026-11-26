@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Yellow Pages Scraper: Business Leads, Phones &amp; Emails | TechLion Dev</title>
+  <meta name="description" content="Yellow Pages and Yellowpages scraper for US business leads: names, phones, addresses, websites, categories, ratings and years in business. Optional emails.">
+  <meta name="theme-color" content="#0a0a0a">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://actors.techlion.dev/yellow-pages-scraper/">
+  <link rel="preconnect" href="https://cdn.techlion.dev" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.techlion.dev">
+  <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-title" content="TLD">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="TechLion Dev">
+  <meta property="og:title" content="Yellow Pages Scraper: Business Leads, Phones &amp; Emails | TechLion Dev">
+  <meta property="og:description" content="Yellow Pages and Yellowpages scraper for US business leads: names, phones, addresses, websites, categories, ratings and years in business. Optional emails.">
+  <meta property="og:url" content="https://actors.techlion.dev/yellow-pages-scraper/">
+  <meta property="og:image" content="https://actors.techlion.dev/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Yellow Pages Scraper: Business Leads, Phones &amp; Emails | TechLion Dev">
+  <meta name="twitter:description" content="Yellow Pages and Yellowpages scraper for US business leads: names, phones, addresses, websites, categories, ratings and years in business. Optional emails.">
+  <meta name="twitter:image" content="https://actors.techlion.dev/og.png">
+  <meta name="twitter:creator" content="@jeremiahisdev">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --background: 0 0% 4%;
+      --foreground: 0 0% 100%;
+      --card: 0 0% 6%;
+      --card-foreground: 0 0% 100%;
+      --primary: 42 54% 54%;
+      --primary-foreground: 0 0% 4%;
+      --secondary: 0 0% 10%;
+      --secondary-foreground: 0 0% 100%;
+      --muted: 0 0% 12%;
+      --muted-foreground: 0 0% 65%;
+      --accent: 42 54% 54%;
+      --accent-foreground: 0 0% 4%;
+      --border: 42 54% 54% / 0.15;
+      --ring: 42 54% 54%;
+      --radius: 0.75rem;
+      --font-syne: "Syne", ui-sans-serif, system-ui, sans-serif;
+      --font-outfit: "Outfit", ui-sans-serif, system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; border-color: hsl(var(--border)); }
+    html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: hsl(var(--background));
+      color: hsl(var(--foreground));
+      font-family: var(--font-outfit);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    ::selection { background: hsl(var(--primary) / 0.3); color: hsl(var(--foreground)); }
+    a { color: inherit; }
+    img { display: block; max-width: 100%; }
+    .font-heading { font-family: var(--font-syne); }
+    .gold-gradient {
+      background: linear-gradient(135deg, #c9a84c 0%, #e8c85a 50%, #c9a84c 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .section-padding { padding-left: 1rem; padding-right: 1rem; }
+    @media (min-width: 640px) { .section-padding { padding-left: 1.5rem; padding-right: 1.5rem; } }
+    @media (min-width: 1024px) { .section-padding { padding-left: 2rem; padding-right: 2rem; } }
+    .max-w-content { margin-left: auto; margin-right: auto; max-width: 80rem; }
+
+    /* Header / nav — from src/components/navbar.tsx */
+    .site-header {
+      position: sticky; top: 0; z-index: 50; width: 100%;
+      border-bottom: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--background) / 0.9);
+    }
+    @supports (backdrop-filter: blur(24px)) or (-webkit-backdrop-filter: blur(24px)) {
+      .site-header {
+        background: hsl(var(--background) / 0.8);
+        -webkit-backdrop-filter: blur(24px);
+        backdrop-filter: blur(24px);
+      }
+    }
+    .nav {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 4rem;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 0.5rem;
+      text-decoration: none; transition: opacity 0.15s;
+    }
+    .brand:hover { opacity: 0.8; }
+    .brand img { width: 2rem; height: 2rem; }
+    .brand-name {
+      font-family: var(--font-syne);
+      font-size: 1.125rem; font-weight: 700; letter-spacing: -0.025em;
+      white-space: nowrap; color: #fff;
+    }
+    .nav-desktop { display: none; align-items: center; gap: 0.25rem; }
+    @media (min-width: 768px) { .nav-desktop { display: flex; } }
+    .nav-link {
+      position: relative; display: inline-flex; align-items: center; gap: 0.25rem;
+      border-radius: 0.5rem; padding: 0.375rem 0.5rem;
+      font-size: 0.75rem; font-weight: 500; text-decoration: none;
+      color: hsl(var(--muted-foreground)); transition: color 0.15s;
+    }
+    .nav-link:hover { color: hsl(var(--foreground)); }
+    @media (min-width: 1024px) {
+      .nav-link { padding: 0.5rem 0.75rem; font-size: 0.875rem; }
+    }
+    .nav-dropdown { position: relative; }
+    .nav-dropdown-menu {
+      position: absolute; left: 0; top: 100%; z-index: 50;
+      margin-top: 0.25rem; width: 14rem; padding: 0.5rem;
+      border-radius: 0.75rem; border: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--card)); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+      opacity: 0; visibility: hidden; transition: opacity 0.15s, visibility 0.15s;
+    }
+    .nav-dropdown:hover .nav-dropdown-menu,
+    .nav-dropdown:focus-within .nav-dropdown-menu {
+      opacity: 1; visibility: visible;
+    }
+    .nav-dropdown-menu a {
+      display: block; border-radius: 0.5rem; padding: 0.5rem 0.75rem;
+      font-size: 0.875rem; text-decoration: none;
+      color: hsl(var(--muted-foreground));
+    }
+    .nav-dropdown-menu a:first-child {
+      font-weight: 500; color: hsl(var(--foreground));
+    }
+    .nav-dropdown-menu a:hover { background: hsl(var(--primary) / 0.05); color: hsl(var(--foreground)); }
+    .btn-gold {
+      display: inline-flex; align-items: center; justify-content: center;
+      flex-shrink: 0; height: 2.5rem; margin-left: 0.5rem; padding: 0 1.25rem;
+      border-radius: 0.75rem; white-space: nowrap; text-decoration: none;
+      font-size: 0.875rem; font-weight: 600; color: #000;
+      background-image: linear-gradient(to right, #f59e0b, #eab308);
+      transition: filter 0.15s;
+    }
+    .btn-gold:hover { background-image: linear-gradient(to right, #fbbf24, #facc15); }
+    .menu-toggle {
+      display: flex; align-items: center; justify-content: center;
+      border: 0; background: transparent; border-radius: 0.5rem; padding: 0.5rem;
+      color: hsl(var(--muted-foreground)); cursor: pointer;
+    }
+    .menu-toggle:hover { color: hsl(var(--foreground)); }
+    .menu-toggle #icon-close { display: none; }
+    .site-header.is-open .menu-toggle #icon-menu { display: none; }
+    .site-header.is-open .menu-toggle #icon-close { display: block; }
+    @media (min-width: 768px) { .menu-toggle { display: none; } }
+    .nav-mobile {
+      display: none;
+      border-top: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--background) / 0.95);
+    }
+    @supports (backdrop-filter: blur(24px)) or (-webkit-backdrop-filter: blur(24px)) {
+      .nav-mobile {
+        background: hsl(var(--background) / 0.85);
+        -webkit-backdrop-filter: blur(24px);
+        backdrop-filter: blur(24px);
+      }
+    }
+    .site-header.is-open .nav-mobile { display: block; }
+    @media (min-width: 768px) { .site-header.is-open .nav-mobile { display: none; } }
+    .nav-mobile-inner { padding-top: 1rem; padding-bottom: 1rem; }
+    .nav-mobile a, .nav-mobile summary {
+      display: block; border-radius: 0.5rem; padding: 0.5rem 0.75rem;
+      font-size: 0.875rem; font-weight: 500; color: hsl(var(--muted-foreground));
+      text-decoration: none; list-style: none; cursor: pointer;
+    }
+    .nav-mobile summary { display: flex; align-items: center; justify-content: space-between; }
+    .nav-mobile summary::-webkit-details-marker { display: none; }
+    .nav-mobile a:hover, .nav-mobile summary:hover { color: hsl(var(--foreground)); }
+    .nav-mobile details[open] > summary { color: hsl(var(--foreground)); }
+    .nav-mobile .sub { margin-left: 1rem; }
+    .nav-mobile .sub a { font-weight: 500; }
+    .nav-mobile .sub a.strong { font-weight: 600; color: hsl(var(--foreground)); }
+    .nav-mobile .btn-gold {
+      display: block; margin: 0.5rem 0 0; height: auto; padding: 0.625rem 0.75rem; text-align: center;
+    }
+    .chevron { width: 0.75rem; height: 0.75rem; flex-shrink: 0; }
+    .nav-mobile .chevron { width: 1rem; height: 1rem; transition: transform 0.2s; }
+    .nav-mobile details[open] .chevron { transform: rotate(180deg); }
+
+    /* Hero — from src/components/sections/hero.tsx */
+    .hero {
+      position: relative; overflow: hidden;
+      border-bottom: 1px solid hsl(var(--primary) / 0.1);
+    }
+    .hero-bg {
+      pointer-events: none; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at top, hsl(var(--primary) / 0.08), transparent 60%);
+    }
+    .hero-inner { position: relative; z-index: 1; padding: 6rem 0; }
+    @media (min-width: 640px) { .hero-inner { padding: 8rem 0; } }
+    @media (min-width: 1024px) { .hero-inner { padding: 10rem 0; } }
+    .hero-copy { margin: 0 auto; max-width: 48rem; text-align: center; }
+    .hero h1 {
+      margin: 0;
+      font-family: var(--font-syne);
+      font-size: 2.25rem; font-weight: 700; letter-spacing: -0.025em; line-height: 1.15;
+      color: hsl(var(--foreground));
+    }
+    @media (min-width: 640px) { .hero h1 { font-size: 3rem; } }
+    @media (min-width: 1024px) { .hero h1 { font-size: 3.75rem; } }
+    .hero .lead {
+      margin: 2rem auto 0; max-width: 32rem;
+      font-size: 1rem; color: hsl(var(--muted-foreground));
+    }
+    @media (min-width: 640px) { .hero .lead { font-size: 1.125rem; } }
+    .hero-note {
+      margin: 1.5rem auto 0;
+      font-size: 0.875rem; color: hsl(var(--muted-foreground) / 0.8);
+    }
+    .actions {
+      margin-top: 2.5rem;
+      display: flex; flex-direction: column; align-items: center; gap: 1rem;
+    }
+    @media (min-width: 640px) {
+      .actions { flex-direction: row; justify-content: center; }
+    }
+    .btn-gold-lg {
+      display: inline-flex; align-items: center; justify-content: center;
+      height: 3rem; width: 100%; padding: 0 1.5rem; border-radius: 0.75rem;
+      font-size: 0.875rem; font-weight: 600; color: #000; text-decoration: none;
+      background-image: linear-gradient(to right, #f59e0b, #eab308);
+      transition: filter 0.15s;
+    }
+    .btn-gold-lg:hover { background-image: linear-gradient(to right, #fbbf24, #facc15); }
+    @media (min-width: 640px) { .btn-gold-lg { width: auto; } }
+    .btn-outline {
+      display: inline-flex; align-items: center; justify-content: center;
+      height: 3rem; width: 100%; padding: 0 1.5rem; border-radius: 0.75rem;
+      border: 1px solid hsl(var(--primary) / 0.2);
+      font-size: 0.875rem; font-weight: 600; color: hsl(var(--foreground));
+      text-decoration: none; transition: background 0.15s;
+    }
+    .btn-outline:hover { background: hsl(var(--secondary)); }
+    @media (min-width: 640px) { .btn-outline { width: auto; } }
+
+    /* Breadcrumb-ish */
+    .crumbs {
+      border-bottom: 1px solid hsl(var(--primary) / 0.1);
+      font-size: 0.8125rem; color: hsl(var(--muted-foreground));
+    }
+    .crumbs-inner { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; min-height: 2.75rem; }
+    .crumbs a { color: hsl(var(--muted-foreground)); text-decoration: none; }
+    .crumbs a:hover { color: hsl(var(--primary)); }
+    .crumbs span[aria-current] { color: hsl(var(--foreground)); }
+
+    /* Directory */
+    main { flex: 1; }
+    .directory { padding: 3rem 0 5rem; }
+    .directory h2 {
+      margin: 2.5rem 0 1rem;
+      font-family: var(--font-syne);
+      font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em;
+      color: hsl(var(--foreground));
+    }
+    .directory h2:first-child { margin-top: 0; }
+    .grid {
+      display: grid; gap: 1.5rem;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 640px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1024px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+    /* Cards — from src/components/offer-card-client.tsx */
+    article {
+      display: flex; flex-direction: column;
+      border-radius: 1rem;
+      border: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--card));
+      padding: 1.5rem;
+      transition: border-color 0.2s;
+    }
+    @media (min-width: 640px) { article { padding: 1.5rem; } }
+    article:hover { border-color: hsl(var(--primary) / 0.3); }
+    article a { text-decoration: none; display: flex; flex-direction: column; flex: 1; color: inherit; }
+    article h3 {
+      margin: 0;
+      font-family: var(--font-syne);
+      font-size: 1.125rem; font-weight: 700; letter-spacing: -0.02em;
+      color: hsl(var(--foreground));
+    }
+    article p {
+      margin: 0.75rem 0 0;
+      font-size: 0.875rem; color: hsl(var(--muted-foreground));
+      flex: 1;
+    }
+    .price {
+      display: inline-flex; align-items: center; align-self: flex-start;
+      margin-top: 1.25rem;
+      border-radius: 999px;
+      border: 1px solid hsl(var(--primary) / 0.3);
+      background: hsl(var(--primary) / 0.1);
+      padding: 0.25rem 0.75rem;
+      font-size: 0.75rem; font-weight: 600; color: hsl(var(--primary));
+    }
+
+    /* Footer — from src/components/footer.tsx */
+    .site-footer {
+      border-top: 1px solid hsl(var(--primary) / 0.1);
+      background: hsl(var(--card));
+    }
+    .footer-inner { padding-top: 4rem; padding-bottom: 4rem; }
+    .footer-grid {
+      display: grid; gap: 2.5rem;
+    }
+    @media (min-width: 640px) { .footer-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1024px) { .footer-grid { grid-template-columns: repeat(5, 1fr); } }
+    .footer-brand { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; }
+    .footer-brand img { width: 2rem; height: 2rem; }
+    .footer-brand span {
+      font-family: var(--font-syne); font-size: 1.125rem; font-weight: 700; color: #fff;
+    }
+    .footer-blurb {
+      margin: 1rem 0 0; font-size: 0.875rem; line-height: 1.625;
+      color: hsl(var(--muted-foreground));
+    }
+    .footer-col h3 {
+      margin: 0 0 1rem;
+      font-family: var(--font-syne);
+      font-size: 0.875rem; font-weight: 600; letter-spacing: 0.05em;
+      text-transform: uppercase; color: hsl(var(--foreground));
+    }
+    .footer-col ul { list-style: none; margin: 0; padding: 0; }
+    .footer-col li + li { margin-top: 0.5rem; }
+    .footer-col a {
+      font-size: 0.875rem; color: hsl(var(--muted-foreground));
+      text-decoration: none; transition: color 0.15s;
+    }
+    .footer-col a:hover { color: hsl(var(--primary)); }
+    .footer-email {
+      margin: 0.5rem 0 0;
+      font-size: 0.75rem; color: hsl(var(--muted-foreground) / 0.6);
+    }
+    .footer-email a {
+      font-size: 0.75rem; color: hsl(var(--muted-foreground) / 0.6);
+      text-decoration: none;
+    }
+    .footer-email a:hover { color: hsl(var(--primary)); }
+    .footer-bottom {
+      margin-top: 3rem; padding-top: 2rem;
+      border-top: 1px solid hsl(var(--primary) / 0.1);
+      display: flex; flex-direction: column; align-items: flex-start; gap: 1rem;
+      font-size: 0.75rem; color: hsl(var(--muted-foreground) / 0.6);
+    }
+    @media (min-width: 640px) {
+      .footer-bottom { flex-direction: row; align-items: center; justify-content: space-between; }
+    }
+    .footer-bottom p { margin: 0; }
+    .footer-legal { display: flex; align-items: center; gap: 1rem; }
+    .footer-legal a { color: inherit; text-decoration: none; }
+    .footer-legal a:hover { color: hsl(var(--primary)); }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: hsl(var(--background)); }
+    ::-webkit-scrollbar-thumb { background: hsl(var(--primary) / 0.3); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb
+    .doc { padding: 1.5rem 0 5rem; max-width: 52rem; }
+    .doc h1 { font-family: var(--font-syne); font-size: clamp(1.9rem,4vw,2.8rem); line-height:1.1; letter-spacing:-.03em; margin: .75rem 0 1rem; }
+    .doc h2 { font-family: var(--font-syne); font-size: 1.5rem; letter-spacing:-.02em; margin: 2.75rem 0 .75rem; }
+    .doc h3 { font-family: var(--font-syne); font-size: 1.1rem; margin: 1.75rem 0 .5rem; }
+    .doc p, .doc li { color: hsl(0 0% 82%); line-height: 1.7; }
+    .doc a { color: hsl(var(--primary)); }
+    .doc ul, .doc ol { padding-left: 1.25rem; }
+    .doc code { background: hsl(var(--muted)); padding: .1rem .35rem; border-radius: .35rem; font-size: .88em; }
+    .doc pre { background: hsl(var(--card)); border: 1px solid hsl(var(--primary) / .12); border-radius: .75rem; padding: 1rem; overflow-x: auto; font-size: .82rem; }
+    .doc pre code { background: none; padding: 0; }
+    .doc table { width: 100%; border-collapse: collapse; display: block; overflow-x: auto; font-size: .9rem; margin: 1rem 0; }
+    .doc th, .doc td { border: 1px solid hsl(var(--primary) / .15); padding: .5rem .75rem; text-align: left; vertical-align: top; }
+    .doc th { background: hsl(var(--card)); }
+    .lede { font-size: 1.1rem; color: hsl(var(--muted-foreground)); }
+    .cta-row { display: flex; flex-wrap: wrap; gap: .75rem; margin: 1.5rem 0 .5rem; align-items: center; }
+    .related { margin-top: 3rem; }
+    .related .grid { margin-top: 1rem; }
+    article .guide { margin-top: .75rem; font-size: .8rem; color: hsl(var(--primary)); flex: 0; }
+:hover { background: hsl(var(--primary) / 0.5); }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+  </style>
+
+  <script type="application/ld+json">[{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Yellow Pages Scraper: Business Leads, Phones & Emails", "applicationCategory": "DeveloperApplication", "operatingSystem": "Web", "url": "https://actors.techlion.dev/yellow-pages-scraper/", "description": "Yellow Pages and Yellowpages scraper for US business leads: names, phones, addresses, websites, categories, ratings and years in business. Optional emails.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD", "description": "$1.00 / 1,000 businesses (pay per result on Apify)"}, "author": {"@type": "Organization", "name": "TechLion Dev", "url": "https://www.techlion.dev/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.techlion.dev/"}, {"@type": "ListItem", "position": 2, "name": "Apify Actors", "item": "https://actors.techlion.dev/"}, {"@type": "ListItem", "position": 3, "name": "Yellow Pages Scraper", "item": "https://actors.techlion.dev/yellow-pages-scraper/"}]}, {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How many businesses can I get per search?", "acceptedAnswer": {"@type": "Answer", "text": "As many as Yellow Pages lists for that search, up to 3,000 per term and location pair (100 pages of 30). For bigger lists, split a city into ZIP codes."}}, {"@type": "Question", "name": "How do I get emails?", "acceptedAnswer": {"@type": "Answer", "text": "Turn on Load listing details: email and hours ($). The Actor opens each listing page and adds the email when the business publishes one (about half of businesses in our tests) and the opening hours."}}, {"@type": "Question", "name": "Does it work outside the United States?", "acceptedAnswer": {"@type": "Answer", "text": "Yellow Pages (yellowpages.com) covers the United States. Use US cities, states or ZIP codes."}}, {"@type": "Question", "name": "Do I need an account, an API key or a proxy?", "acceptedAnswer": {"@type": "Answer", "text": "No. The Actor reads public pages without logging in. If Yellow Pages refuses direct requests, it retries through Apify proxy on its own, with a traffic cap, at no extra charge to you."}}, {"@type": "Question", "name": "Is it legal to scrape Yellow Pages?", "acceptedAnswer": {"@type": "Answer", "text": "The Actor collects only business information that Yellow Pages shows publicly. It does not log in or collect private data. When you contact businesses, follow the marketing and privacy rules that apply to you (for example rules on cold email and calling)."}}]}]</script>
+</head>
+<body>
+  <header class="site-header" id="site-header">
+    <nav class="nav max-w-content section-padding" aria-label="Primary">
+      <a class="brand" href="https://www.techlion.dev/">
+        <img src="https://cdn.techlion.dev/logos/png/icons/Color.png" alt="TechLion Dev" width="32" height="32">
+        <span class="brand-name">TechLion<span class="gold-gradient"> Dev</span></span>
+      </a>
+      <div class="nav-desktop">
+        <a class="nav-link" href="https://www.techlion.dev/">Home</a>
+        <div class="nav-dropdown">
+          <a class="nav-link" href="https://www.techlion.dev/services">Services
+            <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+          </a>
+          <div class="nav-dropdown-menu">
+            <a href="https://www.techlion.dev/services">All Services</a>
+            <a href="https://www.techlion.dev/services/web-design">Web Design</a>
+            <a href="https://www.techlion.dev/services/web-apps">Web Apps &amp; APIs</a>
+            <a href="https://www.techlion.dev/services/automations">Automations</a>
+            <a href="https://www.techlion.dev/services/ai-integration">AI Integration</a>
+            <a href="https://www.techlion.dev/services/ai-visibility">AI Visibility</a>
+            <a href="https://www.techlion.dev/locations">Locations</a>
+          </div>
+        </div>
+        <a class="nav-link" href="https://www.techlion.dev/projects">Projects</a>
+        <a class="nav-link" href="https://www.techlion.dev/blog">Blog</a>
+        <a class="nav-link" href="https://www.techlion.dev/pricing">Pricing</a>
+        <a class="nav-link" href="https://www.techlion.dev/productized-offer">Offers</a>
+        <div class="nav-dropdown">
+          <a class="nav-link" href="https://www.techlion.dev/about">Company
+            <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+          </a>
+          <div class="nav-dropdown-menu">
+            <a href="https://www.techlion.dev/about">Company</a>
+            <a href="https://www.techlion.dev/about">About</a>
+            <a href="https://www.techlion.dev/process">Process</a>
+            <a href="https://www.techlion.dev/faq">FAQ</a>
+            <a href="https://www.techlion.dev/contact">Contact</a>
+          </div>
+        </div>
+        <a class="btn-gold" href="https://www.techlion.dev/contact">Start Your Project</a>
+      </div>
+      <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav" id="menu-toggle">
+        <svg id="icon-menu" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16"></path><path d="M4 12h16"></path><path d="M4 19h16"></path></svg>
+        <svg id="icon-close" hidden xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+      </button>
+    </nav>
+    <div class="nav-mobile" id="mobile-nav">
+      <div class="nav-mobile-inner section-padding max-w-content">
+        <a href="https://www.techlion.dev/">Home</a>
+        <details>
+          <summary>Services <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary>
+          <div class="sub">
+            <a class="strong" href="https://www.techlion.dev/services">All Services</a>
+            <a href="https://www.techlion.dev/services/web-design">Web Design</a>
+            <a href="https://www.techlion.dev/services/web-apps">Web Apps &amp; APIs</a>
+            <a href="https://www.techlion.dev/services/automations">Automations</a>
+            <a href="https://www.techlion.dev/services/ai-integration">AI Integration</a>
+            <a href="https://www.techlion.dev/services/ai-visibility">AI Visibility</a>
+            <a href="https://www.techlion.dev/locations">Locations</a>
+          </div>
+        </details>
+        <a href="https://www.techlion.dev/projects">Projects</a>
+        <a href="https://www.techlion.dev/blog">Blog</a>
+        <a href="https://www.techlion.dev/pricing">Pricing</a>
+        <a href="https://www.techlion.dev/productized-offer">Offers</a>
+        <details>
+          <summary>Company <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary>
+          <div class="sub">
+            <a class="strong" href="https://www.techlion.dev/about">Company</a>
+            <a href="https://www.techlion.dev/about">About</a>
+            <a href="https://www.techlion.dev/process">Process</a>
+            <a href="https://www.techlion.dev/faq">FAQ</a>
+            <a href="https://www.techlion.dev/contact">Contact</a>
+          </div>
+        </details>
+        <a class="btn-gold" href="https://www.techlion.dev/contact">Start Your Project</a>
+      </div>
+    </div>
+  </header>
+<nav class="crumbs" aria-label="Breadcrumb"><div class="crumbs-inner max-w-content section-padding"><a href="https://www.techlion.dev/">Home</a><span aria-hidden="true">/</span><a href="/">Apify Actors</a><span aria-hidden="true">/</span><span aria-current="page">Yellow Pages Scraper</span></div></nav>
+<main>
+    <div class="max-w-content section-padding">
+<div class="doc">
+<h1>Yellow Pages Scraper: Business Leads, Phones &amp; Emails</h1>
+<p class="lede">Yellow Pages and Yellowpages scraper for US business leads: names, phones, addresses, websites, categories, ratings and years in business. Optional emails.</p>
+<div class="cta-row"><a class="btn-gold" href="https://apify.com/techliondev/yellow-pages-scraper">Run it on Apify</a><a class="btn-outline" href="/">All 23 TechLion Dev Actors</a><span class="price">$1.00 / 1,000 businesses</span></div>
+<p class="lede" style="font-size:.9rem">A first test run is usually under a cent. No login to the source site. Pay only for the results you get. Built and maintained by <a href="https://www.techlion.dev/">TechLion Dev</a>.</p>
+<p><strong>Yellow Pages Scraper</strong> turns Yellow Pages (yellowpages.com) searches into a clean <strong>list of US business leads</strong>: business names, phone numbers, full addresses, websites, categories, Yellow Pages ratings, years in business and claimed status. Turn on the details add-on to also get <strong>emails and opening hours</strong>. Type what you are looking for (for example <code>plumber</code>) and where (<code>Denver, CO</code> or a ZIP code), and press <strong>Start</strong>.</p>
+<p>It is for sales teams, marketing agencies, lead-generation freelancers, local service businesses, researchers and AI (artificial intelligence) agents that need structured local business data.</p>
+<p>It reads the same public search pages any visitor sees, with no login and no browser, so runs are <strong>fast and cheap</strong>.</p>
+<ul>
+<li><strong>Build calling and email lists</strong> of plumbers, dentists, roofers, lawyers or any other trade, in any US city or ZIP code.</li>
+<li><strong>Find businesses without a website</strong> (a great list for web design agencies).</li>
+<li><strong>Filter for quality:</strong> only businesses with a phone, a website, a minimum star rating or a minimum number of years in business.</li>
+<li><strong>Track new businesses:</strong> schedule a run and get only listings you have not seen before.</li>
+<li><strong>Export</strong> to Excel, CSV (comma-separated values) or JSON (JavaScript Object Notation), or send rows to your CRM (customer relationship management) tool.</li>
+</ul><h3>What data does it extract?</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🏢 Business name and Yellow Pages listing link</td>
+<td>📞 Phone number</td>
+</tr>
+<tr>
+<td>📍 Street, city, state, ZIP and full address</td>
+<td>🌐 Website</td>
+</tr>
+<tr>
+<td>📧 Email (details add-on, when published)</td>
+<td>🕒 Opening hours (details add-on)</td>
+</tr>
+<tr>
+<td>🗂️ Categories and main category</td>
+<td>⭐ Yellow Pages rating and review count</td>
+</tr>
+<tr>
+<td>📅 Years in business</td>
+<td>✅ Claimed status, paid-ad flag, BBB (Better Business Bureau) and TripAdvisor ratings when shown</td>
+</tr>
+</tbody>
+</table><h3>Why this scraper?</h3>
+<ul>
+<li><strong>A third of the price of the most-used Yellow Pages scraper:</strong> $1 per 1,000 businesses instead of $3, and every filter is free.</li>
+<li><strong>Emails when you want them:</strong> the optional details add-on opens each listing page and adds the email and hours for $1 more per 1,000.</li>
+<li><strong>Many searches in one run:</strong> every search term is combined with every location, and duplicates across searches are removed.</li>
+<li><strong>Clean, flat columns</strong> that are the same on every row, ready for spreadsheets and CRMs.</li>
+</ul><h2>Input</h2><p>Example input:</p>
+<pre><code class="language-json">{
+    &quot;searchTerms&quot;: [&quot;plumber&quot;, &quot;electrician&quot;],
+    &quot;locations&quot;: [&quot;Denver, CO&quot;, &quot;Phoenix, AZ&quot;, &quot;10001&quot;],
+    &quot;maxResultsPerSearch&quot;: 100,
+    &quot;includeDetails&quot;: true,
+    &quot;onlyWithPhone&quot;: true
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Search terms</strong></td>
+<td>Business types or names, one per line.</td>
+</tr>
+<tr>
+<td><strong>Locations</strong></td>
+<td>City and state, ZIP code or state, one per line. Every term is searched in every location.</td>
+</tr>
+<tr>
+<td><strong>Yellow Pages search links</strong></td>
+<td>Optional: paste search result links from yellowpages.com instead.</td>
+</tr>
+<tr>
+<td><strong>Maximum businesses per search</strong></td>
+<td>Stops after this many saved businesses for each term and location pair (Yellow Pages shows 30 per page, up to 3,000).</td>
+</tr>
+<tr>
+<td><strong>Details add-on ($)</strong></td>
+<td>Opens each listing page to add email and opening hours.</td>
+</tr>
+<tr>
+<td><strong>Filters (free)</strong></td>
+<td>Only with phone, only with website, minimum stars, minimum years in business, name or category keywords.</td>
+</tr>
+<tr>
+<td><strong>Only new businesses</strong></td>
+<td>After the first run, save only businesses you have not seen before.</td>
+</tr>
+</tbody>
+</table><h2>Output</h2><p>You can download the results as Excel, CSV, JSON, HTML or XML, or read them through the Apify API. The <strong>Overview</strong>, <strong>Contacts</strong> and <strong>Ratings and trust</strong> views show the most useful columns for each job.</p>
+<h3>Table view</h3>
+<table>
+<thead>
+<tr>
+<th>Business</th>
+<th>Phone</th>
+<th>City</th>
+<th>Category</th>
+<th>Stars</th>
+<th>Years</th>
+<th>Website</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bell Plumbing, Heating, Cooling &amp;…</td>
+<td>(720) 828-8886</td>
+<td>Centennial, CO</td>
+<td>Electricians</td>
+<td></td>
+<td>100</td>
+<td>https://bellplumbing.com</td>
+</tr>
+<tr>
+<td>Xcel Energy</td>
+<td>(800) 895-1999</td>
+<td></td>
+<td>Electric Companies</td>
+<td></td>
+<td>26</td>
+<td>http://my.xcelenergy.com</td>
+</tr>
+<tr>
+<td>Drain Pro Plumbing</td>
+<td>(623) 321-3470</td>
+<td></td>
+<td>Plumbers</td>
+<td>4.5</td>
+<td>41</td>
+<td>http://drainproplumbingaz.locals…</td>
+</tr>
+<tr>
+<td>Blue Plumbing LLC</td>
+<td>(602) 618-0900</td>
+<td></td>
+<td>Plumbers</td>
+<td>5</td>
+<td></td>
+<td>http://www.blueplumbingphx.com</td>
+</tr>
+<tr>
+<td>Absolute Plumbing, Electrical, Hea…</td>
+<td>(678) 322-8938</td>
+<td>Denver, CO</td>
+<td>Plumbers</td>
+<td></td>
+<td></td>
+<td>https://absolutefix.com/service-…</td>
+</tr>
+<tr>
+<td>Good Plumbing Service Co</td>
+<td>(303) 962-3628</td>
+<td>Denver, CO</td>
+<td>Plumbers</td>
+<td>5</td>
+<td>67</td>
+<td></td>
+</tr>
+<tr>
+<td>Colter Electric LLC</td>
+<td>(480) 447-3860</td>
+<td></td>
+<td>Electricians</td>
+<td></td>
+<td></td>
+<td>https://www.colterelectricllc.co…</td>
+</tr>
+<tr>
+<td>Granado's Electrical Service</td>
+<td>(480) 999-1557</td>
+<td>Mesa, AZ</td>
+<td>Electricians</td>
+<td></td>
+<td>24</td>
+<td>https://www.granadoselectrical.c…</td>
+</tr>
+</tbody>
+</table><h2>How to use it</h2><ol>
+<li>Click <strong>Try for free</strong> (an Apify account is free to create).</li>
+<li>Type your <strong>Search terms</strong> and <strong>Locations</strong>.</li>
+<li>Set <strong>Maximum businesses per search</strong>, and turn on the details add-on if you need emails.</li>
+<li>Click <strong>Start</strong>. The default run (30 plumbers in Denver) finishes in about 4 seconds.</li>
+<li>Download your leads from the <strong>Output</strong> tab, or connect them to another tool.</li>
+</ol><h2>How much does it cost?</h2><p>This Actor uses <strong>pay-per-event pricing</strong>: you pay only for the businesses you get.</p>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Price (free plan)</th>
+<th>When it is charged</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actor start</td>
+<td>$0.00005</td>
+<td>Once per run</td>
+</tr>
+<tr>
+<td><strong>Business saved</strong></td>
+<td><strong>$0.001</strong> ($1 per 1,000)</td>
+<td>For each business saved, after your filters</td>
+</tr>
+<tr>
+<td>Listing details loaded (add-on)</td>
+<td>$0.001 ($1 per 1,000)</td>
+<td>Only with the details add-on, for each listing page opened</td>
+</tr>
+</tbody>
+</table>
+<p>Paid Apify plans get lower prices automatically. See the <strong>Pricing</strong> tab for every plan.</p>
+<p><strong>Worked examples</strong></p>
+<ul>
+<li><strong>Default test run, 30 businesses:</strong> $0.00005 + 30 × $0.001 = <strong>about $0.03</strong>.</li>
+<li><strong>1,000 businesses:</strong> <strong>$1.00</strong>, or <strong>$2.00</strong> with emails and hours.</li>
+<li><strong>Monthly list of new dentists in 10 cities, only new (about 300 a month):</strong> <strong>about $0.30 per month</strong>.</li>
+</ul>
+<p>The most-used Yellow Pages scraper in Apify Store charges $3 per 1,000 results. Filters and de-duplication never add to the price here.</p><h2>Use cases</h2><ul>
+<li><strong>Cold calling and email outreach</strong> to local businesses by trade and city.</li>
+<li><strong>Agency prospecting:</strong> businesses without a website, with few reviews or that have not claimed their listing.</li>
+<li><strong>Market research:</strong> count and compare businesses by category and city.</li>
+<li><strong>Data enrichment:</strong> add phone numbers, websites and categories to your own lists.</li>
+</ul><h2>Frequently asked questions</h2><h3>How many businesses can I get per search?</h3><p>As many as Yellow Pages lists for that search, up to 3,000 per term and location pair (100 pages of 30). For bigger lists, split a city into ZIP codes.</p><h3>How do I get emails?</h3><p>Turn on <strong>Load listing details: email and hours ($)</strong>. The Actor opens each listing page and adds the email when the business publishes one (about half of businesses in our tests) and the opening hours.</p><h3>Does it work outside the United States?</h3><p>Yellow Pages (yellowpages.com) covers the United States. Use US cities, states or ZIP codes.</p><h3>Do I need an account, an API key or a proxy?</h3><p>No. The Actor reads public pages without logging in. If Yellow Pages refuses direct requests, it retries through Apify proxy on its own, with a traffic cap, at no extra charge to you.</p><h3>Is it legal to scrape Yellow Pages?</h3><p>The Actor collects only business information that Yellow Pages shows publicly. It does not log in or collect private data. When you contact businesses, follow the marketing and privacy rules that apply to you (for example rules on cold email and calling).</p>
+<div class="cta-row"><a class="btn-gold" href="https://apify.com/techliondev/yellow-pages-scraper">Try Yellow Pages Scraper on Apify</a></div>
+<section class="related"><h2>More TechLion Dev Actors</h2><div class="grid"><article><a href="/bbb-business-scraper/"><h3>BBB Scraper</h3><p>Better Business Bureau listings, ratings and accreditation.</p><span class="price">$0.80 / 1,000 businesses</span></a></article><article><a href="/contractor-license-scraper/"><h3>Contractor License Scraper</h3><p>Official license data for Washington, Oregon, Texas and New York.</p><span class="price">$1.00 / 1,000 licenses</span></a></article><article><a href="/website-contact-scraper/"><h3>Website Email &amp; Contact Scraper</h3><p>Emails, phones and social links from any website.</p><span class="price">$0.50 / 1,000 pages</span></a></article><article><a href="/email-validator/"><h3>Email Validator</h3><p>Bulk email checker: MX records, disposable addresses and typo fixes.</p><span class="price">$0.20 / 1,000 emails</span></a></article></div></section>
+<p>Need a custom data pipeline or integration? <a href="https://www.techlion.dev/contact">Talk to TechLion Dev</a>.</p>
+</div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner max-w-content section-padding">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <a class="footer-brand" href="https://www.techlion.dev/">
+            <img src="https://cdn.techlion.dev/logos/png/icons/Color.png" alt="TechLion Dev" width="32" height="32">
+            <span>TechLion<span class="gold-gradient"> Dev</span></span>
+          </a>
+          <p class="footer-blurb">Web development for small and medium businesses nationwide. Built by Jeremiah Samuel.</p>
+        </div>
+        <div class="footer-col">
+          <h3>Services</h3>
+          <ul>
+            <li><a href="https://www.techlion.dev/services/web-design">Websites</a></li>
+            <li><a href="https://www.techlion.dev/services/web-apps">Web Apps &amp; APIs</a></li>
+            <li><a href="https://www.techlion.dev/services/automations">Automations</a></li>
+            <li><a href="https://www.techlion.dev/services/ai-integration">AI Integration</a></li>
+            <li><a href="https://www.techlion.dev/services/ai-visibility">AI Visibility</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Company</h3>
+          <ul>
+            <li><a href="https://www.techlion.dev/about">About</a></li>
+            <li><a href="https://www.techlion.dev/process">Process</a></li>
+            <li><a href="https://www.techlion.dev/projects">Projects</a></li>
+            <li><a href="https://www.techlion.dev/pricing">Pricing</a></li>
+            <li><a href="https://www.techlion.dev/faq">FAQ</a></li>
+            <li><a href="https://www.techlion.dev/ai-instructions">AI Instructions</a></li>
+            <li><a href="https://www.techlion.dev/contact">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Locations</h3>
+          <ul>
+            <li><a href="https://www.techlion.dev/locations/asbury-park">Asbury Park</a></li>
+            <li><a href="https://www.techlion.dev/locations/brick">Brick</a></li>
+            <li><a href="https://www.techlion.dev/locations/colts-neck">Colts Neck</a></li>
+            <li><a href="https://www.techlion.dev/locations/edison">Edison</a></li>
+            <li><a href="https://www.techlion.dev/locations/freehold">Freehold</a></li>
+            <li><a href="https://www.techlion.dev/locations/holmdel">Holmdel</a></li>
+            <li><a href="https://www.techlion.dev/locations/howell">Howell</a></li>
+            <li><a href="https://www.techlion.dev/locations/manalapan">Manalapan</a></li>
+            <li><a href="https://www.techlion.dev/locations/marlboro">Marlboro</a></li>
+            <li><a href="https://www.techlion.dev/locations/middletown">Middletown</a></li>
+            <li><a href="https://www.techlion.dev/locations/monmouth-county">Monmouth County</a></li>
+            <li><a href="https://www.techlion.dev/locations/old-bridge">Old Bridge</a></li>
+            <li><a href="https://www.techlion.dev/locations/red-bank">Red Bank</a></li>
+            <li><a href="https://www.techlion.dev/locations/toms-river">Toms River</a></li>
+            <li><a href="https://www.techlion.dev/locations/woodbridge">Woodbridge</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Connect</h3>
+          <ul>
+            <li><a href="https://github.com/TechLionDev" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+            <li><a href="https://linkedin.com/in/jeremiah-samuel-4790b138a/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+            <li><a href="https://x.com/jeremiahisdev" target="_blank" rel="noopener noreferrer">X / Twitter</a></li>
+          </ul>
+          <p class="footer-email"><a href="mailto:jeremiahis@techlion.dev">jeremiahis@techlion.dev</a></p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 TechLion Dev. All rights reserved.</p>
+        <div class="footer-legal">
+          <a href="https://www.techlion.dev/privacy">Privacy</a>
+          <a href="https://www.techlion.dev/terms">Terms</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script>
+    (function () {
+      var header = document.getElementById('site-header');
+      var btn = document.getElementById('menu-toggle');
+      var iconMenu = document.getElementById('icon-menu');
+      var iconClose = document.getElementById('icon-close');
+      if (!header || !btn) return;
+      btn.addEventListener('click', function () {
+        var open = header.classList.toggle('is-open');
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+        if (iconMenu) iconMenu.hidden = open;
+        if (iconClose) iconClose.hidden = !open;
+      });
+    })();
+  </script>
+</body>
+</html>
